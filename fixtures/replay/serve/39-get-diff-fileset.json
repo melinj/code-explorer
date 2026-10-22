@@ -1,0 +1,113 @@
+{
+ "method": "GET",
+ "path": "/api/v1/diff",
+ "query": {
+  "fileset": "src",
+  "from": "root()",
+  "to": "@"
+ },
+ "response": {
+  "files": [
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "import os"
+       },
+       {
+        "kind": "add",
+        "newLine": 2,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 3,
+        "text": "DEFAULT_TOPIC = \"world.entity.moved\""
+       },
+       {
+        "kind": "add",
+        "newLine": 4,
+        "text": "DB_URL = os.getenv(\"DB_URL\", \"sqlite://\")"
+       },
+       {
+        "kind": "add",
+        "newLine": 5,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 6,
+        "text": ""
+       }
+      ],
+      "new": [
+       1,
+       14
+      ],
+      "old": [
+       0,
+       0
+      ]
+     }
+    ],
+    "path": "src/helpers.py",
+    "status": "added"
+   },
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "from src.helpers import load, DEFAULT_TOPIC"
+       },
+       {
+        "kind": "add",
+        "newLine": 2,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 3,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 4,
+        "text": "def circle(size: float) -> dict:"
+       },
+       {
+        "kind": "add",
+        "newLine": 5,
+        "text": "    \"\"\"Shape circle.\"\"\""
+       },
+       {
+        "kind": "add",
+        "newLine": 6,
+        "text": "    v1 = size * 1  # circle step 1"
+       }
+      ],
+      "new": [
+       1,
+       148
+      ],
+      "old": [
+       0,
+       0
+      ]
+     }
+    ],
+    "path": "src/shapes.py",
+    "status": "added"
+   }
+  ],
+  "from": "0000000000000000000000000000000000000000",
+  "to": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+ },
+ "route": "GET /api/v1/diff",
+ "status": 200
+}

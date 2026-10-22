@@ -1,0 +1,40 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/metrics",
+ "query": {
+  "level": "cluster"
+ },
+ "response": {
+  "cochange": [],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.757146,
+      0.757146
+     ],
+     "grade": 4,
+     "rate": 0.757146,
+     "settled": false,
+     "touches": 5
+    },
+    "heatPct": 0.5,
+    "key": "c0",
+    "label": "(root)",
+    "lane": "code",
+    "risk": 0.5
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

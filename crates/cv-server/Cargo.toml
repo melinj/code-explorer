@@ -1,0 +1,78 @@
+[package]
+name = "cv-server"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+# Integration tests are one binary (tests/main.rs): see there.
+autotests = false
+
+[[bin]]
+name = "cv"
+path = "src/main.rs"
+
+[dependencies]
+cv-contracts.workspace = true
+cv-vcs.workspace = true
+cv-lang.workspace = true
+cv-lang-python.workspace = true
+cv-lang-typescript.workspace = true
+cv-lang-config.workspace = true
+cv-lang-rust.workspace = true
+cv-lang-cpp.workspace = true
+cv-churn.workspace = true
+cv-link.workspace = true
+cv-channel.workspace = true
+cv-channel-bus.workspace = true
+cv-channel-http.workspace = true
+cv-channel-env.workspace = true
+cv-channel-deploy.workspace = true
+cv-channel-config.workspace = true
+cv-layout.workspace = true
+cv-review.workspace = true
+cv-store.workspace = true
+cv-mcp.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+async-trait = "0.1"
+axum = { workspace = true, features = ["ws"] }
+tokio = { workspace = true, features = ["sync", "time"] }
+futures.workspace = true
+tower-http = { workspace = true, features = ["fs"] }
+rayon.workspace = true
+base64.workspace = true
+globset.workspace = true
+toml_edit.workspace = true
+getrandom = "0.3"
+
+[dev-dependencies]
+tempfile.workspace = true
+tower = { version = "0.5", features = ["util"] }
+tokio-tungstenite = "0.29"
+reqwest = { version = "0.13", default-features = false, features = ["json"] }
+# examples/parse_speed: raw grammar parse time next to each pack's full analysis
+tree-sitter.workspace = true
+tree-sitter-python.workspace = true
+tree-sitter-typescript.workspace = true
+tree-sitter-rust.workspace = true
+tree-sitter-cpp.workspace = true
+
+[[test]]
+name = "it"
+path = "tests/main.rs"
+
+[[test]]
+name = "parse_cache"
+path = "tests/parse_cache.rs"
+
+[[test]]
+name = "restart_bootstrap"
+path = "tests/restart_bootstrap.rs"
+
+[[test]]
+name = "session_expiry"
+path = "tests/session_expiry.rs"
+
+[[test]]
+name = "view_store"
+path = "tests/view_store.rs"

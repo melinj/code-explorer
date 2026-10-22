@@ -1,0 +1,41 @@
+{
+ "method": "GET",
+ "path": "/api/v1/search",
+ "query": {
+  "limit": 5,
+  "q": "circle",
+  "viewId": "<id1>"
+ },
+ "response": [
+  {
+   "detail": "src/shapes.py:4",
+   "kind": "symbol",
+   "label": "circle",
+   "score": 1.0,
+   "target": {
+    "site": {
+     "line": 4,
+     "path": "src/shapes.py",
+     "window": "w1ca31856bd4f"
+    },
+    "window": "w1ca31856bd4f"
+   }
+  },
+  {
+   "detail": "tests/test_shapes.py:4",
+   "kind": "symbol",
+   "label": "test_circle",
+   "score": 0.6,
+   "target": {
+    "site": {
+     "line": 4,
+     "path": "tests/test_shapes.py",
+     "window": "wa4dc73c0f459"
+    },
+    "window": "wa4dc73c0f459"
+   }
+  }
+ ],
+ "route": "GET /api/v1/search",
+ "status": 200
+}

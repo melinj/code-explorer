@@ -1,0 +1,19 @@
+{
+ "body": {
+  "agent": "replay",
+  "note": "replay",
+  "tool": "get_window",
+  "windows": [
+   "w10"
+  ],
+  "workspace": "default"
+ },
+ "method": "POST",
+ "path": "/api/v1/agent/attention",
+ "response": {
+  "cursor": "<volatile>",
+  "ok": true
+ },
+ "route": "POST /api/v1/agent/attention",
+ "status": 200
+}

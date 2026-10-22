@@ -1,0 +1,23 @@
+{
+ "body": {
+  "revset": "description(substring:\"B:\")::description(substring:\"D:\")"
+ },
+ "method": "POST",
+ "path": "/api/v1/revsets:validate",
+ "response": {
+  "added": 176,
+  "changes": [
+   "movzpqyzyppxxytnosmllumqklzlksxt",
+   "lzpvzwsoruutxtxwxuvzormxkvynvkyy",
+   "upzkznrnqnzzuyovsolvnzmupnmywnvm"
+  ],
+  "conflicts": 0,
+  "count": 3,
+  "files": 7,
+  "ok": true,
+  "removed": 9,
+  "warnings": []
+ },
+ "route": "POST /api/v1/revsets:validate",
+ "status": 200
+}

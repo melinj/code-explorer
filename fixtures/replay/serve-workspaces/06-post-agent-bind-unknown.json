@@ -1,0 +1,19 @@
+{
+ "body": {
+  "agent": "replay",
+  "workspace": "nope"
+ },
+ "expectStatus": 404,
+ "method": "POST",
+ "path": "/api/v1/agent/bind",
+ "response": {
+  "code": "not-found",
+  "error": {
+   "code": "not-found",
+   "message": "no workspace \"nope\" in this repo (workspaces: agent, default, ws2)"
+  },
+  "message": "no workspace \"nope\" in this repo (workspaces: agent, default, ws2)"
+ },
+ "route": "POST /api/v1/agent/bind",
+ "status": 404
+}

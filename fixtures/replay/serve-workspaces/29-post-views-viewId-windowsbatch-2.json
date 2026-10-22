@@ -1,0 +1,93 @@
+{
+ "body": {
+  "ids": [
+   "w2d63ca59b09d",
+   "w9f2213a4350b"
+  ],
+  "layoutVersion": 1,
+  "parts": [
+   "outline",
+   "diff"
+  ]
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id4>/windows:batch",
+ "response": {
+  "diffs": [],
+  "links": [
+   {
+    "confidence": 1.0,
+    "from": {
+     "line": 1,
+     "path": "settings.yaml",
+     "window": "w2d63ca59b09d"
+    },
+    "id": "<id3>",
+    "kind": "reference",
+    "label": "replay",
+    "provenance": "human",
+    "to": {
+     "line": 1,
+     "path": "app.py",
+     "window": "w9f2213a4350b"
+    }
+   }
+  ],
+  "missing": [],
+  "outlines": [
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "mode: dev",
+      "line": 1
+     }
+    ],
+    "id": "w2d63ca59b09d",
+    "ports": [
+     {
+      "id": "out1",
+      "kind": "reference",
+      "label": "→ replay",
+      "line": 1,
+      "links": [
+       "<id3>"
+      ],
+      "side": "out"
+     }
+    ],
+    "silhouette": "AAlM"
+   },
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "def greet(who):",
+      "line": 1
+     },
+     {
+      "depth": 0,
+      "label": "def bye(who):",
+      "line": 5
+     }
+    ],
+    "id": "w9f2213a4350b",
+    "ports": [
+     {
+      "id": "in1",
+      "kind": "reference",
+      "label": "← replay",
+      "line": 1,
+      "links": [
+       "<id3>"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "AA9FBBUCAAAPAAAPAA0BBBMC"
+   }
+  ]
+ },
+ "route": "POST /api/v1/views/:viewId/windows:batch",
+ "status": 200
+}

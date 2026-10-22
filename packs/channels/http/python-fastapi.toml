@@ -1,0 +1,31 @@
+# HTTP routes for Python web frameworks (pack P2): FastAPI / Starlette / Flask-style decorators on
+# a router object, with the router's `prefix=` composed in (same file, by router variable).
+
+[[endpoints]]
+id = "python.fastapi.route"
+lang = "python"
+role = "server"
+hints = ["@"]
+query = '''
+(decorated_definition
+  (decorator (call
+    function: (attribute object: (identifier) @scope attribute: (identifier) @method)
+    arguments: (argument_list . (string) @key)))
+  definition: (function_definition name: (identifier) @handler)
+  (#match? @method "^(get|post|put|delete|patch|head|options|websocket|api_route|route)$"))
+'''
+
+[[endpoints]]
+id = "python.fastapi.router-prefix"
+lang = "python"
+role = "server"
+hints = ["prefix="]
+query = '''
+(assignment
+  left: (identifier) @scope
+  right: (call
+    function: [(identifier) (attribute)] @_f
+    arguments: (argument_list (keyword_argument name: (identifier) @_k value: (_) @prefix)))
+  (#match? @_f "(APIRouter|FastAPI|Blueprint|Router)$")
+  (#match? @_k "^(prefix|url_prefix)$"))
+'''

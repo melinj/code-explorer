@@ -1,0 +1,29 @@
+{
+ "method": "GET",
+ "path": "/api/v1/blobs/833a6efefbe0b8c569c9a8a80156ed27e3252b26/text",
+ "query": {
+  "from": 1,
+  "to": 20
+ },
+ "response": {
+  "blob": "833a6efefbe0b8c569c9a8a80156ed27e3252b26",
+  "from": 1,
+  "lang": "yaml",
+  "lines": [
+   "mode: dev"
+  ],
+  "to": 1,
+  "tokens": [
+   [
+    0,
+    4,
+    12,
+    4,
+    1,
+    9
+   ]
+  ]
+ },
+ "route": "GET /api/v1/blobs/:blobId/text",
+ "status": 200
+}

@@ -1,0 +1,24 @@
+[package]
+name = "cv-review"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+# Integration tests are one binary (tests/main.rs): see there.
+autotests = false
+
+[dependencies]
+cv-contracts.workspace = true
+cv-store.workspace = true
+cv-vcs.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tokio = { workspace = true, features = ["sync"] }
+notify = "8"
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[[test]]
+name = "it"
+path = "tests/main.rs"

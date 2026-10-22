@@ -1,0 +1,50 @@
+{
+ "method": "GET",
+ "path": "/api/v1/conflicts",
+ "response": [
+  {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "firstSeenOp": "4eb0965a",
+   "path": "config/edge/session_51.yaml",
+   "sides": 2
+  },
+  {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "firstSeenOp": "4eb0965a",
+   "path": "docs/tool/config_1463.md",
+   "sides": 2
+  },
+  {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "firstSeenOp": "4eb0965a",
+   "path": "src/cache/district/config_601.py",
+   "sides": 2
+  },
+  {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "firstSeenOp": "4eb0965a",
+   "path": "src/loader/district/camera_343.py",
+   "sides": 2
+  },
+  {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "firstSeenOp": "4eb0965a",
+   "path": "src/market/turn/world_635.py",
+   "sides": 2
+  },
+  {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "firstSeenOp": "4eb0965a",
+   "path": "tests/dialogue/test_event_1128.py",
+   "sides": 2
+  }
+ ],
+ "route": "GET /api/v1/conflicts",
+ "status": 200
+}

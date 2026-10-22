@@ -1,0 +1,51 @@
+# Deploy wiring (pack P4): commands in infra files. The pack reads each command and links it to
+# the module, script or test path it runs (direct links, no hubs).
+
+[[config]]
+id = "dockerfile.cmd"
+glob = "**/{Dockerfile,Dockerfile.*,*.dockerfile,*.Dockerfile}"
+path = "CMD"
+role = "deploy"
+
+[[config]]
+id = "dockerfile.entrypoint"
+glob = "**/{Dockerfile,Dockerfile.*,*.dockerfile,*.Dockerfile}"
+path = "ENTRYPOINT"
+role = "deploy"
+
+[[config]]
+id = "dockerfile.run"
+glob = "**/{Dockerfile,Dockerfile.*,*.dockerfile,*.Dockerfile}"
+path = "RUN"
+role = "deploy"
+
+[[config]]
+id = "compose.command"
+glob = "**/*compose*.{yml,yaml}"
+path = "services.*.command"
+role = "deploy"
+
+[[config]]
+id = "compose.entrypoint"
+glob = "**/*compose*.{yml,yaml}"
+path = "services.*.entrypoint"
+role = "deploy"
+
+[[config]]
+id = "ci.run"
+glob = "{.github/workflows/*.{yml,yaml},**/.github/workflows/*.{yml,yaml}}"
+path = "$..run"
+role = "deploy"
+
+[[config]]
+id = "ci.script"
+glob = "{**/.gitlab-ci.yml,.gitlab-ci.yml}"
+path = "$..script"
+role = "deploy"
+items = true
+
+[[config]]
+id = "shell"
+glob = "**/{*.sh,*.bash,Makefile,makefile,justfile}"
+path = "sh"
+role = "deploy"

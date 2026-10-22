@@ -1,0 +1,14 @@
+# Env readers in C and C++ (pack P3): getenv / secure_getenv / std::getenv.
+# Runs once the C++ language pack provides a site extractor.
+
+[[endpoints]]
+id = "cpp.getenv"
+lang = "cpp"
+role = "read"
+hints = ["getenv"]
+query = '''
+(call_expression
+  function: [(identifier) (qualified_identifier)] @_f
+  arguments: (argument_list . (_) @key)
+  (#match? @_f "(^|::)(secure_)?getenv$"))
+'''

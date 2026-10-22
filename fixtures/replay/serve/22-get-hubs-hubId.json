@@ -1,0 +1,54 @@
+{
+ "method": "GET",
+ "path": "/api/v1/hubs/env%3ADB_URL",
+ "query": {
+  "viewId": "<id1>"
+ },
+ "response": {
+  "anchors": [
+   [
+    860.0,
+    6087.8
+   ],
+   [
+    860.0,
+    2875.0
+   ],
+   [
+    3642.16,
+    9111.96
+   ]
+  ],
+  "consumers": [
+   {
+    "line": 4,
+    "path": "src/helpers.py",
+    "window": "w520470537758"
+   }
+  ],
+  "display": "env:DB_URL",
+  "id": "env:DB_URL",
+  "key": "DB_URL",
+  "producers": [
+   {
+    "line": 1,
+    "path": ".env.example",
+    "window": "w8a97636e48ec"
+   },
+   {
+    "line": 2,
+    "path": "Dockerfile",
+    "window": "wa42f613539cd"
+   }
+  ],
+  "protocol": "env",
+  "rect": {
+   "h": 240.0,
+   "w": 240.0,
+   "x": 1577.39,
+   "y": 7272.96
+  }
+ },
+ "route": "GET /api/v1/hubs/:hubId",
+ "status": 200
+}

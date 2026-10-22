@@ -1,0 +1,42 @@
+{
+ "method": "GET",
+ "path": "/api/v1/threads/t150",
+ "response": {
+  "anchor": {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "end": 2,
+   "fingerprint": {
+    "after": "",
+    "before": "",
+    "text": ""
+   },
+   "path": "deploy/signal_5.sh",
+   "side": "new",
+   "start": 1
+  },
+  "comments": [
+   {
+    "author": {
+     "kind": "human",
+     "name": "you"
+    },
+    "body": "Replay: why 80?",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "id": "cm151"
+   }
+  ],
+  "createdAt": "2026-01-01T00:00:00Z",
+  "createdBy": {
+   "kind": "human",
+   "name": "you"
+  },
+  "id": "t150",
+  "kind": "question",
+  "producedEdits": [],
+  "status": "open",
+  "updatedAt": "2026-01-01T00:00:00Z"
+ },
+ "route": "GET /api/v1/threads/:threadId",
+ "status": 200
+}

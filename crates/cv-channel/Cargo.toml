@@ -1,0 +1,13 @@
+[package]
+name = "cv-channel"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+cv-lang.workspace = true
+globset.workspace = true
+rayon.workspace = true
+regex.workspace = true
+toml_edit.workspace = true

@@ -1,0 +1,14 @@
+# HTTP clients in Python (pack P2): requests / httpx / test clients called with a path or URL.
+
+[[endpoints]]
+id = "python.http.client"
+lang = "python"
+role = "client"
+hints = [".get(", ".post(", ".put(", ".delete(", ".patch("]
+query = '''
+(call
+  function: (attribute object: (identifier) @_o attribute: (identifier) @method)
+  arguments: (argument_list . [(string) (concatenated_string) (binary_operator)] @key)
+  (#match? @_o "^(requests|httpx|client|test_client|async_client|api_client|http_client|ac)$")
+  (#match? @method "^(get|post|put|delete|patch|head|options)$"))
+'''

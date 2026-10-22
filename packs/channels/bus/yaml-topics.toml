@@ -1,0 +1,19 @@
+# Bus topics declared in YAML (pack P1): `topic:` keys whose value looks like a dotted topic.
+# A node whose `config_id` names a publisher publishes; every other `topic:` subscribes.
+
+[[config]]
+id = "yaml.topic.publish"
+glob = "**/*.{yaml,yml}"
+path = "$..topic"
+role = "producer"
+key_from = "value"
+when = "config_id=pub"
+value_pattern = '^[A-Za-z0-9_{}*#-]+(\.[A-Za-z0-9_{}*#-]+)+$'
+
+[[config]]
+id = "yaml.topic.subscribe"
+glob = "**/*.{yaml,yml}"
+path = "$..topic"
+role = "consumer"
+key_from = "value"
+value_pattern = '^[A-Za-z0-9_{}*#-]+(\.[A-Za-z0-9_{}*#-]+)+$'

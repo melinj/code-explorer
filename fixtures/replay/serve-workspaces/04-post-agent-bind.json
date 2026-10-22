@@ -1,0 +1,58 @@
+{
+ "body": {
+  "agent": "replay",
+  "client": "contract-replay",
+  "workspace": "agent"
+ },
+ "method": "POST",
+ "path": "/api/v1/agent/bind",
+ "response": {
+  "agent": {
+   "activity": "reading",
+   "client": "contract-replay",
+   "lastSeen": "2026-01-01T00:00:00Z",
+   "name": "replay"
+  },
+  "files": [
+   "app.py",
+   "settings.yaml"
+  ],
+  "lastOp": {
+   "description": "create initial working-copy commit in workspace agent",
+   "op": "<volatile>",
+   "time": "2026-01-01T00:00:00Z"
+  },
+  "name": "agent",
+  "overlaps": [
+   {
+    "paths": [
+     "app.py",
+     "settings.yaml"
+    ],
+    "workspace": "default"
+   },
+   {
+    "paths": [
+     "app.py",
+     "settings.yaml"
+    ],
+    "workspace": "ws2"
+   }
+  ],
+  "root": "<FIXTURES>/workspaces/agent",
+  "serving": false,
+  "stack": {
+   "changes": 3,
+   "conflicts": 0,
+   "files": 2,
+   "revset": "trunk()..agent@"
+  },
+  "unsnapshottedFiles": 0,
+  "wc": {
+   "change": "nuwkyouxrorslpnuuswmwplsnkmropst",
+   "commit": "c2fdb934040274a56ac547c840fb2bdcd03bad02"
+  }
+ },
+ "route": "POST /api/v1/agent/bind",
+ "status": 200
+}

@@ -1,0 +1,13 @@
+[package]
+name = "cv-channel-deploy"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+cv-channel.workspace = true
+cv-lang.workspace = true
+
+[dev-dependencies]
+cv-lang-config.workspace = true

@@ -1,0 +1,66 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id4>/metrics",
+ "query": {
+  "level": "cluster"
+ },
+ "response": {
+  "cochange": [],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      1.0,
+      1.0
+     ],
+     "grade": 4,
+     "rate": 1.0,
+     "settled": false,
+     "touches": 2
+    },
+    "heatPct": 0.75,
+    "key": "c1",
+    "label": "app",
+    "lane": "code",
+    "risk": 0.612372
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.499996,
+      0.499996
+     ],
+     "grade": 4,
+     "rate": 0.499996,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.25,
+    "key": "c0",
+    "label": "Replay cluster",
+    "lane": "config",
+    "risk": 0.353553
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

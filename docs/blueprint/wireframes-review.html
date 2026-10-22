@@ -1,0 +1,139 @@
+<style>
+.wf-svg .v3-chip{fill:var(--bp-bg);stroke:var(--bp-line);stroke-width:1}
+.wf-svg .v3-a{fill:var(--chip-a)}
+.wf-svg .v3-b{fill:var(--chip-b)}
+.wf-svg .v3-c{fill:var(--chip-c)}
+.wf-svg .v3-a-hi{fill:var(--chip-a-hi)}
+.wf-svg .v3-b-hi{fill:var(--chip-b-hi)}
+.wf-svg .v3-c-hi{fill:var(--chip-c-hi)}
+.wf-svg .v3-sel{fill:none;stroke:var(--chip-a-hi);stroke-width:2.25}
+.wf-svg .v3-selchip{fill:var(--bp-bg);stroke:var(--chip-a-hi);stroke-width:1.5}
+.wf-svg .v3-frag{fill:none;stroke:var(--chip-a-hi);stroke-width:1.75;stroke-dasharray:1 4;stroke-linecap:round}
+.wf-svg .v3-dim{opacity:.35}
+.wf-svg .v3-ghost{fill:none;stroke:var(--bp-dim);stroke-width:1;stroke-dasharray:3 4;opacity:.7}
+.wf-svg .v3-pill{fill:var(--bp-bg);stroke:var(--bp-dim);stroke-width:1;stroke-dasharray:4 3}
+.wf-svg .v3-own1{fill:var(--bp-ink);opacity:.8}
+.wf-svg .v3-own2{fill:var(--bp-dim)}
+.wf-svg .v3-shadow{fill:var(--bp-line);opacity:.25}
+</style>
+<figure class="wf" id="wf-chips-range"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 600" role="img" aria-labelledby="wf-chips-range-t"><title id="wf-chips-range-t">File chips with one colour per split file, brighter when selected and marked on the minimap; and a range review drawn on the full view's map with diff windows and minimized connected functions</title>
+<defs>
+<marker id="wf13-ac" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fc" d="M0 0L8 4L0 8z"/></marker>
+</defs>
+<rect class="pn" x="16" y="16" width="536" height="568" rx="6"/>
+<text class="l b" x="32" y="44">File chips</text>
+<text class="s d" x="32" y="62">each split file has its own colour; selecting one lights every fragment</text>
+<rect class="rg" x="32" y="78" width="240" height="206" rx="10"/><text class="s b" x="44" y="94">pay · InvoiceBuilder</text>
+<rect class="rg" x="288" y="78" width="248" height="206" rx="10"/><text class="s b" x="300" y="94">core · retry</text>
+<rect class="rg" x="32" y="300" width="240" height="160" rx="10"/><text class="s b" x="44" y="316">events · EventBus</text>
+<rect class="pn" x="44" y="104" width="216" height="72" rx="4"/><rect class="h3" x="44" y="104" width="216" height="3"/>
+<text class="s m b" x="52" y="122">build</text>
+<rect class="v3-selchip" x="134" y="110" width="118" height="18" rx="9"/><rect class="v3-a-hi" x="139" y="114" width="4" height="10" rx="2"/><text class="s m" x="148" y="123">builder.py · 1/5</text>
+<rect class="bar" x="54" y="140" width="140" height="3" rx="1.5"/><rect class="bar" x="64" y="150" width="110" height="3" rx="1.5"/><rect class="bar" x="64" y="160" width="150" height="3" rx="1.5"/>
+<rect class="v3-sel" x="41" y="101" width="222" height="78" rx="5"/>
+<rect class="pn" x="44" y="190" width="216" height="80" rx="4"/><rect class="h3" x="44" y="190" width="216" height="3"/>
+<text class="s m b" x="52" y="208">_generate</text>
+<rect class="v3-selchip" x="134" y="196" width="118" height="18" rx="9"/><rect class="v3-a-hi" x="139" y="200" width="4" height="10" rx="2"/><text class="s m" x="148" y="209">builder.py · 2/5</text>
+<rect class="bar" x="54" y="226" width="120" height="3" rx="1.5"/><rect class="bar" x="64" y="236" width="150" height="3" rx="1.5"/><rect class="bar" x="64" y="246" width="96" height="3" rx="1.5"/>
+<rect class="v3-sel" x="41" y="187" width="222" height="86" rx="5"/>
+<rect class="pn" x="300" y="104" width="224" height="72" rx="4"/><rect class="h2" x="300" y="104" width="224" height="3"/>
+<text class="s m b" x="308" y="122">backoff</text>
+<rect class="v3-selchip" x="396" y="110" width="118" height="18" rx="9"/><rect class="v3-a-hi" x="401" y="114" width="4" height="10" rx="2"/><text class="s m" x="410" y="123">builder.py · 4/5</text>
+<rect class="bar" x="310" y="140" width="130" height="3" rx="1.5"/><rect class="bar" x="320" y="150" width="100" height="3" rx="1.5"/><rect class="bar" x="320" y="160" width="140" height="3" rx="1.5"/>
+<rect class="v3-sel" x="297" y="101" width="230" height="78" rx="5"/>
+<g class="v3-dim">
+<rect class="pn" x="300" y="190" width="224" height="80" rx="4"/><rect class="h1" x="300" y="190" width="224" height="3"/>
+<text class="s m b" x="308" y="208">RetryPolicy</text>
+<rect class="v3-chip" x="396" y="196" width="118" height="18" rx="9"/><rect class="v3-c" x="401" y="200" width="4" height="10" rx="2"/><text class="s m" x="410" y="209">policy.py · 2/3</text>
+<rect class="bar" x="310" y="226" width="120" height="3" rx="1.5"/><rect class="bar" x="320" y="236" width="140" height="3" rx="1.5"/>
+<rect class="pn" x="44" y="326" width="216" height="58" rx="4"/><rect class="h4" x="44" y="326" width="216" height="3"/>
+<text class="s m b" x="52" y="344">emit</text>
+<rect class="v3-chip" x="150" y="332" width="102" height="18" rx="9"/><rect class="v3-b" x="155" y="336" width="4" height="10" rx="2"/><text class="s m" x="164" y="345">bus.py · 1/3</text>
+<rect class="bar" x="54" y="362" width="140" height="3" rx="1.5"/><rect class="bar" x="64" y="372" width="96" height="3" rx="1.5"/>
+<rect class="pn" x="44" y="394" width="216" height="56" rx="4"/><rect class="h3" x="44" y="394" width="216" height="3"/>
+<text class="s m b" x="52" y="412">on</text>
+<rect class="v3-chip" x="150" y="400" width="102" height="18" rx="9"/><rect class="v3-b" x="155" y="404" width="4" height="10" rx="2"/><text class="s m" x="164" y="413">bus.py · 2/3</text>
+<rect class="bar" x="54" y="430" width="120" height="3" rx="1.5"/>
+</g>
+<path class="v3-frag" d="M263 140C280 140 280 140 297 140"/>
+<path class="v3-frag" d="M263 230C285 230 285 150 297 150"/>
+<rect class="v3-selchip" x="300" y="246" width="210" height="20" rx="10"/><text class="s" x="312" y="260">3/5 and 5/5 off-screen · ]f jumps</text>
+<rect class="pg" x="288" y="300" width="248" height="160" rx="6"/>
+<text class="s b" x="300" y="318">Minimap</text><text class="s d" x="360" y="318">fragments of builder.py</text>
+<rect class="g1" x="300" y="328" width="224" height="22"/><rect class="g1" x="300" y="354" width="224" height="22"/><rect class="g1" x="300" y="380" width="224" height="66"/>
+<rect class="h3 mm" x="310" y="384" width="40" height="22" rx="2"/><rect class="h2 mm" x="356" y="384" width="44" height="22" rx="2"/><rect class="h4 mm" x="310" y="412" width="36" height="28" rx="2"/><rect class="h1 mm" x="420" y="390" width="50" height="30" rx="2"/><rect class="h0 mm" x="476" y="406" width="40" height="32" rx="2"/><rect class="h2 mm" x="420" y="358" width="60" height="14" rx="2"/>
+<rect class="v3-a-hi" x="316" y="388" width="8" height="6" rx="1"/><rect class="v3-a-hi" x="330" y="396" width="8" height="6" rx="1"/><rect class="v3-a-hi" x="362" y="390" width="8" height="6" rx="1"/><rect class="v3-a-hi" x="432" y="398" width="8" height="6" rx="1"/><rect class="v3-a-hi" x="488" y="420" width="8" height="6" rx="1"/>
+<rect class="sls" x="306" y="380" width="104" height="36" rx="2"/>
+<text class="s d" x="300" y="438">viewport</text>
+<text class="s b" x="32" y="490">Chip colour</text>
+<text class="s d" x="32" y="508">at rest</text><text class="s d" x="32" y="530">selected</text>
+<rect class="v3-chip" x="96" y="496" width="64" height="16" rx="8"/><rect class="v3-a" x="101" y="499" width="4" height="10" rx="2"/><text class="s m" x="110" y="508">slot 4</text>
+<rect class="v3-chip" x="168" y="496" width="64" height="16" rx="8"/><rect class="v3-b" x="173" y="499" width="4" height="10" rx="2"/><text class="s m" x="182" y="508">slot 7</text>
+<rect class="v3-chip" x="240" y="496" width="64" height="16" rx="8"/><rect class="v3-c" x="245" y="499" width="4" height="10" rx="2"/><text class="s m" x="254" y="508">slot 9</text>
+<rect class="v3-selchip" x="96" y="518" width="64" height="16" rx="8"/><rect class="v3-a-hi" x="101" y="521" width="4" height="10" rx="2"/><text class="s m" x="110" y="530">slot 4</text>
+<rect class="v3-chip" x="168" y="518" width="64" height="16" rx="8"/><rect class="v3-b-hi" x="173" y="521" width="4" height="10" rx="2"/><text class="s m" x="182" y="530">slot 7</text>
+<rect class="v3-chip" x="240" y="518" width="64" height="16" rx="8"/><rect class="v3-c-hi" x="245" y="521" width="4" height="10" rx="2"/><text class="s m" x="254" y="530">slot 9</text>
+<text class="s d" x="32" y="560">hue = slot · 36° (OKLCH) · rest L 0.78 C 0.06 → selected L 0.88 C 0.17</text>
+<rect class="pn" x="568" y="16" width="536" height="568" rx="6"/>
+<text class="l b" x="584" y="44">Range review on the full view's map</text>
+<text class="s d" x="584" y="62">trunk()..@ · 3 commits · diff windows; unchanged connected code minimized</text>
+<rect class="pg" x="936" y="72" width="156" height="20" rx="4"/><text class="s" x="946" y="86">Connected: minimized ▾</text>
+<rect class="e-band" x="576" y="100" width="520" height="470"/>
+<rect class="e-rail" x="576" y="100" width="72" height="470"/>
+<text class="s b" x="586" y="118">Code</text>
+<text class="s d end" x="642" y="150">Core</text><text class="s d end" x="642" y="320">High</text><text class="s d end" x="642" y="480">Medium</text>
+<line class="ru" x1="648" y1="260" x2="1096" y2="260"/><line class="ru" x1="648" y1="420" x2="1096" y2="420"/>
+<text class="s b" x="660" y="96">Hot</text><text class="s b" x="814" y="96">Warm</text><text class="s b" x="964" y="96">Mild</text>
+<line class="ru" x1="806" y1="100" x2="806" y2="570"/><line class="ru" x1="956" y1="100" x2="956" y2="570"/>
+<rect class="v3-ghost" x="816" y="112" width="128" height="80" rx="8"/><text class="s d" x="826" y="130">core · store</text><text class="s d" x="826" y="146">unchanged</text>
+<rect class="v3-ghost" x="966" y="276" width="122" height="96" rx="8"/><text class="s d" x="976" y="294">web api</text><text class="s d" x="976" y="310">unchanged</text>
+<rect class="v3-ghost" x="660" y="432" width="134" height="90" rx="8"/><text class="s d" x="670" y="450">admin</text><text class="s d" x="670" y="466">unchanged</text>
+<rect class="rg" x="656" y="110" width="146" height="146" rx="10"/><text class="s b" x="666" y="126">pay · InvoiceBuilder</text>
+<rect class="pn" x="664" y="134" width="130" height="112" rx="4"/><rect class="h3" x="664" y="134" width="130" height="3"/>
+<text class="s m b" x="670" y="151">build · diff</text>
+<rect class="v3-own1" x="664" y="160" width="3" height="20"/><rect class="v3-own2" x="664" y="184" width="3" height="40"/>
+<rect class="del" x="670" y="160" width="118" height="9"/><rect class="add" x="670" y="171" width="118" height="9"/><rect class="bar" x="676" y="186" width="90" height="3" rx="1.5"/><rect class="add" x="670" y="194" width="118" height="9"/><rect class="add" x="670" y="205" width="118" height="9"/><rect class="bar" x="676" y="220" width="70" height="3" rx="1.5"/>
+<rect class="pg" x="670" y="228" width="92" height="14" rx="7"/><text class="s mid" x="716" y="239">2 of 3 commits</text>
+<rect class="rg" x="812" y="274" width="140" height="140" rx="10"/><text class="s b" x="822" y="290">events · EventBus</text>
+<rect class="pn" x="820" y="298" width="124" height="100" rx="4"/><rect class="h4" x="820" y="298" width="124" height="3"/>
+<text class="s m b" x="826" y="315">emit · diff</text>
+<rect class="v3-own2" x="820" y="324" width="3" height="30"/>
+<rect class="bar" x="832" y="328" width="80" height="3" rx="1.5"/><rect class="del" x="826" y="336" width="112" height="9"/><rect class="add" x="826" y="347" width="112" height="9"/><rect class="bar" x="832" y="362" width="60" height="3" rx="1.5"/>
+<rect class="pg" x="826" y="376" width="86" height="14" rx="7"/><text class="s mid" x="869" y="387">1 of 3 commits</text>
+<path class="ec" d="M794 200C850 200 880 220 936 220" marker-end="url(#wf13-ac)"/>
+<rect class="v3-pill" x="936" y="210" width="152" height="22" rx="11"/><text class="s m" x="946" y="225">validate · unchanged · ↧ 41</text>
+<path class="ec" d="M944 340C960 340 960 300 966 290" marker-end="url(#wf13-ac)"/>
+<path class="ec" d="M794 170C840 170 860 120 966 118" marker-end="url(#wf13-ac)"/>
+<rect class="v3-shadow" x="972" y="116" width="118" height="80" rx="4"/>
+<rect class="pn" x="966" y="110" width="118" height="80" rx="4"/><rect class="h1" x="966" y="110" width="118" height="3"/>
+<text class="s m b" x="972" y="127">KVStore.put</text><text class="s d end" x="1078" y="127">–</text>
+<rect class="bar" x="976" y="140" width="80" height="3" rx="1.5"/><rect class="bar" x="986" y="150" width="60" height="3" rx="1.5"/><rect class="bar" x="986" y="160" width="90" height="3" rx="1.5"/>
+<text class="s d" x="972" y="182">unchanged · expanded</text>
+<rect class="v3-pill" x="966" y="384" width="122" height="22" rx="11"/><text class="s m" x="976" y="399">get_item · unchanged</text>
+<path class="ec" d="M944 370C955 370 955 395 966 395" marker-end="url(#wf13-ac)"/>
+<text class="s d" x="584" y="562">Unchanged clusters keep their full-view cells as faint outlines; Fit frames only what changed.</text>
+<g class="wf-callout" transform="translate(22 94)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(286 140)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(296 256)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(278 310)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(22 500)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(654 104)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(806 236)"><circle r="9"/><text y="4">7</text></g>
+<g class="wf-callout" transform="translate(928 222)"><circle r="9"/><text y="4">8</text></g>
+<g class="wf-callout" transform="translate(1094 110)"><circle r="9"/><text y="4">9</text></g>
+<g class="wf-callout" transform="translate(814 120)"><circle r="9"/><text y="4">10</text></g>
+</svg></div>
+<figcaption><h4>File chips, and a range review on the full view's map</h4>
+<p>Left: every split file carries its own chip colour, muted until you select the file. Then its chips and outlines brighten, the rest dims, and the minimap marks every fragment. Right: a range review keeps the full view's map, so diff windows sit where their code always sits, and unchanged connected functions stay one click away.</p>
+<ol class="wf-legend">
+<li><b>Chip at rest</b> — one colour per split file, stable per path; muted so it reads as identity, not heat. <span class="ws f">F1</span> <span class="ws">B3</span> <code>WindowHeader.fragment</code> (chip)</li>
+<li><b>Selected file</b> — its chips and outlines go more saturated and brighter; other windows dim. <span class="ws f">F1</span> <code>ws: view.state</code> (selectedFile)</li>
+<li><b>Off-screen fragments</b> — listed in a chip; <code>]f</code> and <code>[f</code> jump between fragments. <span class="ws f">F1</span> <code>GET /api/v1/views/{id}/fragments?path=</code></li>
+<li><b>Minimap</b> — every fragment of the selected file marked in its bright colour, including off-screen ones. <span class="ws f">F1</span> <code>GET /api/v1/views/{id}/fragments?path=</code></li>
+<li><b>Palette</b> — 10 slots at 36° apart; selection raises lightness and chroma. <span class="ws c">C0</span> <code>wire.ts FILE_CHIP_SLOTS</code></li>
+<li><b>Same map as the full view</b> — lanes, heat columns, connectedness rows and cluster positions come from the snapshot of the range tip. <span class="ws">B6</span> <code>ViewRef.sharedPlacement</code></li>
+<li><b>Diff windows</b> — one window per hunk cluster, with in-range activity as a badge and per-line owner stripes instead of position. <span class="ws f">F3</span> <span class="ws">B6</span> <code>WindowDiff</code> <code>Heat.inRange</code></li>
+<li><b>Minimized context</b> — unchanged functions the diff calls or is called by: header-only pills with name and dependents. <span class="ws f">F3</span> <code>RangeOptions.contextDisplay</code> <code>WindowHeader.flags.minimized</code></li>
+<li><b>Expanded in place</b> — a click opens the pill as an overlay with its outline; nothing is relaid. <span class="ws f">F3</span></li>
+<li><b>Unchanged clusters</b> — faint outlines in their full-view cells keep orientation; Fit frames only the change. <span class="ws f">F1</span> <span class="ws">B6</span></li>
+</ol></figcaption></figure>

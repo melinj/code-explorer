@@ -1,0 +1,24 @@
+# Known differences between the Rust wire types (generated TS) and the hand-written spec
+# (docs/contracts/*.ts), read when scripts/gen-contracts.sh writes check.ts. One line per type:
+#   Name [exact|out|in|keys|skip] [keys-differ]   # reason
+#   exact        mutually assignable (the default for every shared type not listed)
+#   out          Rust's output conforms to the spec (generated assignable to spec)
+#   in           the spec's input is accepted by Rust (spec assignable to generated)
+#   keys         only field names and required fields are compared
+#   skip         not compared
+#   keys-differ  the top-level field names may differ (otherwise they must be identical)
+# Brands, literal unions (Rust String / integers) and serde_json::Value fields are compared loosely
+# everywhere; see U<T> in check.ts.
+
+# Kept on purpose (2026-10-18): each is one-directional conformance, which is all the wire needs.
+# Responses: Rust always writes these #[serde(default)] fields, the spec marks them optional, so
+# every Rust response is a valid spec value (`out`). ts-rs only marks Option fields optional, and a
+# bool/Vec that is always present is simpler for clients than a tri-state.
+Cluster out            # pinned
+WorkspaceSummary out   # files
+# Request bodies: Rust reads optional fields with #[serde(default)] (null or absent), so every
+# spec-valid body is accepted (`in`); Rust being more lenient than the spec is intended.
+ExpandRequest in       # before/after; Rust also accepts null
+NewThread in           # anchor.end optional in Rust, required in the spec
+# Contains Cluster (pinned is always written, see above).
+ViewBootstrap out

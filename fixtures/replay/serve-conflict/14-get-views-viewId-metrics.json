@@ -1,0 +1,68 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/metrics",
+ "query": {
+  "level": "file"
+ },
+ "response": {
+  "cochange": [],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.375532,
+      0.963778
+     ],
+     "grade": 4,
+     "rate": 0.800004,
+     "settled": false,
+     "touches": 4
+    },
+    "heatPct": 0.75,
+    "key": "engine.py#file",
+    "label": "engine.py",
+    "lane": "code",
+    "risk": 0.612372,
+    "window": "w9693b98bf584"
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.0362219,
+      0.624468
+     ],
+     "grade": 2,
+     "rate": 0.199996,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.25,
+    "key": "notes.py#file",
+    "label": "notes.py",
+    "lane": "code",
+    "risk": 0.353553,
+    "window": "we168852ff31f"
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

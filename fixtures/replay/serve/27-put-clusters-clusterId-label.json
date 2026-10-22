@@ -1,0 +1,12 @@
+{
+ "body": {
+  "label": "Replay cluster"
+ },
+ "method": "PUT",
+ "path": "/api/v1/clusters/c0/label",
+ "response": {
+  "ok": true
+ },
+ "route": "PUT /api/v1/clusters/:clusterId/label",
+ "status": 200
+}

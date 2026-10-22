@@ -1,0 +1,14 @@
+{
+ "body": {
+  "revset": "trunk("
+ },
+ "method": "POST",
+ "path": "/api/v1/revsets:validate",
+ "response": {
+  "error": "unbalanced parentheses",
+  "hint": "check the brackets",
+  "ok": false
+ },
+ "route": "POST /api/v1/revsets:validate",
+ "status": 200
+}

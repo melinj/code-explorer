@@ -1,0 +1,21 @@
+{
+ "body": {
+  "steps": [
+   {
+    "note": "start here",
+    "target": {
+     "line": 1,
+     "path": "deploy/signal_5.sh"
+    }
+   }
+  ],
+  "title": "Replay tour"
+ },
+ "method": "POST",
+ "path": "/api/v1/agent/tours",
+ "response": {
+  "tour": "tour1"
+ },
+ "route": "POST /api/v1/agent/tours",
+ "status": 200
+}

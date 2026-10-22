@@ -1,0 +1,15 @@
+{
+ "method": "GET",
+ "path": "/api/v1/links",
+ "query": {
+  "dir": "both",
+  "target": "w85a48e7c7471",
+  "viewId": "<id2>"
+ },
+ "response": {
+  "hubs": [],
+  "links": []
+ },
+ "route": "GET /api/v1/links",
+ "status": 200
+}

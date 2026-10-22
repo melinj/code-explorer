@@ -1,0 +1,15 @@
+[package]
+name = "cv-channel-http"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+cv-channel.workspace = true
+cv-lang.workspace = true
+
+[dev-dependencies]
+cv-lang-cpp.workspace = true
+cv-lang-rust.workspace = true
+cv-lang-typescript.workspace = true

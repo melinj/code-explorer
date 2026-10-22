@@ -1,0 +1,323 @@
+{
+ "method": "GET",
+ "path": "/api/v1/diff",
+ "query": {
+  "from": "description(substring:\"B:\")",
+  "to": "description(substring:\"D:\")"
+ },
+ "response": {
+  "files": [
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "name: ci"
+       },
+       {
+        "kind": "add",
+        "newLine": 2,
+        "text": "on: [push]"
+       },
+       {
+        "kind": "add",
+        "newLine": 3,
+        "text": "jobs:"
+       },
+       {
+        "kind": "add",
+        "newLine": 4,
+        "text": "  test:"
+       },
+       {
+        "kind": "add",
+        "newLine": 5,
+        "text": "    runs-on: ubuntu-latest"
+       },
+       {
+        "kind": "add",
+        "newLine": 6,
+        "text": "    steps:"
+       }
+      ],
+      "new": [
+       1,
+       7
+      ],
+      "old": [
+       0,
+       0
+      ]
+     }
+    ],
+    "path": ".github/workflows/ci.yml",
+    "status": "added"
+   },
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "FROM python:3.12-slim AS base"
+       },
+       {
+        "kind": "add",
+        "newLine": 2,
+        "text": "ENV DB_URL=sqlite://"
+       },
+       {
+        "kind": "add",
+        "newLine": 3,
+        "text": "COPY src /app/src"
+       },
+       {
+        "kind": "add",
+        "newLine": 4,
+        "text": "CMD [\"python\", \"-m\", \"src.shapes\"]"
+       }
+      ],
+      "new": [
+       1,
+       4
+      ],
+      "old": [
+       0,
+       0
+      ]
+     }
+    ],
+    "path": "Dockerfile",
+    "status": "added"
+   },
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "# Design"
+       },
+       {
+        "kind": "add",
+        "newLine": 2,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 3,
+        "text": "Shapes are dicts."
+       }
+      ],
+      "new": [
+       1,
+       3
+      ],
+      "old": [
+       0,
+       0
+      ]
+     }
+    ],
+    "path": "docs/design.md",
+    "status": "added"
+   },
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "import os"
+       },
+       {
+        "kind": "add",
+        "newLine": 2,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 3,
+        "text": "DEFAULT_TOPIC = \"world.entity.moved\""
+       },
+       {
+        "kind": "add",
+        "newLine": 4,
+        "text": "DB_URL = os.getenv(\"DB_URL\", \"sqlite://\")"
+       },
+       {
+        "kind": "add",
+        "newLine": 5,
+        "text": ""
+       },
+       {
+        "kind": "add",
+        "newLine": 6,
+        "text": ""
+       }
+      ],
+      "new": [
+       1,
+       9
+      ],
+      "old": [
+       0,
+       0
+      ]
+     }
+    ],
+    "path": "src/helpers.py",
+    "status": "added"
+   },
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "del",
+        "oldLine": 1,
+        "text": "from src.util import load, DEFAULT_TOPIC"
+       },
+       {
+        "kind": "add",
+        "newLine": 1,
+        "text": "from src.helpers import load, DEFAULT_TOPIC"
+       },
+       {
+        "kind": "ctx",
+        "newLine": 2,
+        "oldLine": 2,
+        "text": ""
+       },
+       {
+        "kind": "ctx",
+        "newLine": 3,
+        "oldLine": 3,
+        "text": ""
+       },
+       {
+        "kind": "ctx",
+        "newLine": 4,
+        "oldLine": 4,
+        "text": "def circle(size: float) -> dict:"
+       }
+      ],
+      "new": [
+       1,
+       4
+      ],
+      "old": [
+       1,
+       4
+      ]
+     },
+     {
+      "lines": [
+       {
+        "kind": "ctx",
+        "newLine": 39,
+        "oldLine": 39,
+        "text": "    v5 = size * 5  # square step 5"
+       },
+       {
+        "kind": "ctx",
+        "newLine": 40,
+        "oldLine": 40,
+        "text": "    v6 = size * 6  # square step 6"
+       },
+       {
+        "kind": "ctx",
+        "newLine": 41,
+        "oldLine": 41,
+        "text": "    v7 = size * 7  # square step 7"
+       },
+       {
+        "kind": "del",
+        "oldLine": 42,
+        "text": "    v8 = size * 8  # square step 8"
+       },
+       {
+        "kind": "add",
+        "newLine": 42,
+        "text": "    v8 = size * 80  # square step 8 (tuned)"
+       },
+       {
+        "kind": "ctx",
+        "newLine": 43,
+        "oldLine": 43,
+        "text": "    v9 = size * 9  # square step 9"
+       }
+      ],
+      "new": [
+       39,
+       7
+      ],
+      "old": [
+       39,
+       7
+      ]
+     }
+    ],
+    "path": "src/shapes.py",
+    "status": "modified"
+   },
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "del",
+        "oldLine": 1,
+        "text": "import os"
+       },
+       {
+        "kind": "del",
+        "oldLine": 2,
+        "text": ""
+       },
+       {
+        "kind": "del",
+        "oldLine": 3,
+        "text": "DEFAULT_TOPIC = \"world.entity.moved\""
+       },
+       {
+        "kind": "del",
+        "oldLine": 4,
+        "text": "DB_URL = os.getenv(\"DB_URL\", \"sqlite://\")"
+       },
+       {
+        "kind": "del",
+        "oldLine": 5,
+        "text": ""
+       },
+       {
+        "kind": "del",
+        "oldLine": 6,
+        "text": ""
+       }
+      ],
+      "new": [
+       0,
+       0
+      ],
+      "old": [
+       1,
+       9
+      ]
+     }
+    ],
+    "path": "src/util.py",
+    "status": "removed"
+   }
+  ],
+  "from": "e0e57ac0773c8e5fee289331cd1ccea990a7fa59",
+  "to": "6f6464936dd64ee833c43cb87e976a463073bc4a"
+ },
+ "route": "GET /api/v1/diff",
+ "status": 200
+}

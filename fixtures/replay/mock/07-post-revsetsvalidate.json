@@ -1,0 +1,26 @@
+{
+ "body": {
+  "revset": "trunk()..@"
+ },
+ "method": "POST",
+ "path": "/api/v1/revsets:validate",
+ "response": {
+  "added": 246,
+  "changes": [
+   "pprklvvmkwulvnstlwqqwmqqvopxprou",
+   "zsswnpqrtltqkqlpomlxtxklzovyoysz",
+   "rxlrokqnomsrwptyrolnxlxxkuukzmyn",
+   "rqtmtvrnxskrntkuvnqzxkmosxmrsxqm",
+   "qmqoquwzwssyzlmrttkmopulymksrvwz",
+   "mwnkvnlrkwtuyupxmovlyvwlqmxvqtsq"
+  ],
+  "conflicts": 0,
+  "count": 6,
+  "files": 18,
+  "ok": true,
+  "removed": 72,
+  "warnings": []
+ },
+ "route": "POST /api/v1/revsets:validate",
+ "status": 200
+}

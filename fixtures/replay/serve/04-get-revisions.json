@@ -1,0 +1,247 @@
+{
+ "method": "GET",
+ "path": "/api/v1/revisions",
+ "query": {
+  "limit": 10,
+  "revset": "::@"
+ },
+ "response": {
+  "rows": [
+   {
+    "edges": [
+     {
+      "parent": "86cbec6edefff461814ac69129a4f6f7ef776c6e",
+      "toLane": 0
+     }
+    ],
+    "lane": 0,
+    "rev": {
+     "author": {
+      "email": "fixture@example.com",
+      "name": "Fixture Author",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+     "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": true,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": true
+     },
+     "parents": [
+      "86cbec6edefff461814ac69129a4f6f7ef776c6e"
+     ],
+     "shortest": {
+      "change": 2,
+      "commit": 3
+     },
+     "tags": [],
+     "workspaces": [
+      "default"
+     ]
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "6f6464936dd64ee833c43cb87e976a463073bc4a",
+      "toLane": 0
+     }
+    ],
+    "lane": 0,
+    "rev": {
+     "author": {
+      "email": "fixture@example.com",
+      "name": "Fixture Author",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [
+      "main"
+     ],
+     "change": "pqkwwwtswwsyxutrtsvqkuzyorxzstop",
+     "commit": "86cbec6edefff461814ac69129a4f6f7ef776c6e",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "E: more retries, save helper\n",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "6f6464936dd64ee833c43cb87e976a463073bc4a"
+     ],
+     "shortest": {
+      "change": 1,
+      "commit": 1
+     },
+     "tags": [],
+     "workspaces": []
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "bab07844ab64acb0ca54bd5fa964285183707040",
+      "toLane": 0
+     }
+    ],
+    "lane": 0,
+    "rev": {
+     "author": {
+      "email": "fixture@example.com",
+      "name": "Fixture Author",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "movzpqyzyppxxytnosmllumqklzlksxt",
+     "commit": "6f6464936dd64ee833c43cb87e976a463073bc4a",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "D: tune square, add CI and docs\n",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "bab07844ab64acb0ca54bd5fa964285183707040"
+     ],
+     "shortest": {
+      "change": 2,
+      "commit": 1
+     },
+     "tags": [],
+     "workspaces": []
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "e0e57ac0773c8e5fee289331cd1ccea990a7fa59",
+      "toLane": 0
+     }
+    ],
+    "lane": 0,
+    "rev": {
+     "author": {
+      "email": "fixture@example.com",
+      "name": "Fixture Author",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "lzpvzwsoruutxtxwxuvzormxkvynvkyy",
+     "commit": "bab07844ab64acb0ca54bd5fa964285183707040",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "C: rename util.py to helpers.py\n",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "e0e57ac0773c8e5fee289331cd1ccea990a7fa59"
+     ],
+     "shortest": {
+      "change": 1,
+      "commit": 2
+     },
+     "tags": [],
+     "workspaces": []
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "b3e34247614bed4073fb34f176cb3a5c375a8569",
+      "toLane": 0
+     }
+    ],
+    "lane": 0,
+    "rev": {
+     "author": {
+      "email": "fixture@example.com",
+      "name": "Fixture Author",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "upzkznrnqnzzuyovsolvnzmupnmywnvm",
+     "commit": "e0e57ac0773c8e5fee289331cd1ccea990a7fa59",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "B: shapes split into five fragments\n",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "b3e34247614bed4073fb34f176cb3a5c375a8569"
+     ],
+     "shortest": {
+      "change": 1,
+      "commit": 1
+     },
+     "tags": [],
+     "workspaces": []
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "0000000000000000000000000000000000000000",
+      "toLane": 0
+     }
+    ],
+    "lane": 0,
+    "rev": {
+     "author": {
+      "email": "fixture@example.com",
+      "name": "Fixture Author",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "supuptltkpyzzqoplyruxkkqpmtyzttz",
+     "commit": "b3e34247614bed4073fb34f176cb3a5c375a8569",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "A: util and config\n",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "0000000000000000000000000000000000000000"
+     ],
+     "shortest": {
+      "change": 1,
+      "commit": 3
+     },
+     "tags": [],
+     "workspaces": []
+    }
+   }
+  ],
+  "truncated": false
+ },
+ "route": "GET /api/v1/revisions",
+ "status": 200
+}

@@ -1,0 +1,33 @@
+{
+ "method": "GET",
+ "path": "/api/v1/links",
+ "query": {
+  "dir": "both",
+  "target": "w10",
+  "viewId": "<id2>"
+ },
+ "response": {
+  "hubs": [],
+  "links": [
+   {
+    "confidence": 0.9,
+    "from": {
+     "line": 16,
+     "path": "deploy/signal_5.sh",
+     "window": "w10"
+    },
+    "id": "l17",
+    "kind": "call",
+    "label": "client_edge",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 214,
+     "path": "src/config/camera/parse_672.py",
+     "window": "w914"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/links",
+ "status": 200
+}

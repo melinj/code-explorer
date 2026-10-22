@@ -1,0 +1,213 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/metrics",
+ "query": {
+  "level": "file"
+ },
+ "response": {
+  "cochange": [
+   {
+    "a": "deploy/signal_5.sh",
+    "b": "config/turn/schema_37.yaml",
+    "jaccard": 0.571784,
+    "support": 12
+   },
+   {
+    "a": "deploy/plan_6.sh",
+    "b": "src/world/graph/signal_279.py",
+    "jaccard": 0.421808,
+    "support": 12
+   },
+   {
+    "a": "deploy/market_8.sh",
+    "b": "src/trade/player/index_447.py",
+    "jaccard": 0.677854,
+    "support": 10
+   },
+   {
+    "a": "deploy/tick_10.sh",
+    "b": "src/config/camera/district_673.py",
+    "jaccard": 0.478045,
+    "support": 9
+   },
+   {
+    "a": "deploy/tick_11.sh",
+    "b": "tests/turn/test_event_964.py",
+    "jaccard": 0.444599,
+    "support": 7
+   },
+   {
+    "a": "deploy/queue_12.sh",
+    "b": "tests/trade/test_zone_1282.py",
+    "jaccard": 0.534632,
+    "support": 11
+   }
+  ],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 455,
+     "fanIn": 151,
+     "fanOut": 12,
+     "grade": 4,
+     "reach": 1365,
+     "tests": 0
+    },
+    "connPct": 0.952466,
+    "heat": {
+     "ci": [
+      0.0662148,
+      0.12297
+     ],
+     "grade": 4,
+     "rate": 0.0945926,
+     "settled": false,
+     "touches": 37
+    },
+    "heatPct": 1.0,
+    "key": "src/edge/district/worker_246.py#Prompt",
+    "label": "Prompt",
+    "lane": "code",
+    "risk": 0.975944,
+    "window": "w311"
+   },
+   {
+    "conn": {
+     "dependents2": 463,
+     "fanIn": 154,
+     "fanOut": 9,
+     "grade": 4,
+     "reach": 1389,
+     "tests": 4
+    },
+    "connPct": 0.878956,
+    "heat": {
+     "ci": [
+      0.0656765,
+      0.121971
+     ],
+     "grade": 4,
+     "rate": 0.0938235,
+     "settled": true,
+     "touches": 37
+    },
+    "heatPct": 1.0,
+    "key": "deploy/prompt_15.sh#item_spawn",
+    "label": "item_spawn",
+    "lane": "infra",
+    "risk": 0.937526,
+    "window": "w29"
+   },
+   {
+    "conn": {
+     "dependents2": 374,
+     "fanIn": 124,
+     "fanOut": 1,
+     "grade": 4,
+     "reach": 1122,
+     "tests": 3
+    },
+    "connPct": 0.729195,
+    "heat": {
+     "ci": [
+      0.0681734,
+      0.126608
+     ],
+     "grade": 4,
+     "rate": 0.0973906,
+     "settled": false,
+     "touches": 38
+    },
+    "heatPct": 1.0,
+    "key": "src/edge/district/entity_236.py#Agent",
+    "label": "Agent",
+    "lane": "code",
+    "risk": 0.853929,
+    "window": "w297"
+   },
+   {
+    "conn": {
+     "dependents2": 468,
+     "fanIn": 156,
+     "fanOut": 7,
+     "grade": 4,
+     "reach": 1404,
+     "tests": 2
+    },
+    "connPct": 0.974797,
+    "heat": {
+     "ci": [
+      0.0618927,
+      0.114944
+     ],
+     "grade": 4,
+     "rate": 0.0884181,
+     "settled": true,
+     "touches": 35
+    },
+    "heatPct": 0.919081,
+    "key": "src/event/theme/zone_313.py#world_prompt",
+    "label": "world_prompt",
+    "lane": "code",
+    "risk": 0.946529,
+    "window": "w407"
+   },
+   {
+    "conn": {
+     "dependents2": 335,
+     "fanIn": 111,
+     "fanOut": 1,
+     "grade": 4,
+     "reach": 1005,
+     "tests": 3
+    },
+    "connPct": 0.759244,
+    "heat": {
+     "ci": [
+      0.0660657,
+      0.122693
+     ],
+     "grade": 4,
+     "rate": 0.0943795,
+     "settled": true,
+     "touches": 37
+    },
+    "heatPct": 0.946745,
+    "key": "src/edge/district/entity_236.py#Layout",
+    "label": "Layout",
+    "lane": "code",
+    "risk": 0.847827,
+    "window": "w301"
+   },
+   {
+    "conn": {
+     "dependents2": 322,
+     "fanIn": 107,
+     "fanOut": 1,
+     "grade": 4,
+     "reach": 966,
+     "tests": 5
+    },
+    "connPct": 0.715833,
+    "heat": {
+     "ci": [
+      0.0665046,
+      0.123509
+     ],
+     "grade": 4,
+     "rate": 0.0950066,
+     "settled": false,
+     "touches": 38
+    },
+    "heatPct": 0.961346,
+    "key": "src/edge/district/map_234.py#sync_map",
+    "label": "sync_map",
+    "lane": "code",
+    "risk": 0.829556,
+    "window": "w295"
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

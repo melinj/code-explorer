@@ -1,0 +1,10 @@
+{
+ "method": "GET",
+ "path": "/api/v1/agent/permissions",
+ "response": {
+  "edit": true,
+  "moveCamera": false
+ },
+ "route": "GET /api/v1/agent/permissions",
+ "status": 200
+}

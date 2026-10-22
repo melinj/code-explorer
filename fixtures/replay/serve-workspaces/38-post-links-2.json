@@ -1,0 +1,31 @@
+{
+ "body": {
+  "from": "w2d63ca59b09d",
+  "kind": "reference",
+  "label": "replay",
+  "to": "w9f2213a4350b",
+  "viewId": "<id4>"
+ },
+ "method": "POST",
+ "path": "/api/v1/links",
+ "response": {
+  "confidence": 1.0,
+  "feedback": "confirmed",
+  "from": {
+   "line": 1,
+   "path": "settings.yaml",
+   "window": "w2d63ca59b09d"
+  },
+  "id": "<id3>",
+  "kind": "reference",
+  "label": "replay",
+  "provenance": "human",
+  "to": {
+   "line": 1,
+   "path": "app.py",
+   "window": "w9f2213a4350b"
+  }
+ },
+ "route": "POST /api/v1/links",
+ "status": 200
+}

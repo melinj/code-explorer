@@ -1,0 +1,20 @@
+{
+ "body": {
+  "baseLayoutVersion": 1,
+  "moves": [
+   {
+    "key": "deploy/signal_5.sh#prompt_trade",
+    "pinned": false,
+    "x": 410.0,
+    "y": 2560.0
+   }
+  ]
+ },
+ "method": "PATCH",
+ "path": "/api/v1/views/<id2>/layout",
+ "response": {
+  "layoutVersion": 2
+ },
+ "route": "PATCH /api/v1/views/:viewId/layout",
+ "status": 200
+}

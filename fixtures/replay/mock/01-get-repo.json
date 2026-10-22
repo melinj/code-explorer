@@ -1,0 +1,50 @@
+{
+ "method": "GET",
+ "path": "/api/v1/repo",
+ "response": {
+  "capabilities": {
+   "jjLib": true,
+   "runtimeLinks": false,
+   "scip": false
+  },
+  "index": {
+   "blobsParsed": 1478,
+   "files": 1478,
+   "lastOp": "<volatile>",
+   "state": "idle"
+  },
+  "jjVersion": "0.45.1",
+  "name": "sample-app",
+  "op": "<volatile>",
+  "root": "<ROOT>",
+  "trunk": "c0ffee",
+  "workspaces": [
+   {
+    "name": "default",
+    "root": "<ROOT>",
+    "wc": {
+     "change": "",
+     "commit": ""
+    }
+   },
+   {
+    "name": "gym",
+    "root": "<ROOT>-gym",
+    "wc": {
+     "change": "",
+     "commit": ""
+    }
+   },
+   {
+    "name": "progression",
+    "root": "<ROOT>-progression",
+    "wc": {
+     "change": "",
+     "commit": ""
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/repo",
+ "status": 200
+}

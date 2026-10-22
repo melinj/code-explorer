@@ -1,0 +1,66 @@
+{
+ "method": "GET",
+ "path": "/api/v1/events",
+ "query": {
+  "cursor": 0,
+  "timeoutS": 0
+ },
+ "response": {
+  "cursor": "<volatile>",
+  "events": [
+   {
+    "layoutVersion": 1,
+    "reason": "expand",
+    "type": "view.invalidated",
+    "viewId": "<id1>",
+    "windows": [
+     "w18c6bc35815c"
+    ]
+   },
+   {
+    "layoutVersion": 1,
+    "reason": "index",
+    "type": "view.invalidated",
+    "viewId": "<id1>",
+    "windows": [
+     "w18c6bc35815c",
+     "wa4dc73c0f459"
+    ]
+   },
+   {
+    "layoutVersion": 1,
+    "reason": "index",
+    "type": "view.invalidated",
+    "viewId": "<id1>",
+    "windows": [
+     "w18c6bc35815c",
+     "wa42f613539cd"
+    ]
+   },
+   {
+    "layoutVersion": 2,
+    "reason": "layout",
+    "type": "view.invalidated",
+    "viewId": "<id1>",
+    "windows": [
+     "w18c6bc35815c"
+    ]
+   },
+   {
+    "layoutVersion": 2,
+    "reason": "layout",
+    "type": "view.invalidated",
+    "viewId": "<id1>",
+    "windows": []
+   },
+   {
+    "done": 0,
+    "job": "sync",
+    "total": 9,
+    "type": "index.progress"
+   }
+  ]
+ },
+ "route": "GET /api/v1/events",
+ "status": 200
+}

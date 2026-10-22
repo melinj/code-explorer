@@ -1,0 +1,20 @@
+{
+ "body": {
+  "lines": [
+   30,
+   32
+  ],
+  "note": "look",
+  "target": {
+   "line": 30,
+   "path": "src/shapes.py"
+  }
+ },
+ "method": "POST",
+ "path": "/api/v1/agent/focus",
+ "response": {
+  "delivered": "suggested"
+ },
+ "route": "POST /api/v1/agent/focus",
+ "status": 200
+}

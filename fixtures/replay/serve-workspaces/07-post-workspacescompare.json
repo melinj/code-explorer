@@ -1,0 +1,56 @@
+{
+ "body": {
+  "a": "agent",
+  "b": "default"
+ },
+ "method": "POST",
+ "path": "/api/v1/workspaces:compare",
+ "response": {
+  "id": "<id1>",
+  "layoutVersion": 1,
+  "resolved": {
+   "base": "0000000000000000000000000000000000000000",
+   "commits": [
+    "c2fdb934040274a56ac547c840fb2bdcd03bad02",
+    "1e80f0594b740f14f66daad989834d9bff3feb6c",
+    "04ca3b888d774ff51a168b6adad35ee72441ea04",
+    "6956b0c9a042c5f43f721213c66d9cd51a020209"
+   ],
+   "head": "c2fdb934040274a56ac547c840fb2bdcd03bad02",
+   "op": "<volatile>"
+  },
+  "sharedPlacement": "v_756cc6f74661",
+  "spec": {
+   "fileset": "\"app.py\" | \"settings.yaml\"",
+   "mode": "range",
+   "options": {
+    "allowNonChain": true,
+    "contextDisplay": "minimized",
+    "contextHops": 0,
+    "contextLines": 3,
+    "diff": "per-commit",
+    "ignoreWhitespace": false
+   },
+   "revset": "(trunk()..agent@) | (trunk()..default@)"
+  },
+  "stats": {
+   "added": 7,
+   "clusters": 2,
+   "files": 2,
+   "removed": 0,
+   "windows": 3
+  },
+  "status": "ready",
+  "warnings": [
+   {
+    "changes": [
+     "nuwkyouxrorslpnuuswmwplsnkmropst",
+     "opvrmxwvxuwuzrvsqptonyopknkuulyt"
+    ],
+    "kind": "multiple-heads"
+   }
+  ]
+ },
+ "route": "POST /api/v1/workspaces:compare",
+ "status": 200
+}

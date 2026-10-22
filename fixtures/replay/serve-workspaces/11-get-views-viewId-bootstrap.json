@@ -1,0 +1,209 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/bootstrap",
+ "response": {
+  "bundles": [],
+  "churn": {
+   "bands": [
+    0.249998,
+    0.249998,
+    0.249998,
+    0.749998
+   ],
+   "halfLifeDays": 90.0,
+   "head": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+   "oldest": "2026-01-01T00:00:00Z",
+   "scannedCommits": 3,
+   "settledMass": -0.0,
+   "stop": "history-exhausted"
+  },
+  "clusters": [
+   {
+    "conflicts": 0,
+    "conn": 0,
+    "heat": 4,
+    "id": "c0",
+    "label": "settings",
+    "labelSource": "auto",
+    "lane": "config",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 254.0,
+     "w": 700.0,
+     "x": 240.0,
+     "y": 2440.0
+    },
+    "windows": 1
+   },
+   {
+    "conflicts": 0,
+    "conn": 0,
+    "heat": 4,
+    "id": "c1",
+    "label": "app",
+    "labelSource": "auto",
+    "lane": "code",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 344.0,
+     "w": 700.0,
+     "x": 240.0,
+     "y": 5394.32
+    },
+    "windows": 1
+   }
+  ],
+  "columns": [
+   {
+    "clusters": 2,
+    "heat": 4,
+    "w": 1772.49,
+    "x": 0.0
+   },
+   {
+    "clusters": 0,
+    "heat": 3,
+    "w": 0.0,
+    "x": 3372.49
+   },
+   {
+    "clusters": 0,
+    "heat": 2,
+    "w": 0.0,
+    "x": 3372.49
+   },
+   {
+    "clusters": 0,
+    "heat": 1,
+    "w": 0.0,
+    "x": 3372.49
+   },
+   {
+    "clusters": 0,
+    "heat": 0,
+    "w": 0.0,
+    "x": 3372.49
+   }
+  ],
+  "heatLabels": [
+   "Frozen",
+   "Cool",
+   "Mild",
+   "Warm",
+   "Hot"
+  ],
+  "hubs": [],
+  "laneDefs": [
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "infra",
+    "label": "Infra",
+    "order": 0,
+    "texture": "hatch"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "config",
+    "label": "Config",
+    "order": 1,
+    "texture": "dots"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "code",
+    "label": "Code",
+    "order": 2,
+    "texture": "plain"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "test",
+    "label": "Tests",
+    "order": 3,
+    "texture": "lines"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "docs",
+    "label": "Docs",
+    "order": 4,
+    "texture": "cross"
+   }
+  ],
+  "lanes": [
+   {
+    "clusters": 1,
+    "files": 1,
+    "lane": "config",
+    "rect": {
+     "h": 1554.32,
+     "w": 1772.49,
+     "x": 0.0,
+     "y": 1800.0
+    },
+    "rows": [
+     {
+      "conn": 0,
+      "h": 754.32,
+      "y": 2200.0
+     }
+    ]
+   },
+   {
+    "clusters": 1,
+    "files": 1,
+    "lane": "code",
+    "rect": {
+     "h": 1651.52,
+     "w": 1772.49,
+     "x": 0.0,
+     "y": 4754.32
+    },
+    "rows": [
+     {
+      "conn": 0,
+      "h": 851.52,
+      "y": 5154.32
+     }
+    ]
+   }
+  ],
+  "view": {
+   "id": "<id2>",
+   "layoutVersion": 1,
+   "resolved": {
+    "commits": [
+     "1e80f0594b740f14f66daad989834d9bff3feb6c"
+    ],
+    "head": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+    "op": "<volatile>"
+   },
+   "spec": {
+    "mode": "snapshot",
+    "rev": "@"
+   },
+   "stats": {
+    "clusters": 2,
+    "files": 2,
+    "windows": 2
+   },
+   "status": "ready",
+   "warnings": []
+  },
+  "world": {
+   "h": 6405.84,
+   "w": 1772.49,
+   "x": 0.0,
+   "y": 0.0
+  }
+ },
+ "route": "GET /api/v1/views/:viewId/bootstrap",
+ "status": 200
+}

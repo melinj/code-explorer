@@ -1,0 +1,17 @@
+{
+ "body": {
+  "baseLayoutVersion": 1001,
+  "moves": []
+ },
+ "expectStatus": 409,
+ "method": "PATCH",
+ "path": "/api/v1/views/<id1>/layout",
+ "response": {
+  "error": {
+   "code": "layout-stale",
+   "message": "baseLayoutVersion 1001 is stale: the view is at layoutVersion 2"
+  }
+ },
+ "route": "PATCH /api/v1/views/:viewId/layout",
+ "status": 409
+}

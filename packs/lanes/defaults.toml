@@ -1,0 +1,75 @@
+# Built-in lane rules (DESIGN §4.3), as data so the core (cv-lang) holds no file-type names (D13).
+#
+# Embedded into cv-lang at build time (`include_str!`). Rules are tried in order and the first match
+# wins; a path matching none is `other`. Paths and names are compared lower-cased (sniff lines are not).
+# Repo rules from `.cv/lanes.toml` go before all of these.
+#
+# Match keys (a rule matches when ANY of its keys matches):
+#   names         the file name equals one of these
+#   prefixes      the file name starts with one of these
+#   suffixes      the file name ends with one of these
+#   contains      the file name contains one of these
+#   dirs          some directory component equals one of these
+#   top_dirs      the first path component equals one of these and the file is below it
+#   path_prefixes the whole path starts with one of these
+#   pack_code     the file name matches an installed language pack's code globs
+#   pack_test     the file name matches an installed language pack's test globs
+#
+# A rule may carry a content sniff: when the file name ends with one of `sniff.suffixes` and every
+# entry of `sniff.line_prefixes` starts some line in the first 4,000 bytes, the file goes to
+# `sniff.lane` instead (YAML with top-level `apiVersion` + `kind` is a k8s manifest → infra).
+
+# Lockfiles, binaries, vendored and generated files (DESIGN §4.3: `other`, hidden by default).
+# Vendored: a vendor / third-party directory anywhere. Generated: a `generated` directory, protobuf
+# and gRPC stubs, `*.generated.*`, minified bundles.
+[[rule]]
+lane = "other"
+names = ["uv.lock", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock", "cargo.lock"]
+dirs = [
+    "node_modules", "vendor", "vendored", "third_party", "third-party", "thirdparty",
+    "generated", "__generated__",
+]
+suffixes = [
+    ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".svg", ".pt", ".bin", ".npz", ".parquet",
+    ".zip", ".gz", ".tgz", ".woff", ".woff2", ".ttf", ".mp4", ".wav", ".pdf", ".db", ".sqlite",
+    "_pb2.py", "_pb2.pyi", "_pb2_grpc.py", ".pb.go", ".pb.h", ".pb.cc",
+]
+contains = [".min.", ".generated."]
+
+[[rule]]
+lane = "infra"
+prefixes = ["dockerfile"]
+suffixes = [".dockerfile", ".tf", ".tfvars", ".hcl", ".service", ".sh"]
+names = [
+    ".dockerignore", "docker-compose.yml", "docker-compose.yaml", "compose.yml", "compose.yaml",
+    "makefile", "justfile", "procfile", "jenkinsfile", ".gitlab-ci.yml",
+]
+path_prefixes = [".github/workflows/"]
+
+# D15: config files always get their own lane, wherever they are (under tests/ or docs/ too), so
+# this rule goes before the directory rules of the test and docs lanes.
+[[rule]]
+lane = "config"
+prefixes = [".env"]
+suffixes = [".yaml", ".yml", ".toml", ".json", ".ini", ".cfg", ".conf", ".properties"]
+names = [".python-version", ".gitignore"]
+sniff = { suffixes = [".yaml", ".yml"], line_prefixes = ["apiVersion:", "kind:"], lane = "infra" }
+
+[[rule]]
+lane = "test"
+dirs = ["tests", "test", "__tests__", "e2e"]
+pack_test = true
+
+[[rule]]
+lane = "docs"
+suffixes = [".md", ".rst"]
+top_dirs = ["docs", "doc"]
+
+[[rule]]
+lane = "code"
+pack_code = true
+# Source files that are code even without an installed pack (they render as plain text).
+suffixes = [
+    ".rs", ".go", ".java", ".rb", ".c", ".cc", ".cpp", ".h", ".hpp", ".css", ".scss", ".html",
+    ".jinja", ".j2", ".vue", ".svelte", ".sql",
+]

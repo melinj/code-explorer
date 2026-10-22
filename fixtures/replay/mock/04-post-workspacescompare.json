@@ -1,0 +1,44 @@
+{
+ "body": {
+  "a": "default",
+  "b": "gym"
+ },
+ "method": "POST",
+ "path": "/api/v1/workspaces:compare",
+ "response": {
+  "id": "<id1>",
+  "layoutVersion": 1,
+  "resolved": {
+   "commits": [
+    "c0ffee"
+   ],
+   "head": "c0ffee",
+   "op": "<volatile>"
+  },
+  "sharedPlacement": "<id2>",
+  "spec": {
+   "fileset": "\"src/agent/item/node_264.py\" | \"tests/schema/test_zone_1193.py\" | \"tests/server/test_prompt_1096.py\"",
+   "mode": "range",
+   "options": {
+    "allowNonChain": true,
+    "contextDisplay": "minimized",
+    "contextHops": 0,
+    "contextLines": 3,
+    "diff": "per-commit",
+    "ignoreWhitespace": false
+   },
+   "revset": "(trunk()..default@) | (trunk()..gym@)"
+  },
+  "stats": {
+   "added": 135,
+   "clusters": 162,
+   "files": 1478,
+   "removed": 38,
+   "windows": 8
+  },
+  "status": "ready",
+  "warnings": []
+ },
+ "route": "POST /api/v1/workspaces:compare",
+ "status": 200
+}

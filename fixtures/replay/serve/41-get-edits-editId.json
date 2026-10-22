@@ -1,0 +1,28 @@
+{
+ "method": "GET",
+ "path": "/api/v1/edits/<id7>",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "id": "<id7>",
+  "opBefore": "<volatile>",
+  "predicted": true,
+  "rewritten": [
+   "pqkwwwtswwsyxutrtsvqkuzyorxzstop",
+   "muoulswlvsusqsxtvvzmupplskxxxpvr"
+  ],
+  "status": "previewed",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": false,
+    "updated": false
+   }
+  ]
+ },
+ "route": "GET /api/v1/edits/:editId",
+ "status": 200
+}

@@ -1,0 +1,31 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id4>",
+ "response": {
+  "id": "<id4>",
+  "layoutVersion": 1,
+  "resolved": {
+   "commits": [
+    "de3b9164c85332d3573fdeb4996de7ddaed79e3a"
+   ],
+   "head": "de3b9164c85332d3573fdeb4996de7ddaed79e3a",
+   "op": "<volatile>"
+  },
+  "spec": {
+   "mode": "snapshot",
+   "options": {
+    "workspace": "ws2"
+   },
+   "rev": "ws2@"
+  },
+  "stats": {
+   "clusters": 2,
+   "files": 2,
+   "windows": 2
+  },
+  "status": "ready",
+  "warnings": []
+ },
+ "route": "GET /api/v1/views/:viewId",
+ "status": 200
+}

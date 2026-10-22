@@ -1,0 +1,286 @@
+{
+ "body": {
+  "ids": [
+   "w18c6bc35815c",
+   "wa42f613539cd",
+   "w8a97636e48ec",
+   "wd9b7286111ca",
+   "w520470537758",
+   "w1ca31856bd4f"
+  ],
+  "layoutVersion": 1,
+  "parts": [
+   "outline",
+   "diff"
+  ]
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id1>/windows:batch",
+ "response": {
+  "diffs": [],
+  "links": [
+   {
+    "confidence": 0.85,
+    "from": {
+     "line": 5,
+     "path": "tests/test_shapes.py",
+     "window": "wa4dc73c0f459"
+    },
+    "id": "l0",
+    "kind": "call",
+    "label": "→ circle",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 4,
+     "path": "src/shapes.py",
+     "window": "w1ca31856bd4f"
+    }
+   },
+   {
+    "confidence": 1.0,
+    "from": {
+     "line": 1,
+     "path": ".env.example",
+     "window": "w8a97636e48ec"
+    },
+    "id": "l1",
+    "kind": "define",
+    "label": "⇢ env:DB_URL",
+    "provenance": "rule:dotenv",
+    "to": {
+     "line": 4,
+     "path": "src/helpers.py",
+     "window": "w520470537758"
+    }
+   },
+   {
+    "confidence": 0.85,
+    "from": {
+     "line": 7,
+     "path": ".github/workflows/ci.yml",
+     "window": "w18c6bc35815c"
+    },
+    "id": "l2",
+    "kind": "deploy",
+    "label": "⇢ pytest tests",
+    "provenance": "rule:ci.run",
+    "to": {
+     "line": 1,
+     "path": "tests/test_shapes.py",
+     "window": "wa4dc73c0f459"
+    }
+   },
+   {
+    "confidence": 1.0,
+    "from": {
+     "line": 2,
+     "path": "Dockerfile",
+     "window": "wa42f613539cd"
+    },
+    "id": "l3",
+    "kind": "define",
+    "label": "⇢ env:DB_URL",
+    "provenance": "rule:dockerfile.env",
+    "to": {
+     "line": 4,
+     "path": "src/helpers.py",
+     "window": "w520470537758"
+    }
+   },
+   {
+    "confidence": 0.95,
+    "from": {
+     "line": 4,
+     "path": "Dockerfile",
+     "window": "wa42f613539cd"
+    },
+    "id": "l4",
+    "kind": "deploy",
+    "label": "⇢ -m src.shapes",
+    "provenance": "rule:dockerfile.cmd",
+    "to": {
+     "line": 1,
+     "path": "src/shapes.py",
+     "window": "w1ca31856bd4f"
+    }
+   }
+  ],
+  "missing": [],
+  "outlines": [
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "name: ci",
+      "line": 1
+     },
+     {
+      "depth": 0,
+      "label": "on: [push]",
+      "line": 2
+     },
+     {
+      "depth": 0,
+      "label": "jobs:",
+      "line": 3
+     },
+     {
+      "depth": 1,
+      "label": "test:",
+      "line": 4
+     }
+    ],
+    "id": "w18c6bc35815c",
+    "ports": [
+     {
+      "id": "out7",
+      "kind": "deploy",
+      "label": "⇢ pytest tests",
+      "line": 7,
+      "links": [
+       "l2"
+      ],
+      "side": "out"
+     }
+    ],
+    "silhouette": "AAgMAAoJAAUMAgUMBBYMBAYMBhNM"
+   },
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "FROM python:3.12-slim AS base",
+      "line": 1
+     }
+    ],
+    "id": "wa42f613539cd",
+    "ports": [
+     {
+      "id": "out2",
+      "kind": "define",
+      "label": "⇢ env:DB_URL",
+      "line": 2,
+      "links": [
+       "l3"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "out4",
+      "kind": "deploy",
+      "label": "⇢ -m src.shapes",
+      "line": 4,
+      "links": [
+       "l4"
+      ],
+      "side": "out"
+     }
+    ],
+    "silhouette": "AB0GABRMABEBACJC"
+   },
+   {
+    "headings": [],
+    "id": "w8a97636e48ec",
+    "ports": [
+     {
+      "id": "out1",
+      "kind": "define",
+      "label": "⇢ env:DB_URL",
+      "line": 1,
+      "links": [
+       "l1"
+      ],
+      "side": "out"
+     }
+    ],
+    "silhouette": "ABBM"
+   },
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "name: fixture",
+      "line": 1
+     },
+     {
+      "depth": 0,
+      "label": "retries: 5",
+      "line": 2
+     },
+     {
+      "depth": 0,
+      "label": "features:",
+      "line": 3
+     }
+    ],
+    "id": "wd9b7286111ca",
+    "ports": [],
+    "silhouette": "AA0MAAoMAAkMAgoL"
+   },
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "def load(path: str) -> str:",
+      "line": 7
+     },
+     {
+      "depth": 0,
+      "label": "def save(path: str, text: str) -> None:",
+      "line": 12
+     }
+    ],
+    "id": "w520470537758",
+    "ports": [
+     {
+      "id": "in4",
+      "kind": "define",
+      "label": "⇢ env:DB_URL",
+      "line": 4,
+      "links": [
+       "l1",
+       "l3"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "AAkBAAAPACQCAClCAAAPAAAPABsGBBUBCA8BAAAPAAAPACcGBBoBCA0F"
+   },
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "def circle(size: float) -> dict:",
+      "line": 4
+     }
+    ],
+    "id": "w1ca31856bd4f",
+    "ports": [
+     {
+      "id": "in1",
+      "kind": "deploy",
+      "label": "⇢ -m src.shapes",
+      "line": 1,
+      "links": [
+       "l4"
+      ],
+      "side": "in"
+     },
+     {
+      "id": "in4",
+      "kind": "call",
+      "label": "← test_shapes.py",
+      "line": 4,
+      "links": [
+       "l0"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "ACtLAAAPAAAPACBGBBMCBB4DBB4DBB4DBB4DBB4DBB4DBB4DBB4DBB4DBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBCEDBDQC"
+   }
+  ]
+ },
+ "route": "POST /api/v1/views/:viewId/windows:batch",
+ "status": 200
+}

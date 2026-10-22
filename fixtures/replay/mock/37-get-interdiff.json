@@ -1,0 +1,69 @@
+{
+ "method": "GET",
+ "path": "/api/v1/interdiff",
+ "query": {
+  "change": "pprklvvmkwulvnstlwqqwmqqvopxprou",
+  "from": "087642ca189a92d565ed226d3acbc5b6bfe58e32"
+ },
+ "response": {
+  "description": [
+   "",
+   ""
+  ],
+  "files": [
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "ctx",
+        "newLine": 10,
+        "oldLine": 10,
+        "text": "    let n = items.len();"
+       },
+       {
+        "kind": "del",
+        "oldLine": 11,
+        "text": "    for i in 0..n {"
+       },
+       {
+        "kind": "add",
+        "newLine": 11,
+        "text": "    for i in 0..n.min(LIMIT) {"
+       },
+       {
+        "kind": "add",
+        "newLine": 12,
+        "text": "        // capped after review"
+       },
+       {
+        "kind": "ctx",
+        "newLine": 13,
+        "oldLine": 12,
+        "text": "        process(&items[i]);"
+       },
+       {
+        "kind": "ctx",
+        "newLine": 14,
+        "oldLine": 13,
+        "text": "    }"
+       }
+      ],
+      "new": [
+       10,
+       5
+      ],
+      "old": [
+       10,
+       4
+      ]
+     }
+    ],
+    "path": "src/path/render/graph_674.py",
+    "status": "modified"
+   }
+  ]
+ },
+ "route": "GET /api/v1/interdiff",
+ "status": 200
+}

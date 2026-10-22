@@ -1,0 +1,26 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/fragments",
+ "query": {
+  "path": "settings.yaml"
+ },
+ "response": {
+  "chip": 1,
+  "fragments": [
+   {
+    "cluster": "c0",
+    "index": 1,
+    "rect": {
+     "h": 54.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 2560.0
+    },
+    "window": "w85a48e7c7471"
+   }
+  ],
+  "path": "settings.yaml"
+ },
+ "route": "GET /api/v1/views/:viewId/fragments",
+ "status": 200
+}

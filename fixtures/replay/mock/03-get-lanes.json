@@ -1,0 +1,48 @@
+{
+ "method": "GET",
+ "path": "/api/v1/lanes",
+ "response": [
+  {
+   "collapsed": false,
+   "hidden": false,
+   "id": "infra",
+   "label": "Infra",
+   "order": 0,
+   "texture": "hatch"
+  },
+  {
+   "collapsed": false,
+   "hidden": false,
+   "id": "config",
+   "label": "Config",
+   "order": 1,
+   "texture": "dots"
+  },
+  {
+   "collapsed": false,
+   "hidden": false,
+   "id": "code",
+   "label": "Code",
+   "order": 2,
+   "texture": "plain"
+  },
+  {
+   "collapsed": false,
+   "hidden": false,
+   "id": "test",
+   "label": "Tests",
+   "order": 3,
+   "texture": "lines"
+  },
+  {
+   "collapsed": false,
+   "hidden": false,
+   "id": "docs",
+   "label": "Docs",
+   "order": 4,
+   "texture": "cross"
+  }
+ ],
+ "route": "GET /api/v1/lanes",
+ "status": 200
+}

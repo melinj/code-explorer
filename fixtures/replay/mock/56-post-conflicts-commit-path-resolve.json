@@ -1,0 +1,31 @@
+{
+ "body": {
+  "content": "resolved\n"
+ },
+ "method": "POST",
+ "path": "/api/v1/conflicts/c0ffee/config/edge/session_51.yaml/resolve",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "id": "e154",
+  "opAfter": "<volatile>",
+  "opBefore": "<volatile>",
+  "predicted": false,
+  "rewritten": [
+   "kxwqmnpo"
+  ],
+  "status": "applied",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": true,
+    "updated": true
+   }
+  ]
+ },
+ "route": "POST /api/v1/conflicts/:commit/*path/resolve",
+ "status": 200
+}

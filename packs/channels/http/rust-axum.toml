@@ -1,0 +1,85 @@
+# HTTP routes and clients in Rust (pack P2): axum `.route("/p", get(handler))` (method routers
+# `get(a).post(b)` give one site per method, `axum::routing::put(h)` works too), `.nest("/prefix",
+# router)` prefixes, and reqwest clients. The key may be a literal, `format!`/`concat!` or a constant.
+#
+# Prefix scopes (the Rust pack's convention): a route takes the scope of where it is built: inside
+# `.nest(prefix, Router::new()…)` the nest call, else its `let` binding, else its function. A
+# `.nest("/p", api)` or `.nest("/p", api())` prefix is scoped by `api`, so routes bound to
+# `let api = …` or built in `fn api()` in the same file get it.
+
+[[endpoints]]
+id = "rust.axum.route"
+lang = "rust"
+role = "server"
+hints = [".route("]
+query = '''
+(call_expression
+  function: (field_expression field: (field_identifier) @_r)
+  arguments: (arguments . (_) @key . (call_expression
+    function: [(identifier) @method (scoped_identifier name: (identifier) @method)]
+    arguments: (arguments . (_) @handler)))
+  (#eq? @_r "route")
+  (#match? @method "^(get|post|put|delete|patch|head|options|any)$"))
+(call_expression
+  function: (field_expression field: (field_identifier) @_r)
+  arguments: (arguments . (_) @key . (call_expression
+    function: (field_expression field: (field_identifier) @method)
+    arguments: (arguments . (_) @handler)))
+  (#eq? @_r "route")
+  (#match? @method "^(get|post|put|delete|patch|head|options|any)$"))
+(call_expression
+  function: (field_expression field: (field_identifier) @_r)
+  arguments: (arguments . (_) @key . (call_expression
+    function: (field_expression value: (call_expression
+      function: [(identifier) @method (scoped_identifier name: (identifier) @method)]
+      arguments: (arguments . (_) @handler)))))
+  (#eq? @_r "route")
+  (#match? @method "^(get|post|put|delete|patch|head|options|any)$"))
+(call_expression
+  function: (field_expression field: (field_identifier) @_r)
+  arguments: (arguments . (_) @key . (call_expression
+    function: (field_expression value: (call_expression
+      function: (field_expression field: (field_identifier) @method)
+      arguments: (arguments . (_) @handler)))))
+  (#eq? @_r "route")
+  (#match? @method "^(get|post|put|delete|patch|head|options|any)$"))
+'''
+
+[[endpoints]]
+id = "rust.axum.nest"
+lang = "rust"
+role = "server"
+hints = [".nest("]
+query = '''
+(call_expression
+  function: (field_expression field: (field_identifier) @_n)
+  arguments: (arguments . (_) @prefix . [
+    (identifier) @scope
+    (call_expression function: (identifier) @scope)
+    (call_expression function: (scoped_identifier name: (identifier) @scope))
+    (call_expression function: (field_expression))])
+  (#eq? @_n "nest"))
+'''
+
+[[endpoints]]
+id = "rust.reqwest"
+lang = "rust"
+role = "client"
+hints = ["reqwest", "client."]
+query = '''
+(call_expression
+  function: (field_expression value: (identifier) @_o field: (field_identifier) @method)
+  arguments: (arguments . (_) @key)
+  (#match? @_o "^(client|http|http_client|reqwest)$")
+  (#match? @method "^(get|post|put|delete|patch|head)$"))
+(call_expression
+  function: (field_expression value: (field_expression field: (field_identifier) @_o) field: (field_identifier) @method)
+  arguments: (arguments . (_) @key)
+  (#match? @_o "^(client|http|http_client)$")
+  (#match? @method "^(get|post|put|delete|patch|head)$"))
+(call_expression
+  function: (scoped_identifier path: (identifier) @_o name: (identifier) @method)
+  arguments: (arguments . (_) @key)
+  (#eq? @_o "reqwest")
+  (#eq? @method "get"))
+'''

@@ -1,0 +1,144 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/metrics",
+ "query": {
+  "level": "cluster"
+ },
+ "response": {
+  "cochange": [],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 2,
+     "fanIn": 1,
+     "fanOut": 0,
+     "grade": 4,
+     "reach": 4,
+     "tests": 0
+    },
+    "connPct": 0.8,
+    "heat": {
+     "ci": [
+      0.359999,
+      0.359999
+     ],
+     "grade": 4,
+     "rate": 0.359999,
+     "settled": false,
+     "touches": 3
+    },
+    "heatPct": 0.7,
+    "key": "c1",
+    "label": "(root)",
+    "lane": "config",
+    "risk": 0.748331
+   },
+   {
+    "conn": {
+     "dependents2": 1,
+     "fanIn": 2,
+     "fanOut": 2,
+     "grade": 4,
+     "reach": 3,
+     "tests": 1
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.6,
+      0.6
+     ],
+     "grade": 3,
+     "rate": 0.6,
+     "settled": false,
+     "touches": 6
+    },
+    "heatPct": 0.9,
+    "key": "c2",
+    "label": "src · shapes",
+    "lane": "code",
+    "risk": 0.67082
+   },
+   {
+    "conn": {
+     "dependents2": 2,
+     "fanIn": 1,
+     "fanOut": 1,
+     "grade": 4,
+     "reach": 3,
+     "tests": 0
+    },
+    "connPct": 0.8,
+    "heat": {
+     "ci": [
+      0.200002,
+      0.200002
+     ],
+     "grade": 4,
+     "rate": 0.200002,
+     "settled": false,
+     "touches": 2
+    },
+    "heatPct": 0.5,
+    "key": "c0",
+    "label": "(root)",
+    "lane": "infra",
+    "risk": 0.632456
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.2,
+    "heat": {
+     "ci": [
+      0.199998,
+      0.199998
+     ],
+     "grade": 4,
+     "rate": 0.199998,
+     "settled": false,
+     "touches": 2
+    },
+    "heatPct": 0.3,
+    "key": "c4",
+    "label": "(root)",
+    "lane": "docs",
+    "risk": 0.244949
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 1,
+     "fanOut": 1,
+     "grade": 0,
+     "reach": 1,
+     "tests": 0
+    },
+    "connPct": 0.2,
+    "heat": {
+     "ci": [
+      0.199997,
+      0.199997
+     ],
+     "grade": 4,
+     "rate": 0.199997,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.1,
+    "key": "c3",
+    "label": "tests · test_shapes",
+    "lane": "test",
+    "risk": 0.141421
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

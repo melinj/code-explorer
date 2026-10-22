@@ -1,0 +1,16 @@
+{
+ "method": "GET",
+ "path": "/api/v1/ranges",
+ "response": [
+  {
+   "createdBy": {
+    "kind": "human",
+    "name": "you"
+   },
+   "name": "replay",
+   "revset": "description(substring:\"B:\")::description(substring:\"D:\")"
+  }
+ ],
+ "route": "GET /api/v1/ranges",
+ "status": 200
+}

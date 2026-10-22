@@ -1,0 +1,22 @@
+[package]
+name = "cv-vcs"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+# Integration tests are one binary (tests/main.rs): see there.
+autotests = false
+
+[dependencies]
+prost = "0.14"
+jj-lib.workspace = true
+pollster.workspace = true
+futures.workspace = true
+chrono = "0.4"
+
+[dev-dependencies]
+tempfile.workspace = true
+
+[[test]]
+name = "it"
+path = "tests/main.rs"

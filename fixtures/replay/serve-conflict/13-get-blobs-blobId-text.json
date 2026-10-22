@@ -1,0 +1,74 @@
+{
+ "method": "GET",
+ "path": "/api/v1/blobs/conflict-a1056a0356d93a0916212ae8364516733aab5de5-d3f5e6f41bae271c/text",
+ "query": {
+  "from": 1,
+  "to": 20
+ },
+ "response": {
+  "blob": "conflict-a1056a0356d93a0916212ae8364516733aab5de5-d3f5e6f41bae271c",
+  "from": 1,
+  "lang": "python",
+  "lines": [
+   "def speed():",
+   "<<<<<<< conflict 1 of 1",
+   "%%%%%%% diff from: rmnpmuwo 658bfcdf (parents of rebased revision)",
+   "\\\\\\\\\\\\\\        to: rmnpmuwo bdaae216 (rebase destination)",
+   "-    return 1",
+   "+    return 3"
+  ],
+  "to": 13,
+  "tokens": [
+   [
+    0,
+    3,
+    1,
+    4,
+    5,
+    5
+   ],
+   [
+    0,
+    1,
+    8,
+    1,
+    2,
+    8
+   ],
+   [
+    0,
+    1,
+    8,
+    1,
+    1,
+    8
+   ],
+   [
+    17,
+    1,
+    9,
+    28,
+    29,
+    6
+   ],
+   [
+    0,
+    1,
+    8,
+    5,
+    6,
+    1
+   ],
+   [
+    0,
+    1,
+    8,
+    5,
+    6,
+    1
+   ]
+  ]
+ },
+ "route": "GET /api/v1/blobs/:blobId/text",
+ "status": 200
+}

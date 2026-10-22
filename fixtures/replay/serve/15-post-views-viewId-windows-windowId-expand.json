@@ -1,0 +1,63 @@
+{
+ "body": {
+  "after": 3,
+  "before": 3
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id1>/windows/w18c6bc35815c/expand",
+ "response": {
+  "blob": "065a65fa26cacde078071d3f4e705053254e5868",
+  "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+  "cluster": "c0",
+  "conn": {
+   "dependents2": 0,
+   "fanIn": 0,
+   "fanOut": 1,
+   "grade": 0,
+   "reach": 0,
+   "tests": 0
+  },
+  "counts": {
+   "conflicts": 0,
+   "openThreads": 0,
+   "ports": 1
+  },
+  "flags": {
+   "minimized": false,
+   "pinned": false,
+   "truncated": false
+  },
+  "heat": {
+   "ci": [
+    0.0362242,
+    0.624474
+   ],
+   "grade": 3,
+   "rate": 0.200003,
+   "settled": false,
+   "touches": 1
+  },
+  "id": "w18c6bc35815c",
+  "key": ".github/workflows/ci.yml#file",
+  "kind": "chunk",
+  "lane": "infra",
+  "lang": "yaml",
+  "lines": {
+   "end": 7,
+   "fileLines": 7,
+   "start": 1
+  },
+  "path": ".github/workflows/ci.yml",
+  "rect": {
+   "h": 162.0,
+   "w": 540.0,
+   "x": 320.0,
+   "y": 2560.0
+  },
+  "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+  "reviewFirst": false,
+  "risk": 0.375
+ },
+ "route": "POST /api/v1/views/:viewId/windows/:windowId/expand",
+ "status": 200
+}

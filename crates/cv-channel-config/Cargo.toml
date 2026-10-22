@@ -1,0 +1,13 @@
+[package]
+name = "cv-channel-config"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+cv-channel.workspace = true
+cv-lang.workspace = true
+aho-corasick.workspace = true
+rayon.workspace = true
+regex.workspace = true

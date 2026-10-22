@@ -1,0 +1,58 @@
+{
+ "body": {
+  "mode": "range",
+  "options": {
+   "contextDisplay": "minimized",
+   "contextHops": 1,
+   "contextLines": 3,
+   "diff": "cumulative",
+   "ignoreWhitespace": false
+  },
+  "revset": "description(substring:\"B:\") | description(substring:\"D:\")"
+ },
+ "method": "POST",
+ "path": "/api/v1/views",
+ "response": {
+  "id": "<id3>",
+  "layoutVersion": 1,
+  "resolved": {
+   "base": "b3e34247614bed4073fb34f176cb3a5c375a8569",
+   "commits": [
+    "6f6464936dd64ee833c43cb87e976a463073bc4a",
+    "e0e57ac0773c8e5fee289331cd1ccea990a7fa59"
+   ],
+   "head": "6f6464936dd64ee833c43cb87e976a463073bc4a",
+   "op": "<volatile>"
+  },
+  "sharedPlacement": "v_dcad3294a54b",
+  "spec": {
+   "mode": "range",
+   "options": {
+    "contextDisplay": "minimized",
+    "contextHops": 1,
+    "contextLines": 3,
+    "diff": "cumulative",
+    "ignoreWhitespace": false
+   },
+   "revset": "description(substring:\"B:\") | description(substring:\"D:\")"
+  },
+  "stats": {
+   "added": 176,
+   "clusters": 5,
+   "files": 7,
+   "removed": 9,
+   "windows": 11
+  },
+  "status": "ready",
+  "warnings": [
+   {
+    "kind": "gap",
+    "missing": [
+     "lzpvzwsoruutxtxwxuvzormxkvynvkyy"
+    ]
+   }
+  ]
+ },
+ "route": "POST /api/v1/views",
+ "status": 200
+}

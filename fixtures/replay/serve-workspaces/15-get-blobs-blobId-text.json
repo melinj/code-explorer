@@ -1,0 +1,29 @@
+{
+ "method": "GET",
+ "path": "/api/v1/blobs/livebb2a01d6f238be8d/text",
+ "query": {
+  "from": 1,
+  "to": 20
+ },
+ "response": {
+  "blob": "livebb2a01d6f238be8d",
+  "from": 1,
+  "lang": "yaml",
+  "lines": [
+   "mode: prod"
+  ],
+  "to": 1,
+  "tokens": [
+   [
+    0,
+    4,
+    12,
+    4,
+    1,
+    9
+   ]
+  ]
+ },
+ "route": "GET /api/v1/blobs/:blobId/text",
+ "status": 200
+}

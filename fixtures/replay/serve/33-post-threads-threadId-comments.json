@@ -1,0 +1,54 @@
+{
+ "body": {
+  "body": "Tuned on purpose."
+ },
+ "method": "POST",
+ "path": "/api/v1/threads/<id4>/comments",
+ "response": {
+  "anchor": {
+   "change": "movzpqyzyppxxytnosmllumqklzlksxt",
+   "commit": "6f6464936dd64ee833c43cb87e976a463073bc4a",
+   "end": 32,
+   "fingerprint": {
+    "after": "e5bdfed371d21590",
+    "before": "c4b3e546ec2d2800",
+    "text": "09b8f5b1c1f4fce7"
+   },
+   "path": "src/shapes.py",
+   "side": "new",
+   "start": 30
+  },
+  "comments": [
+   {
+    "author": {
+     "kind": "human",
+     "name": "you"
+    },
+    "body": "Replay: why 80?",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "id": "<id5>"
+   },
+   {
+    "author": {
+     "kind": "human",
+     "name": "you"
+    },
+    "body": "Tuned on purpose.",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "id": "<id6>"
+   }
+  ],
+  "createdAt": "2026-01-01T00:00:00Z",
+  "createdBy": {
+   "kind": "human",
+   "name": "you"
+  },
+  "id": "<id4>",
+  "kind": "question",
+  "producedEdits": [],
+  "status": "open",
+  "updatedAt": "2026-01-01T00:00:00Z"
+ },
+ "route": "POST /api/v1/threads/:threadId/comments",
+ "status": 200
+}

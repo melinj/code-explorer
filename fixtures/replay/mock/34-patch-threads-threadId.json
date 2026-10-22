@@ -1,0 +1,56 @@
+{
+ "body": {
+  "assignee": "agent",
+  "status": "in-progress"
+ },
+ "method": "PATCH",
+ "path": "/api/v1/threads/t150",
+ "response": {
+  "anchor": {
+   "change": "kxwqmnpo",
+   "commit": "c0ffee",
+   "end": 2,
+   "fingerprint": {
+    "after": "",
+    "before": "",
+    "text": ""
+   },
+   "path": "deploy/signal_5.sh",
+   "side": "new",
+   "start": 1
+  },
+  "assignee": "agent",
+  "comments": [
+   {
+    "author": {
+     "kind": "human",
+     "name": "you"
+    },
+    "body": "Replay: why 80?",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "id": "cm151"
+   },
+   {
+    "author": {
+     "kind": "human",
+     "name": "you"
+    },
+    "body": "Tuned on purpose.",
+    "createdAt": "2026-01-01T00:00:00Z",
+    "id": "cm152"
+   }
+  ],
+  "createdAt": "2026-01-01T00:00:00Z",
+  "createdBy": {
+   "kind": "human",
+   "name": "you"
+  },
+  "id": "t150",
+  "kind": "question",
+  "producedEdits": [],
+  "status": "in-progress",
+  "updatedAt": "2026-01-01T00:00:00Z"
+ },
+ "route": "PATCH /api/v1/threads/:threadId",
+ "status": 200
+}

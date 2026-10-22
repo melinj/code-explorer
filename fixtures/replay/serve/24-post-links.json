@@ -1,0 +1,30 @@
+{
+ "body": {
+  "from": "w18c6bc35815c",
+  "kind": "reference",
+  "label": "replay",
+  "to": "wa42f613539cd",
+  "viewId": "<id1>"
+ },
+ "method": "POST",
+ "path": "/api/v1/links",
+ "response": {
+  "confidence": 1.0,
+  "from": {
+   "line": 1,
+   "path": ".github/workflows/ci.yml",
+   "window": "w18c6bc35815c"
+  },
+  "id": "<id2>",
+  "kind": "reference",
+  "label": "replay",
+  "provenance": "human",
+  "to": {
+   "line": 1,
+   "path": "Dockerfile",
+   "window": "wa42f613539cd"
+  }
+ },
+ "route": "POST /api/v1/links",
+ "status": 200
+}

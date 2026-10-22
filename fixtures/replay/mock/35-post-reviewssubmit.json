@@ -1,0 +1,15 @@
+{
+ "body": {
+  "note": "replay",
+  "threads": [
+   "t150"
+  ]
+ },
+ "method": "POST",
+ "path": "/api/v1/reviews:submit",
+ "response": {
+  "cursor": "<volatile>"
+ },
+ "route": "POST /api/v1/reviews:submit",
+ "status": 200
+}

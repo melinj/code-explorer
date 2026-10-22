@@ -1,0 +1,37 @@
+{
+ "body": {
+  "content": "def speed():\n    return 3\n\n\ndef name():\n    return \"d\"\n"
+ },
+ "method": "POST",
+ "path": "/api/v1/conflicts/a1056a0356d93a0916212ae8364516733aab5de5/engine.py/resolve",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "files": [
+   {
+    "newBlob": "32c8bd7f865d8e6a93e9346bedd57d1472ecc40d",
+    "path": "engine.py"
+   }
+  ],
+  "id": "<id3>",
+  "opAfter": "<volatile>",
+  "opBefore": "<volatile>",
+  "predicted": false,
+  "rewritten": [
+   "wkzpyywqukmxooynuoxmylmmkktlumwq"
+  ],
+  "status": "applied",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": true,
+    "updated": true
+   }
+  ]
+ },
+ "route": "POST /api/v1/conflicts/:commit/*path/resolve",
+ "status": 200
+}

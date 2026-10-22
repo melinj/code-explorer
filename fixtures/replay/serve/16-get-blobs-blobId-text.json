@@ -1,0 +1,74 @@
+{
+ "method": "GET",
+ "path": "/api/v1/blobs/065a65fa26cacde078071d3f4e705053254e5868/text",
+ "query": {
+  "from": 1,
+  "to": 20
+ },
+ "response": {
+  "blob": "065a65fa26cacde078071d3f4e705053254e5868",
+  "from": 1,
+  "lang": "yaml",
+  "lines": [
+   "name: ci",
+   "on: [push]",
+   "jobs:",
+   "  test:",
+   "    runs-on: ubuntu-latest",
+   "    steps:"
+  ],
+  "to": 7,
+  "tokens": [
+   [
+    0,
+    4,
+    12,
+    4,
+    1,
+    9
+   ],
+   [
+    0,
+    2,
+    12,
+    2,
+    1,
+    9
+   ],
+   [
+    0,
+    4,
+    12,
+    4,
+    1,
+    9
+   ],
+   [
+    2,
+    4,
+    12,
+    6,
+    1,
+    9
+   ],
+   [
+    4,
+    7,
+    12,
+    11,
+    1,
+    9
+   ],
+   [
+    4,
+    5,
+    12,
+    9,
+    1,
+    9
+   ]
+  ]
+ },
+ "route": "GET /api/v1/blobs/:blobId/text",
+ "status": 200
+}

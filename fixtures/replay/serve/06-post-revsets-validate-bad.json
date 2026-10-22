@@ -1,0 +1,14 @@
+{
+ "body": {
+  "revset": "trunk("
+ },
+ "method": "POST",
+ "path": "/api/v1/revsets:validate",
+ "response": {
+  "error": "Syntax error: expected <strict_identifier> or <expression>",
+  "hint": "see `jj help -k revsets`",
+  "ok": false
+ },
+ "route": "POST /api/v1/revsets:validate",
+ "status": 200
+}

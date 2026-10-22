@@ -1,0 +1,7 @@
+{
+ "method": "GET",
+ "path": "/api/v1/conflicts",
+ "response": [],
+ "route": "GET /api/v1/conflicts",
+ "status": 200
+}

@@ -1,0 +1,16 @@
+{
+ "body": {
+  "commit": "087642ca189a92d565ed226d3acbc5b6bfe58e32"
+ },
+ "method": "PUT",
+ "path": "/api/v1/reviews/marks/pprklvvmkwulvnstlwqqwmqqvopxprou",
+ "response": {
+  "change": "pprklvvmkwulvnstlwqqwmqqvopxprou",
+  "changedSinceReview": false,
+  "openThreads": 0,
+  "reviewedAt": "087642ca189a92d565ed226d3acbc5b6bfe58e32",
+  "touchedByAgent": false
+ },
+ "route": "PUT /api/v1/reviews/marks/:change",
+ "status": 200
+}

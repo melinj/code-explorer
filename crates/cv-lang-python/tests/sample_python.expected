@@ -1,0 +1,225 @@
+# Hand-checked 2026-10-22 against the 24 synthetic sources in tests/fixtures/sample_app (see sample.rs). Lines starting with # are ignored.
+# Known, accepted: `from __future__ import …` is not an import fact; module constants are not symbols.
+# A def inside a module-level try/except is a top-level symbol; defs nested in functions or methods are not.
+== src/access/__init__.py lines=1 errors=0
+== src/access/api_keys.py lines=25 errors=0
+sym function digest 10-12
+sym function issue 15-18
+sym function verify 21-25
+imp 3 hashlib as "hashlib" -> -
+imp 4 hmac as "hmac" -> -
+imp 5 secrets as "secrets" -> -
+== src/access/identity.py lines=28 errors=0
+sym class Customer 11-28
+sym method Customer.is_staff 22-24
+sym method Customer.may 26-28
+imp 3 datetime : datetime as "datetime" -> -
+imp 3 datetime : timezone as "timezone" -> -
+imp 4 typing : Literal as "Literal" -> -
+imp 6 pydantic : BaseModel as "BaseModel" -> -
+imp 6 pydantic : ConfigDict as "ConfigDict" -> -
+imp 6 pydantic : Field as "Field" -> -
+imp 8 src.access.roles : Role as "Role" -> src/access/roles.py
+== src/access/roles.py lines=32 errors=0
+sym class Role 7-27
+sym method Role.rank 15-17
+sym method Role.outranks 19-20
+sym method Role.parse_list 22-27
+sym function highest 30-32
+imp 3 enum : StrEnum as "StrEnum" -> -
+imp 4 typing : Iterable as "Iterable" -> -
+== src/access/session.py lines=39 errors=0
+sym function bind 19-21
+sym function unbind 24-25
+sym function current_customer 28-33
+sym function staff_roles 36-39
+imp 5 contextvars : ContextVar as "ContextVar" -> -
+imp 5 contextvars : Token as "Token" -> -
+imp 7 starlette.requests : Request as "Request" -> -
+imp 9 src.access.identity : Customer as "Customer" -> src/access/identity.py
+imp 10 src.access.roles : Role as "Role" -> src/access/roles.py
+== src/access/throttle.py lines=59 errors=0
+sym class Bucket 10-15
+sym class BucketStore 18-24
+sym method BucketStore.load 22-22
+sym method BucketStore.save 24-24
+sym class MemoryBucketStore 27-37
+sym method MemoryBucketStore.__init__ 30-31
+sym method MemoryBucketStore.load 33-34
+sym method MemoryBucketStore.save 36-37
+sym function use_store 43-46
+sym function allow 49-59
+imp 5 time as "time" -> -
+imp 6 dataclasses : dataclass as "dataclass" -> -
+imp 7 typing : Callable as "Callable" -> -
+imp 7 typing : Protocol as "Protocol" -> -
+imp 7 typing : runtime_checkable as "runtime_checkable" -> -
+== src/billing/__init__.py lines=7 errors=0
+imp 3 src.billing.currency : Money as "Money" -> src/billing/currency.py
+imp 4 src.billing.discounts : DiscountRule as "DiscountRule" -> src/billing/discounts.py
+imp 4 src.billing.discounts : PercentOff as "PercentOff" -> src/billing/discounts.py
+imp 5 src.billing.invoices : Invoice as "Invoice" -> src/billing/invoices.py
+imp 5 src.billing.invoices : build_invoice as "build_invoice" -> src/billing/invoices.py
+== src/billing/currency.py lines=44 errors=0
+sym class CurrencyMismatch 9-10
+sym class Money 13-44
+sym method Money.zero 20-22
+sym method Money.__add__ 24-26
+sym method Money.__sub__ 28-30
+sym method Money.scaled 32-35
+sym method Money._same_currency 37-39
+sym method Money.__str__ 41-44
+imp 5 dataclasses : dataclass as "dataclass" -> -
+imp 6 decimal : ROUND_HALF_EVEN as "ROUND_HALF_EVEN" -> -
+imp 6 decimal : Decimal as "Decimal" -> -
+== src/billing/discounts.py lines=66 errors=0
+sym class DiscountRule 12-23
+sym method DiscountRule.applies_to 17-19
+sym method DiscountRule.discounted 21-23
+sym class PercentOff 26-39
+sym method PercentOff.applies_to 34-35
+sym method PercentOff.discounted 37-39
+sym class ThreeForTwo 42-53
+sym method ThreeForTwo.applies_to 48-49
+sym method ThreeForTwo.discounted 51-53
+sym function best_price 56-66
+imp 5 abc as "abc" -> -
+imp 6 dataclasses : dataclass as "dataclass" -> -
+imp 7 decimal : Decimal as "Decimal" -> -
+imp 9 .currency : Money as "Money" -> src/billing/currency.py
+== src/billing/invoices.py lines=64 errors=0
+sym class InvoiceLine 23-29
+sym class Invoice 32-45
+sym method Invoice.total 39-45
+sym function build_invoice 48-64
+imp 5 itertools as "itertools" -> -
+imp 6 dataclasses : dataclass as "dataclass" -> -
+imp 7 datetime : date as "date" -> -
+imp 8 typing : TYPE_CHECKING as "TYPE_CHECKING" -> -
+imp 10 src.billing : tax as "tax" -> src/billing/tax.py
+imp 11 src.billing.discounts : best_price as "best_price" -> src/billing/discounts.py
+imp 12 src.ledger.journal : post_entry as "post_entry" -> src/ledger/journal.py
+imp 14 .currency : Money as "Money" -> src/billing/currency.py
+imp 17 ..catalog.models : Edition as "Edition" -> src/catalog/models.py
+imp 18 .discounts : DiscountRule as "DiscountRule" -> src/billing/discounts.py
+== src/billing/tax.py lines=19 errors=0
+sym class UnknownCountry 9-10
+sym function rate_for 13-19
+imp 3 decimal : Decimal as "Decimal" -> -
+== src/catalog/__init__.py lines=7 errors=0
+imp 3 . : isbn as "isbn" -> src/catalog/isbn.py
+imp 4 .models : Binding as "Binding" -> src/catalog/models.py
+imp 4 .models : Book as "Book" -> src/catalog/models.py
+imp 4 .models : Edition as "Edition" -> src/catalog/models.py
+imp 5 .search : search_titles as "search_titles" -> src/catalog/search.py
+== src/catalog/isbn.py lines=38 errors=0
+sym function normalise 8-10
+sym function isbn13_check_digit 13-16
+sym function isbn10_is_valid 19-25
+sym function to_isbn13 28-38
+imp 3 re as "re" -> -
+== src/catalog/models.py lines=68 errors=0
+sym class Binding 19-33
+sym method Binding.parse 26-33
+sym class Edition 36-43
+sym class Book 46-68
+sym method Book.latest 55-57
+sym method Book.in_binding 59-61
+sym method Book.byline 63-68
+imp 5 dataclasses : dataclass as "dataclass" -> -
+imp 5 dataclasses : field as "field" -> -
+imp 6 datetime : date as "date" -> -
+imp 7 enum : Enum as "Enum" -> -
+== src/catalog/onix.py lines=39 errors=0
+sym function _text 19-21
+sym function read_editions 24-39
+imp 5 xml.etree.ElementTree as "ET" -> -
+imp 6 datetime : date as "date" -> -
+imp 7 decimal : Decimal as "Decimal" -> -
+imp 8 typing : Iterator as "Iterator" -> -
+imp 10 .isbn : to_isbn13 as "to_isbn13" -> src/catalog/isbn.py
+imp 11 .models : Binding as "Binding" -> src/catalog/models.py
+imp 11 .models : Edition as "Edition" -> src/catalog/models.py
+== src/catalog/query_tags.py lines=48 errors=0
+sym class SearchFilters 18-24
+sym function split_query 27-48
+imp 7 logging as "logging" -> -
+imp 8 re as "re" -> -
+imp 9 dataclasses : dataclass as "dataclass" -> -
+== src/catalog/search.py lines=31 errors=0
+sym function _within_filters 12-17
+sym function search_titles 20-31
+imp 5 typing : Iterable as "Iterable" -> -
+imp 7 src.catalog.models : Book as "Book" -> src/catalog/models.py
+imp 8 src.catalog.query_tags : SearchFilters as "SearchFilters" -> src/catalog/query_tags.py
+imp 8 src.catalog.query_tags : split_query as "split_query" -> src/catalog/query_tags.py
+imp 9 src.text.folding : fold as "fold" -> src/text/folding.py
+== src/storefront/__init__.py lines=19 errors=0
+sym class PaymentProvider 9-10
+sym method PaymentProvider.charge 10-10
+sym function load_providers 13-19
+imp 5 importlib as "importlib" -> -
+imp 6 typing : Iterable as "Iterable" -> -
+imp 6 typing : Protocol as "Protocol" -> -
+== src/storefront/checkout.py lines=21 errors=0
+sym function checkout 13-21
+imp 5 typing : Any as "Any" -> -
+imp 7 src.access.session : current_customer as "current_customer" -> src/access/session.py
+imp 8 src.access.throttle : allow as "allow" -> src/access/throttle.py
+imp 9 src.billing : build_invoice as "build_invoice" -> src/billing/__init__.py
+imp 10 src.storefront.errors : CheckoutRejected as "CheckoutRejected" -> src/storefront/errors.py
+== src/telemetry/__init__.py lines=16 errors=0
+sym function span 11-13
+imp 3 src.telemetry.counters : CounterRegistry as "CounterRegistry" -> src/telemetry/counters.py
+imp 3 src.telemetry.counters : registry as "registry" -> src/telemetry/counters.py
+imp 4 src.telemetry.timing : Stopwatch as "Stopwatch" -> src/telemetry/timing.py
+imp 4 src.telemetry.timing : timed as "timed" -> src/telemetry/timing.py
+imp 7 src.telemetry.tracing_bridge : span as "span" -> src/telemetry/tracing_bridge.py
+imp 9 contextlib : nullcontext as "nullcontext" -> -
+== src/telemetry/counters.py lines=44 errors=0
+sym class CounterRegistry 12-41
+sym method CounterRegistry.__init__ 15-17
+sym method CounterRegistry._key 19-21
+sym method CounterRegistry.increment 23-27
+sym method CounterRegistry.bound 29-35
+sym method CounterRegistry.drain 37-41
+imp 5 threading as "threading" -> -
+imp 6 collections : defaultdict as "defaultdict" -> -
+imp 7 typing : Callable as "Callable" -> -
+== src/telemetry/encoding.py lines=23 errors=0
+sym function _fallback 8-13
+sym function dumps 16-18
+sym function encode_batch 21-23
+imp 3 json as "_json" -> -
+imp 4 datetime : datetime as "datetime" -> -
+imp 5 decimal : Decimal as "Decimal" -> -
+== src/telemetry/exporter.py lines=68 errors=0
+sym function default_sink 18-24
+sym class Exporter 27-68
+sym method Exporter.__init__ 30-40
+sym method Exporter.start 42-43
+sym method Exporter.stop 45-48
+sym method Exporter.flush 50-64
+sym method Exporter._run 66-68
+imp 5 logging as "logging" -> -
+imp 6 threading as "threading" -> -
+imp 7 typing : TYPE_CHECKING as "TYPE_CHECKING" -> -
+imp 9 src.telemetry.counters : CounterRegistry as "CounterRegistry" -> src/telemetry/counters.py
+imp 9 src.telemetry.counters : registry as "registry" -> src/telemetry/counters.py
+imp 10 src.telemetry.encoding : encode_batch as "encode_batch" -> src/telemetry/encoding.py
+imp 13 src.telemetry.http_sink : HttpSink as "HttpSink" -> src/telemetry/http_sink.py
+imp 20 os as "os" -> -
+imp 22 src.telemetry.http_sink : HttpSink as "HttpSink" -> src/telemetry/http_sink.py
+== src/telemetry/timing.py lines=56 errors=0
+sym class Stopwatch 17-30
+sym method Stopwatch.__init__ 20-23
+sym method Stopwatch.__enter__ 25-27
+sym method Stopwatch.__exit__ 29-30
+sym function _bucket 33-35
+sym function timed 38-56
+imp 5 functools as "functools" -> -
+imp 6 time as "time" -> -
+imp 7 typing : Callable as "Callable" -> -
+imp 7 typing : ParamSpec as "ParamSpec" -> -
+imp 7 typing : TypeVar as "TypeVar" -> -
+imp 9 src.telemetry.counters : registry as "registry" -> src/telemetry/counters.py

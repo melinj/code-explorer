@@ -1,0 +1,33 @@
+{
+ "method": "GET",
+ "path": "/api/v1/links",
+ "query": {
+  "dir": "both",
+  "target": "w2d63ca59b09d",
+  "viewId": "<id4>"
+ },
+ "response": {
+  "hubs": [],
+  "links": [
+   {
+    "confidence": 1.0,
+    "from": {
+     "line": 1,
+     "path": "settings.yaml",
+     "window": "w2d63ca59b09d"
+    },
+    "id": "<id3>",
+    "kind": "reference",
+    "label": "replay",
+    "provenance": "human",
+    "to": {
+     "line": 1,
+     "path": "app.py",
+     "window": "w9f2213a4350b"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/links",
+ "status": 200
+}

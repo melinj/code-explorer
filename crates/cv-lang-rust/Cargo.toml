@@ -1,0 +1,12 @@
+[package]
+name = "cv-lang-rust"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+cv-lang.workspace = true
+cv-lang-sitter.workspace = true
+tree-sitter.workspace = true
+tree-sitter-rust.workspace = true

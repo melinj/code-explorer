@@ -1,0 +1,268 @@
+{
+ "method": "GET",
+ "path": "/api/v1/revisions",
+ "query": {
+  "limit": 10,
+  "revset": "::@"
+ },
+ "response": {
+  "rows": [
+   {
+    "edges": [
+     {
+      "parent": "493c5f42c7786a6dd3605c4a396c579a318c6f0a",
+      "toLane": 1
+     }
+    ],
+    "lane": 1,
+    "rev": {
+     "author": {
+      "email": "dev@example.com",
+      "name": "you",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "pprklvvmkwulvnstlwqqwmqqvopxprou",
+     "commit": "087642ca189a92d565ed226d3acbc5b6bfe58e32",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": true
+     },
+     "parents": [
+      "493c5f42c7786a6dd3605c4a396c579a318c6f0a"
+     ],
+     "shortest": {
+      "change": 4,
+      "commit": 4
+     },
+     "tags": [],
+     "workspaces": [
+      "default"
+     ]
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "7a7970ea6d1f7382f50d742bc6462b786c3c6558",
+      "toLane": 1
+     }
+    ],
+    "lane": 1,
+    "rev": {
+     "author": {
+      "email": "dev@example.com",
+      "name": "you",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "zsswnpqrtltqkqlpomlxtxklzovyoysz",
+     "commit": "493c5f42c7786a6dd3605c4a396c579a318c6f0a",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "routines: day per schedule phase",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "7a7970ea6d1f7382f50d742bc6462b786c3c6558"
+     ],
+     "shortest": {
+      "change": 4,
+      "commit": 4
+     },
+     "tags": [],
+     "workspaces": []
+    },
+    "review": {
+     "change": "zsswnpqrtltqkqlpomlxtxklzovyoysz",
+     "changedSinceReview": false,
+     "openThreads": 2,
+     "touchedByAgent": false
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "345c93955253d6de661e733a5b30d8507bf276d0",
+      "toLane": 0
+     }
+    ],
+    "lane": 1,
+    "rev": {
+     "author": {
+      "email": "dev@example.com",
+      "name": "you",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "rxlrokqnomsrwptyrolnxlxxkuukzmyn",
+     "commit": "7a7970ea6d1f7382f50d742bc6462b786c3c6558",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "agent: trim prompt context",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "345c93955253d6de661e733a5b30d8507bf276d0"
+     ],
+     "shortest": {
+      "change": 4,
+      "commit": 4
+     },
+     "tags": [],
+     "workspaces": []
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "378e217b8cbc7f049dfda0857b57f46bbdc37fb4",
+      "toLane": 2
+     }
+    ],
+    "lane": 2,
+    "rev": {
+     "author": {
+      "email": "dev@example.com",
+      "name": "agent",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "rqtmtvrnxskrntkuvnqzxkmosxmrsxqm",
+     "commit": "c2b92cc17ac68c6502b7e4a917f7cc1df5e0a02d",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "map: retry district builds on timeout",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "378e217b8cbc7f049dfda0857b57f46bbdc37fb4"
+     ],
+     "shortest": {
+      "change": 4,
+      "commit": 4
+     },
+     "tags": [],
+     "workspaces": [
+      "gym"
+     ]
+    },
+    "review": {
+     "change": "rqtmtvrnxskrntkuvnqzxkmosxmrsxqm",
+     "changedSinceReview": false,
+     "openThreads": 0,
+     "touchedByAgent": true
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "c3c2c83db8dcabfdecb8aab404f80ebd7f70aa35",
+      "toLane": 0
+     }
+    ],
+    "lane": 2,
+    "rev": {
+     "author": {
+      "email": "dev@example.com",
+      "name": "you",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "qmqoquwzwssyzlmrttkmopulymksrvwz",
+     "commit": "378e217b8cbc7f049dfda0857b57f46bbdc37fb4",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "routines: day per schedule phase",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "c3c2c83db8dcabfdecb8aab404f80ebd7f70aa35"
+     ],
+     "shortest": {
+      "change": 4,
+      "commit": 4
+     },
+     "tags": [],
+     "workspaces": []
+    },
+    "review": {
+     "change": "qmqoquwzwssyzlmrttkmopulymksrvwz",
+     "changedSinceReview": true,
+     "openThreads": 0,
+     "reviewedAt": "c3c2c83db8dcabfdecb8aab404f80ebd7f70aa35",
+     "touchedByAgent": true
+    }
+   },
+   {
+    "edges": [
+     {
+      "parent": "b78c7736713fdb13f2f6613ce2a69607dd3b4a58",
+      "toLane": 0
+     }
+    ],
+    "lane": 3,
+    "rev": {
+     "author": {
+      "email": "dev@example.com",
+      "name": "agent",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "bookmarks": [],
+     "change": "mwnkvnlrkwtuyupxmovlyvwlqmxvqtsq",
+     "commit": "d33260adb4d9574a974e2f238a434c8ff99a82f4",
+     "committerTime": "2026-01-01T00:00:00Z",
+     "description": "world: emit entity.moved with district id",
+     "flags": {
+      "conflict": false,
+      "divergent": false,
+      "empty": false,
+      "hidden": false,
+      "immutable": false,
+      "workingCopy": false
+     },
+     "parents": [
+      "b78c7736713fdb13f2f6613ce2a69607dd3b4a58"
+     ],
+     "shortest": {
+      "change": 4,
+      "commit": 4
+     },
+     "tags": [],
+     "workspaces": [
+      "progression"
+     ]
+    }
+   }
+  ],
+  "truncated": false
+ },
+ "route": "GET /api/v1/revisions",
+ "status": 200
+}

@@ -1,0 +1,176 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/metrics",
+ "query": {
+  "level": "file"
+ },
+ "response": {
+  "cochange": [],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 1,
+     "fanIn": 1,
+     "fanOut": 2,
+     "grade": 4,
+     "reach": 3,
+     "tests": 0
+    },
+    "connPct": 0.722222,
+    "heat": {
+     "ci": [
+      0.23072,
+      0.882382
+     ],
+     "grade": 4,
+     "rate": 0.6,
+     "settled": false,
+     "touches": 3
+    },
+    "heatPct": 0.944444,
+    "key": "src/helpers.py#file",
+    "label": "src/helpers.py",
+    "lane": "code",
+    "risk": 0.825893,
+    "window": "w520470537758"
+   },
+   {
+    "conn": {
+     "dependents2": 2,
+     "fanIn": 1,
+     "fanOut": 1,
+     "grade": 4,
+     "reach": 3,
+     "tests": 0
+    },
+    "connPct": 0.888889,
+    "heat": {
+     "ci": [
+      0.0362232,
+      0.624472
+     ],
+     "grade": 3,
+     "rate": 0.2,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.388889,
+    "key": "Dockerfile#file",
+    "label": "Dockerfile",
+    "lane": "infra",
+    "risk": 0.587945,
+    "window": "wa42f613539cd"
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 3,
+     "tests": 0
+    },
+    "connPct": 0.333333,
+    "heat": {
+     "ci": [
+      0.23072,
+      0.882382
+     ],
+     "grade": 4,
+     "rate": 0.6,
+     "settled": false,
+     "touches": 3
+    },
+    "heatPct": 0.833333,
+    "key": "src/shapes.py#star",
+    "label": "src/shapes.py",
+    "lane": "code",
+    "risk": 0.527046,
+    "window": "w15b3a841db4b"
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.333333,
+    "heat": {
+     "ci": [
+      0.117618,
+      0.76928
+     ],
+     "grade": 4,
+     "rate": 0.4,
+     "settled": false,
+     "touches": 2
+    },
+    "heatPct": 0.722222,
+    "key": "config/app.yaml#file",
+    "label": "config/app.yaml",
+    "lane": "config",
+    "risk": 0.490653,
+    "window": "wd9b7286111ca"
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 1,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.333333,
+    "heat": {
+     "ci": [
+      0.0362242,
+      0.624474
+     ],
+     "grade": 3,
+     "rate": 0.200003,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.555556,
+    "key": ".github/workflows/ci.yml#file",
+    "label": ".github/workflows/ci.yml",
+    "lane": "infra",
+    "risk": 0.430331,
+    "window": "w18c6bc35815c"
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.333333,
+    "heat": {
+     "ci": [
+      0.0362242,
+      0.624474
+     ],
+     "grade": 3,
+     "rate": 0.200003,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.555556,
+    "key": "docs/design.md#file",
+    "label": "docs/design.md",
+    "lane": "docs",
+    "risk": 0.430331,
+    "window": "w7e0f14c113d8"
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

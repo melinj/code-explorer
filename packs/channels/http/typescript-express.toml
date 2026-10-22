@@ -1,0 +1,14 @@
+# HTTP routes in Express / Koa-router style servers (pack P2).
+
+[[endpoints]]
+id = "typescript.express.route"
+lang = "typescript"
+role = "server"
+hints = ["app.", "router.", "Router."]
+query = '''
+(call_expression
+  function: (member_expression object: (identifier) @scope property: (property_identifier) @method)
+  arguments: (arguments . (string) @key . (_))
+  (#match? @scope "^(app|router|server|[a-z]+Router)$")
+  (#match? @method "^(get|post|put|delete|patch|all)$"))
+'''

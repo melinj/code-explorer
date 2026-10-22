@@ -1,0 +1,216 @@
+{
+ "method": "GET",
+ "path": "/api/v1/events",
+ "query": {
+  "cursor": 0,
+  "timeoutS": 0
+ },
+ "response": {
+  "cursor": "<volatile>",
+  "events": [
+   {
+    "layoutVersion": 2,
+    "reason": "layout",
+    "type": "view.invalidated",
+    "viewId": "<id2>",
+    "windows": [
+     "w10"
+    ]
+   },
+   {
+    "layoutVersion": 2,
+    "reason": "layout",
+    "type": "view.invalidated",
+    "viewId": "<id2>",
+    "windows": []
+   },
+   {
+    "thread": {
+     "anchor": {
+      "change": "kxwqmnpo",
+      "commit": "c0ffee",
+      "end": 2,
+      "fingerprint": {
+       "after": "",
+       "before": "",
+       "text": ""
+      },
+      "path": "deploy/signal_5.sh",
+      "side": "new",
+      "start": 1
+     },
+     "comments": [
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Replay: why 80?",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm151"
+      }
+     ],
+     "createdAt": "2026-01-01T00:00:00Z",
+     "createdBy": {
+      "kind": "human",
+      "name": "you"
+     },
+     "id": "t150",
+     "kind": "question",
+     "producedEdits": [],
+     "status": "open",
+     "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    "type": "thread.upserted"
+   },
+   {
+    "thread": {
+     "anchor": {
+      "change": "kxwqmnpo",
+      "commit": "c0ffee",
+      "end": 2,
+      "fingerprint": {
+       "after": "",
+       "before": "",
+       "text": ""
+      },
+      "path": "deploy/signal_5.sh",
+      "side": "new",
+      "start": 1
+     },
+     "comments": [
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Replay: why 80?",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm151"
+      },
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Tuned on purpose.",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm152"
+      }
+     ],
+     "createdAt": "2026-01-01T00:00:00Z",
+     "createdBy": {
+      "kind": "human",
+      "name": "you"
+     },
+     "id": "t150",
+     "kind": "question",
+     "producedEdits": [],
+     "status": "open",
+     "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    "type": "thread.upserted"
+   },
+   {
+    "thread": {
+     "anchor": {
+      "change": "kxwqmnpo",
+      "commit": "c0ffee",
+      "end": 2,
+      "fingerprint": {
+       "after": "",
+       "before": "",
+       "text": ""
+      },
+      "path": "deploy/signal_5.sh",
+      "side": "new",
+      "start": 1
+     },
+     "assignee": "agent",
+     "comments": [
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Replay: why 80?",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm151"
+      },
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Tuned on purpose.",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm152"
+      }
+     ],
+     "createdAt": "2026-01-01T00:00:00Z",
+     "createdBy": {
+      "kind": "human",
+      "name": "you"
+     },
+     "id": "t150",
+     "kind": "question",
+     "producedEdits": [],
+     "status": "in-progress",
+     "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    "type": "thread.upserted"
+   },
+   {
+    "thread": {
+     "anchor": {
+      "change": "kxwqmnpo",
+      "commit": "c0ffee",
+      "end": 2,
+      "fingerprint": {
+       "after": "",
+       "before": "",
+       "text": ""
+      },
+      "path": "deploy/signal_5.sh",
+      "side": "new",
+      "start": 1
+     },
+     "assignee": "agent",
+     "comments": [
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Replay: why 80?",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm151"
+      },
+      {
+       "author": {
+        "kind": "human",
+        "name": "you"
+       },
+       "body": "Tuned on purpose.",
+       "createdAt": "2026-01-01T00:00:00Z",
+       "id": "cm152"
+      }
+     ],
+     "createdAt": "2026-01-01T00:00:00Z",
+     "createdBy": {
+      "kind": "human",
+      "name": "you"
+     },
+     "id": "t150",
+     "kind": "question",
+     "producedEdits": [],
+     "status": "in-progress",
+     "updatedAt": "2026-01-01T00:00:00Z"
+    },
+    "type": "thread.upserted"
+   }
+  ]
+ },
+ "route": "GET /api/v1/events",
+ "status": 200
+}

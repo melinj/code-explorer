@@ -1,0 +1,70 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/fragments",
+ "query": {
+  "path": "src/shapes.py"
+ },
+ "response": {
+  "chip": 7,
+  "fragments": [
+   {
+    "cluster": "c2",
+    "index": 1,
+    "rect": {
+     "h": 576.0,
+     "w": 540.0,
+     "x": 3642.16,
+     "y": 9390.96
+    },
+    "window": "w1ca31856bd4f"
+   },
+   {
+    "cluster": "c2",
+    "index": 2,
+    "rect": {
+     "h": 558.0,
+     "w": 540.0,
+     "x": 4362.16,
+     "y": 9012.96
+    },
+    "window": "w099974dbca50"
+   },
+   {
+    "cluster": "c2",
+    "index": 3,
+    "rect": {
+     "h": 558.0,
+     "w": 630.0,
+     "x": 4362.16,
+     "y": 9660.96
+    },
+    "window": "w783fe8a1d83b"
+   },
+   {
+    "cluster": "c2",
+    "index": 4,
+    "rect": {
+     "h": 558.0,
+     "w": 630.0,
+     "x": 5172.16,
+     "y": 9012.96
+    },
+    "window": "w4c19c895f395"
+   },
+   {
+    "cluster": "c2",
+    "index": 5,
+    "rect": {
+     "h": 594.0,
+     "w": 540.0,
+     "x": 5172.16,
+     "y": 9660.96
+    },
+    "window": "w15b3a841db4b"
+   }
+  ],
+  "path": "src/shapes.py"
+ },
+ "route": "GET /api/v1/views/:viewId/fragments",
+ "status": 200
+}

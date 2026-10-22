@@ -1,0 +1,67 @@
+{
+ "body": {
+  "after": 3,
+  "before": 3
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id2>/windows/w10/expand",
+ "response": {
+  "blob": "b1e8b68fb0d8e4b9c",
+  "change": "kxwqmnpo",
+  "cluster": "c1",
+  "conn": {
+   "dependents2": 24,
+   "fanIn": 8,
+   "fanOut": 10,
+   "grade": 3,
+   "reach": 72,
+   "tests": 3
+  },
+  "counts": {
+   "conflicts": 0,
+   "openThreads": 0,
+   "ports": 1
+  },
+  "flags": {
+   "pinned": false,
+   "truncated": true
+  },
+  "heat": {
+   "ci": [
+    0.0654763,
+    0.121599
+   ],
+   "grade": 4,
+   "rate": 0.0935375,
+   "settled": true,
+   "touches": 37
+  },
+  "id": "w10",
+  "key": "deploy/signal_5.sh#prompt_trade",
+  "kind": "chunk",
+  "lane": "infra",
+  "lang": "other",
+  "lines": {
+   "end": 55,
+   "fileLines": 71,
+   "start": 1
+  },
+  "path": "deploy/signal_5.sh",
+  "rect": {
+   "h": 1026.0,
+   "w": 630.0,
+   "x": 320.0,
+   "y": 2506.0
+  },
+  "rev": "c0ffee",
+  "reviewFirst": false,
+  "risk": 0.887572,
+  "symbol": {
+   "kind": "function",
+   "name": "prompt_trade",
+   "qualname": "prompt_trade"
+  }
+ },
+ "route": "POST /api/v1/views/:viewId/windows/:windowId/expand",
+ "status": 200
+}

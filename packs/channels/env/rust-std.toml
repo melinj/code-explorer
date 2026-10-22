@@ -1,0 +1,18 @@
+# Env readers in Rust (pack P3): std::env::var / var_os (also `env::var` after `use std::env`), env!
+# and option_env!. The name may be a literal or a constant.
+
+[[endpoints]]
+id = "rust.std.env"
+lang = "rust"
+role = "read"
+hints = ["env"]
+query = '''
+(call_expression
+  function: (scoped_identifier path: (_) @_p name: (identifier) @_f)
+  arguments: (arguments . (_) @key)
+  (#match? @_p "(^|::)env$") (#match? @_f "^(var|var_os)$"))
+(macro_invocation
+  macro: (identifier) @_m
+  (token_tree . (string_literal) @key)
+  (#match? @_m "^(option_)?env$"))
+'''

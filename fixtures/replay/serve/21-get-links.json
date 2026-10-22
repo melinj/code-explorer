@@ -1,0 +1,33 @@
+{
+ "method": "GET",
+ "path": "/api/v1/links",
+ "query": {
+  "dir": "both",
+  "target": "w18c6bc35815c",
+  "viewId": "<id1>"
+ },
+ "response": {
+  "hubs": [],
+  "links": [
+   {
+    "confidence": 0.85,
+    "from": {
+     "line": 7,
+     "path": ".github/workflows/ci.yml",
+     "window": "w18c6bc35815c"
+    },
+    "id": "l2",
+    "kind": "deploy",
+    "label": "⇢ pytest tests",
+    "provenance": "rule:ci.run",
+    "to": {
+     "line": 1,
+     "path": "tests/test_shapes.py",
+     "window": "wa4dc73c0f459"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/links",
+ "status": 200
+}

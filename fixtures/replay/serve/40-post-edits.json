@@ -1,0 +1,39 @@
+{
+ "body": {
+  "dryRun": true,
+  "files": [
+   {
+    "content": "name: fixture\nretries: 7\nfeatures:\n  fast: true\n",
+    "path": "config/app.yaml"
+   }
+  ],
+  "mode": "amend",
+  "target": "@-"
+ },
+ "method": "POST",
+ "path": "/api/v1/edits",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "id": "<id7>",
+  "opBefore": "<volatile>",
+  "predicted": true,
+  "rewritten": [
+   "pqkwwwtswwsyxutrtsvqkuzyorxzstop",
+   "muoulswlvsusqsxtvvzmupplskxxxpvr"
+  ],
+  "status": "previewed",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": false,
+    "updated": false
+   }
+  ]
+ },
+ "route": "POST /api/v1/edits",
+ "status": 200
+}

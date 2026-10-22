@@ -1,0 +1,12 @@
+{
+ "method": "GET",
+ "path": "/api/v1/search",
+ "query": {
+  "limit": 5,
+  "q": "circle",
+  "viewId": "<id2>"
+ },
+ "response": [],
+ "route": "GET /api/v1/search",
+ "status": 200
+}

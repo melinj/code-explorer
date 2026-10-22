@@ -1,0 +1,8 @@
+[package]
+name = "cv-boundaries"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "Trait sketches for the boundaries between Code Viewer backend crates. Compile-checked, std only; not an implementation."
+
+[dependencies]

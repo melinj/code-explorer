@@ -1,0 +1,64 @@
+{
+ "method": "GET",
+ "path": "/api/v1/blobs/b1e8b68fb0d8e4b9c/text",
+ "query": {
+  "from": 1,
+  "to": 20
+ },
+ "response": {
+  "blob": "b1e8b68fb0d8e4b9c",
+  "from": 1,
+  "lang": "other",
+  "lines": [
+   "items: request.key",
+   "event:",
+   "  # queue",
+   "  district: 7215",
+   "",
+   "  items:"
+  ],
+  "to": 20,
+  "tokens": [
+   [
+    0,
+    5,
+    12,
+    5,
+    2,
+    9
+   ],
+   [
+    0,
+    5,
+    12,
+    5,
+    1,
+    9
+   ],
+   [
+    2,
+    7,
+    3
+   ],
+   [
+    2,
+    8,
+    12,
+    10,
+    2,
+    9
+   ],
+   [],
+   [
+    2,
+    5,
+    12,
+    7,
+    1,
+    9
+   ]
+  ]
+ },
+ "route": "GET /api/v1/blobs/:blobId/text",
+ "status": 200
+}

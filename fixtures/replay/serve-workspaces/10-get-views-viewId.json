@@ -1,0 +1,28 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>",
+ "response": {
+  "id": "<id2>",
+  "layoutVersion": 1,
+  "resolved": {
+   "commits": [
+    "1e80f0594b740f14f66daad989834d9bff3feb6c"
+   ],
+   "head": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+   "op": "<volatile>"
+  },
+  "spec": {
+   "mode": "snapshot",
+   "rev": "@"
+  },
+  "stats": {
+   "clusters": 2,
+   "files": 2,
+   "windows": 2
+  },
+  "status": "ready",
+  "warnings": []
+ },
+ "route": "GET /api/v1/views/:viewId",
+ "status": 200
+}

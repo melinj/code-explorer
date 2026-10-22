@@ -1,0 +1,38 @@
+{
+ "method": "GET",
+ "path": "/api/v1/workspaces",
+ "response": [
+  {
+   "files": [
+    ".env.example",
+    ".github/workflows/ci.yml",
+    "Dockerfile",
+    "README.md",
+    "config/app.yaml",
+    "docs/design.md"
+   ],
+   "lastOp": {
+    "description": "new empty commit",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "default",
+   "overlaps": [],
+   "root": "<ROOT>",
+   "serving": true,
+   "stack": {
+    "changes": 6,
+    "conflicts": 0,
+    "files": 10,
+    "revset": "trunk()..default@"
+   },
+   "unsnapshottedFiles": 0,
+   "wc": {
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+   }
+  }
+ ],
+ "route": "GET /api/v1/workspaces",
+ "status": 200
+}

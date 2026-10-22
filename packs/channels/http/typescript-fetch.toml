@@ -1,0 +1,52 @@
+# HTTP clients in TypeScript / JavaScript (pack P2): fetch, axios-style clients, and request()
+# wrappers whose base prefix is the file's API_BASE constant ("wrapper prefixes").
+
+[[endpoints]]
+id = "typescript.fetch"
+lang = "typescript"
+role = "client"
+method = "GET"
+hints = ["fetch("]
+query = '''
+(call_expression
+  function: (identifier) @_f
+  arguments: (arguments . (_) @key)
+  (#eq? @_f "fetch"))
+(call_expression
+  function: (identifier) @_f
+  arguments: (arguments . (_) @key . (object (pair key: (property_identifier) @_m value: (string (string_fragment) @method))))
+  (#eq? @_f "fetch")
+  (#eq? @_m "method"))
+'''
+
+[[endpoints]]
+id = "typescript.axios"
+lang = "typescript"
+role = "client"
+hints = ["axios", "http.", "client."]
+query = '''
+(call_expression
+  function: (member_expression object: (identifier) @_o property: (property_identifier) @method)
+  arguments: (arguments . (_) @key)
+  (#match? @_o "^(axios|http|apiClient|client|instance)$")
+  (#match? @method "^(get|post|put|delete|patch|head)$"))
+'''
+
+[[endpoints]]
+id = "typescript.request-wrapper"
+lang = "typescript"
+role = "client"
+method = "GET"
+prefix = "$API_BASE"
+hints = ["request(", "Request(", "apiFetch("]
+query = '''
+(call_expression
+  function: (identifier) @_f
+  arguments: (arguments . (_) @key)
+  (#match? @_f "^(request|apiRequest|apiFetch|fetchApi|fetchJson|requestJson)$"))
+(call_expression
+  function: (identifier) @_f
+  arguments: (arguments . (_) @key . (object (pair key: (property_identifier) @_m value: (string (string_fragment) @method))))
+  (#match? @_f "^(request|apiRequest|apiFetch|fetchApi|fetchJson|requestJson)$")
+  (#eq? @_m "method"))
+'''

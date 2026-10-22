@@ -1,0 +1,47 @@
+{
+ "method": "GET",
+ "path": "/api/v1/repo",
+ "response": {
+  "capabilities": {
+   "jjLib": true,
+   "runtimeLinks": false,
+   "scip": false
+  },
+  "index": {
+   "blobsParsed": 7,
+   "churn": {
+    "bands": [
+     0.0999968,
+     0.199994,
+     0.199998,
+     0.300002
+    ],
+    "halfLifeDays": 90.0,
+    "head": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "oldest": "2026-01-01T00:00:00Z",
+    "scannedCommits": 6,
+    "settledMass": -0.0,
+    "stop": "history-exhausted"
+   },
+   "files": 9,
+   "lastOp": "<volatile>",
+   "state": "idle"
+  },
+  "jjVersion": "0.45.1",
+  "name": "linear",
+  "op": "<volatile>",
+  "root": "<ROOT>",
+  "workspaces": [
+   {
+    "name": "default",
+    "root": "<ROOT>",
+    "wc": {
+     "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+     "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/repo",
+ "status": 200
+}

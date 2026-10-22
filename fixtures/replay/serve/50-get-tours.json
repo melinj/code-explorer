@@ -1,0 +1,26 @@
+{
+ "method": "GET",
+ "path": "/api/v1/tours",
+ "response": [
+  {
+   "by": {
+    "kind": "human",
+    "name": "you"
+   },
+   "createdAt": "2026-01-01T00:00:00Z",
+   "id": "tour1",
+   "steps": [
+    {
+     "note": "start here",
+     "target": {
+      "line": 30,
+      "path": "src/shapes.py"
+     }
+    }
+   ],
+   "title": "Replay tour"
+  }
+ ],
+ "route": "GET /api/v1/tours",
+ "status": 200
+}

@@ -1,0 +1,26 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/fragments",
+ "query": {
+  "path": "deploy/signal_5.sh"
+ },
+ "response": {
+  "chip": 0,
+  "fragments": [
+   {
+    "cluster": "c1",
+    "index": 1,
+    "rect": {
+     "h": 918.0,
+     "w": 630.0,
+     "x": 320.0,
+     "y": 2560.0
+    },
+    "window": "w10"
+   }
+  ],
+  "path": "deploy/signal_5.sh"
+ },
+ "route": "GET /api/v1/views/:viewId/fragments",
+ "status": 200
+}

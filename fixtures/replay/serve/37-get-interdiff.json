@@ -1,0 +1,13 @@
+{
+ "method": "GET",
+ "path": "/api/v1/interdiff",
+ "query": {
+  "change": "movzpqyzyppxxytnosmllumqklzlksxt",
+  "from": "6f6464936dd64ee833c43cb87e976a463073bc4a"
+ },
+ "response": {
+  "files": []
+ },
+ "route": "GET /api/v1/interdiff",
+ "status": 200
+}

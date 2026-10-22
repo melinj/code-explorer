@@ -1,0 +1,427 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/tiles/3/0/0",
+ "response": {
+  "edges": [
+   {
+    "a": [
+     860.0,
+     2713.0
+    ],
+    "b": [
+     320.0,
+     13295.3
+    ],
+    "confidence": 0.85,
+    "from": "w18c6bc35815c",
+    "fromCluster": "c0",
+    "id": "l2",
+    "kind": "deploy",
+    "to": "wa4dc73c0f459",
+    "toCluster": "c3"
+   },
+   {
+    "a": [
+     860.0,
+     2875.0
+    ],
+    "b": [
+     3642.16,
+     9111.96
+    ],
+    "confidence": 1.0,
+    "from": "wa42f613539cd",
+    "fromCluster": "c0",
+    "id": "l3",
+    "kind": "define",
+    "to": "w520470537758",
+    "toCluster": "c2"
+   },
+   {
+    "a": [
+     860.0,
+     2911.0
+    ],
+    "b": [
+     3642.16,
+     9435.96
+    ],
+    "confidence": 0.95,
+    "from": "wa42f613539cd",
+    "fromCluster": "c0",
+    "id": "l4",
+    "kind": "deploy",
+    "to": "w1ca31856bd4f",
+    "toCluster": "c2"
+   },
+   {
+    "a": [
+     860.0,
+     6087.8
+    ],
+    "b": [
+     3642.16,
+     9111.96
+    ],
+    "confidence": 1.0,
+    "from": "w8a97636e48ec",
+    "fromCluster": "c1",
+    "id": "l1",
+    "kind": "define",
+    "to": "w520470537758",
+    "toCluster": "c2"
+   },
+   {
+    "a": [
+     860.0,
+     13367.3
+    ],
+    "b": [
+     3642.16,
+     9489.96
+    ],
+    "confidence": 0.85,
+    "from": "wa4dc73c0f459",
+    "fromCluster": "c3",
+    "id": "l0",
+    "kind": "call",
+    "to": "w1ca31856bd4f",
+    "toCluster": "c2"
+   }
+  ],
+  "layoutVersion": 1,
+  "windows": [
+   {
+    "blob": "065a65fa26cacde078071d3f4e705053254e5868",
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "cluster": "c0",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 1,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 1
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.0362242,
+      0.624474
+     ],
+     "grade": 3,
+     "rate": 0.200003,
+     "settled": false,
+     "touches": 1
+    },
+    "id": "w18c6bc35815c",
+    "key": ".github/workflows/ci.yml#file",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "yaml",
+    "lines": {
+     "end": 7,
+     "fileLines": 7,
+     "start": 1
+    },
+    "path": ".github/workflows/ci.yml",
+    "rect": {
+     "h": 162.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 2560.0
+    },
+    "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "reviewFirst": false,
+    "risk": 0.375
+   },
+   {
+    "blob": "5ed36ae891426c2ee07ec6d8745f8d4f969f597d",
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "cluster": "c0",
+    "conn": {
+     "dependents2": 2,
+     "fanIn": 1,
+     "fanOut": 1,
+     "grade": 4,
+     "reach": 3,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 2
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.0362232,
+      0.624472
+     ],
+     "grade": 3,
+     "rate": 0.2,
+     "settled": false,
+     "touches": 1
+    },
+    "id": "wa42f613539cd",
+    "key": "Dockerfile#file",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 4,
+     "fileLines": 4,
+     "start": 1
+    },
+    "path": "Dockerfile",
+    "rect": {
+     "h": 108.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 2812.0
+    },
+    "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "reviewFirst": true,
+    "risk": 0.489473
+   },
+   {
+    "blob": "5ce037207f93494e0268f0e9866d1255fdc0eb7a",
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 2,
+     "fanIn": 1,
+     "fanOut": 0,
+     "grade": 4,
+     "reach": 4,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 1
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.0362211,
+      0.624466
+     ],
+     "grade": 2,
+     "rate": 0.199994,
+     "settled": false,
+     "touches": 1
+    },
+    "id": "w8a97636e48ec",
+    "key": ".env.example#file",
+    "kind": "chunk",
+    "lane": "config",
+    "lang": "other",
+    "lines": {
+     "end": 1,
+     "fileLines": 1,
+     "start": 1
+    },
+    "path": ".env.example",
+    "rect": {
+     "h": 54.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 6042.8
+    },
+    "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "reviewFirst": false,
+    "risk": 0.199826
+   },
+   {
+    "blob": "7f98735e2b396c63e61738698b19297fc3797e8b",
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 0
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.117618,
+      0.76928
+     ],
+     "grade": 4,
+     "rate": 0.4,
+     "settled": false,
+     "touches": 2
+    },
+    "id": "wd9b7286111ca",
+    "key": "config/app.yaml#file",
+    "kind": "chunk",
+    "lane": "config",
+    "lang": "yaml",
+    "lines": {
+     "end": 4,
+     "fileLines": 4,
+     "start": 1
+    },
+    "path": "config/app.yaml",
+    "rect": {
+     "h": 108.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 5844.8
+    },
+    "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "reviewFirst": true,
+    "risk": 0.433013
+   },
+   {
+    "blob": "45ded35c00b0cb07223366b03102689a5084db2d",
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "cluster": "c2",
+    "conn": {
+     "dependents2": 1,
+     "fanIn": 1,
+     "fanOut": 2,
+     "grade": 4,
+     "reach": 3,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 1
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.23072,
+      0.882382
+     ],
+     "grade": 4,
+     "rate": 0.6,
+     "settled": false,
+     "touches": 3
+    },
+    "id": "w520470537758",
+    "key": "src/helpers.py#file",
+    "kind": "chunk",
+    "lane": "code",
+    "lang": "python",
+    "lines": {
+     "end": 14,
+     "fileLines": 14,
+     "start": 1
+    },
+    "path": "src/helpers.py",
+    "rect": {
+     "h": 288.0,
+     "w": 540.0,
+     "x": 3642.16,
+     "y": 9012.96
+    },
+    "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "reviewFirst": true,
+    "risk": 0.912871
+   },
+   {
+    "blob": "54f56ba020a255a556d2d2a6a545aba0f6d48c6f",
+    "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+    "cluster": "c2",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 2,
+     "fanOut": 1,
+     "grade": 0,
+     "reach": 3,
+     "tests": 1
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 2
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "fragment": {
+     "chip": 7,
+     "index": 1,
+     "of": 5,
+     "siblings": [
+      "w1ca31856bd4f",
+      "w099974dbca50",
+      "w783fe8a1d83b",
+      "w4c19c895f395",
+      "w15b3a841db4b"
+     ]
+    },
+    "heat": {
+     "ci": [
+      0.23072,
+      0.882382
+     ],
+     "grade": 4,
+     "rate": 0.6,
+     "settled": false,
+     "touches": 3
+    },
+    "id": "w1ca31856bd4f",
+    "key": "src/shapes.py#circle",
+    "kind": "symbol",
+    "lane": "code",
+    "lang": "python",
+    "lines": {
+     "end": 30,
+     "fileLines": 148,
+     "start": 1
+    },
+    "path": "src/shapes.py",
+    "rect": {
+     "h": 576.0,
+     "w": 540.0,
+     "x": 3642.16,
+     "y": 9390.96
+    },
+    "rev": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "reviewFirst": false,
+    "risk": 0.53033,
+    "symbol": {
+     "kind": "function",
+     "name": "circle",
+     "qualname": "circle"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/tiles/:z/:x/:y",
+ "status": 200
+}

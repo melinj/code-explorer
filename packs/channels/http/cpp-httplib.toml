@@ -1,0 +1,29 @@
+# HTTP routes and clients in C++ with cpp-httplib (pack P2): `svr.Get("/p", handler)` on an
+# `httplib::Server` and `cli.Get("/p")` on an `httplib::Client`. Server and client are told apart
+# by the receiver's name; regex route segments (`R"(/n/(\d+))"`) and `:id` parameters become `{}`.
+
+[[endpoints]]
+id = "cpp.httplib.route"
+lang = "cpp"
+role = "server"
+hints = [".Get(", ".Post(", ".Put(", ".Delete(", ".Patch(", ".Options(", "->Get(", "->Post("]
+query = '''
+(call_expression
+  function: (field_expression argument: (_) @scope field: (field_identifier) @method)
+  arguments: (argument_list . (_) @key . (_))
+  (#match? @scope "^(svr|srv|server|http_server|app|[A-Za-z_]*[sS]erver|[A-Za-z_]*_svr)$")
+  (#match? @method "^(Get|Post|Put|Delete|Patch|Options)$"))
+'''
+
+[[endpoints]]
+id = "cpp.httplib.client"
+lang = "cpp"
+role = "client"
+hints = [".Get(", ".Post(", ".Put(", ".Delete(", ".Patch(", ".Head(", ".Options(", "->Get(", "->Post("]
+query = '''
+(call_expression
+  function: (field_expression argument: (_) @scope field: (field_identifier) @method)
+  arguments: (argument_list . (_) @key)
+  (#match? @scope "^(cli|client|http|http_client|api|[A-Za-z_]*[cC]lient|[A-Za-z_]*_cli)$")
+  (#match? @method "^(Get|Post|Put|Delete|Patch|Head|Options)$"))
+'''

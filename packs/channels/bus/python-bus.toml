@@ -1,0 +1,67 @@
+# Bus channel rules for Python (pack P1). Producers: envelopes and emit/publish calls; consumers:
+# on/subscribe calls. Captures: @key (folded), @handler (dispatch target). Keys fold through string
+# literals, f-strings, module and imported constants and the transforms below.
+
+[[transforms]]
+fn = "scoped_topic"
+result = "{0}.*?"
+
+# EventEnvelope(topic=…), DomainEventEmit(topic=…), bus.publish(topic=…)
+[[endpoints]]
+id = "python.bus.envelope"
+lang = "python"
+role = "producer"
+hints = ["topic="]
+query = '''
+(call
+  function: [(identifier) @_c (attribute attribute: (identifier) @_c)]
+  arguments: (argument_list (keyword_argument name: (identifier) @_k value: (_) @key))
+  (#eq? @_k "topic")
+  (#match? @_c "(Envelope|Emit|Event|Message|^emit|^publish|^_safe_emit)$"))
+'''
+
+# bus.emit("a.b", …), self._safe_emit(TOPIC, …), bus.publish(self.scoped_topic(X), …)
+[[endpoints]]
+id = "python.bus.emit"
+lang = "python"
+role = "producer"
+hints = ["emit(", "publish("]
+query = '''
+(call
+  function: (attribute attribute: (identifier) @_m)
+  arguments: (argument_list . [(string) (concatenated_string) (binary_operator)] @key)
+  (#match? @_m "^_?(safe_)?(emit|publish)$"))
+(call
+  function: (attribute attribute: (identifier) @_m)
+  arguments: (argument_list . [(identifier) (attribute)] @key)
+  (#match? @_m "^_?(safe_)?(emit|publish)$")
+  (#match? @key "([A-Z][A-Z0-9_]+$|topic)"))
+(call
+  function: (attribute attribute: (identifier) @_m)
+  arguments: (argument_list . (call function: [(identifier) (attribute)] @_t) @key)
+  (#match? @_m "^_?(safe_)?(emit|publish)$")
+  (#match? @_t "topic$"))
+'''
+
+# bus.on("a.*", handler), bus.subscribe(TOPIC, self._on_x)
+[[endpoints]]
+id = "python.bus.on"
+lang = "python"
+role = "consumer"
+hints = [".on(", "subscribe("]
+query = '''
+(call
+  function: (attribute attribute: (identifier) @_m)
+  arguments: (argument_list . [(string) (concatenated_string) (binary_operator)] @key . (_)? @handler)
+  (#match? @_m "^(on|subscribe|add_listener|add_handler)$"))
+(call
+  function: (attribute attribute: (identifier) @_m)
+  arguments: (argument_list . [(identifier) (attribute)] @key . (_)? @handler)
+  (#match? @_m "^(on|subscribe|add_listener|add_handler)$")
+  (#match? @key "([A-Z][A-Z0-9_]+$|topic)"))
+(call
+  function: (attribute attribute: (identifier) @_m)
+  arguments: (argument_list . (call function: [(identifier) (attribute)] @_t) @key . (_)? @handler)
+  (#match? @_m "^(on|subscribe|add_listener|add_handler)$")
+  (#match? @_t "topic$"))
+'''

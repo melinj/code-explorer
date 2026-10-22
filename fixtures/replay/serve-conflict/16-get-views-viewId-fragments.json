@@ -1,0 +1,26 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/fragments",
+ "query": {
+  "path": "engine.py"
+ },
+ "response": {
+  "chip": 8,
+  "fragments": [
+   {
+    "cluster": "c0",
+    "index": 1,
+    "rect": {
+     "h": 270.0,
+     "w": 630.0,
+     "x": 320.0,
+     "y": 2560.0
+    },
+    "window": "w9693b98bf584"
+   }
+  ],
+  "path": "engine.py"
+ },
+ "route": "GET /api/v1/views/:viewId/fragments",
+ "status": 200
+}

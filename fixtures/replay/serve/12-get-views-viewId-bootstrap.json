@@ -1,0 +1,397 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/bootstrap",
+ "response": {
+  "bundles": [
+   {
+    "from": "c0",
+    "kinds": {
+     "define": 1,
+     "deploy": 1
+    },
+    "to": "c2",
+    "weight": 2.0
+   },
+   {
+    "from": "c0",
+    "kinds": {
+     "deploy": 1
+    },
+    "to": "c3",
+    "weight": 1.0
+   },
+   {
+    "from": "c1",
+    "kinds": {
+     "define": 1
+    },
+    "to": "c2",
+    "weight": 1.0
+   },
+   {
+    "from": "c3",
+    "kinds": {
+     "call": 1
+    },
+    "to": "c2",
+    "weight": 1.0
+   }
+  ],
+  "churn": {
+   "bands": [
+    0.0999968,
+    0.199994,
+    0.199998,
+    0.300002
+   ],
+   "halfLifeDays": 90.0,
+   "head": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+   "oldest": "2026-01-01T00:00:00Z",
+   "scannedCommits": 6,
+   "settledMass": -0.0,
+   "stop": "history-exhausted"
+  },
+  "clusters": [
+   {
+    "conflicts": 0,
+    "conn": 4,
+    "heat": 4,
+    "id": "c0",
+    "label": "(root)",
+    "labelSource": "auto",
+    "lane": "infra",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 560.0,
+     "w": 700.0,
+     "x": 240.0,
+     "y": 2440.0
+    },
+    "windows": 2
+   },
+   {
+    "conflicts": 0,
+    "conn": 4,
+    "heat": 4,
+    "id": "c1",
+    "label": "(root)",
+    "labelSource": "auto",
+    "lane": "config",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 452.0,
+     "w": 700.0,
+     "x": 240.0,
+     "y": 5724.8
+    },
+    "windows": 2
+   },
+   {
+    "conflicts": 0,
+    "conn": 4,
+    "heat": 3,
+    "id": "c2",
+    "label": "src · shapes",
+    "labelSource": "auto",
+    "lane": "code",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 1442.0,
+     "w": 2320.0,
+     "x": 3562.16,
+     "y": 8892.96
+    },
+    "windows": 6
+   },
+   {
+    "conflicts": 0,
+    "conn": 0,
+    "heat": 4,
+    "id": "c3",
+    "label": "tests · test_shapes",
+    "labelSource": "auto",
+    "lane": "test",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 326.0,
+     "w": 700.0,
+     "x": 240.0,
+     "y": 13130.3
+    },
+    "windows": 1
+   },
+   {
+    "conflicts": 0,
+    "conn": 0,
+    "heat": 4,
+    "id": "c4",
+    "label": "(root)",
+    "labelSource": "auto",
+    "lane": "docs",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 470.0,
+     "w": 700.0,
+     "x": 240.0,
+     "y": 16162.4
+    },
+    "windows": 2
+   }
+  ],
+  "columns": [
+   {
+    "clusters": 4,
+    "heat": 4,
+    "w": 1722.16,
+    "x": 0.0
+   },
+   {
+    "clusters": 1,
+    "heat": 3,
+    "w": 2824.14,
+    "x": 3322.16
+   },
+   {
+    "clusters": 0,
+    "heat": 2,
+    "w": 0.0,
+    "x": 7746.3
+   },
+   {
+    "clusters": 0,
+    "heat": 1,
+    "w": 0.0,
+    "x": 7746.3
+   },
+   {
+    "clusters": 0,
+    "heat": 0,
+    "w": 0.0,
+    "x": 7746.3
+   }
+  ],
+  "heatLabels": [
+   "Frozen",
+   "Cool",
+   "Mild",
+   "Warm",
+   "Hot"
+  ],
+  "hubs": [
+   {
+    "anchors": [
+     [
+      860.0,
+      6087.8
+     ],
+     [
+      860.0,
+      2875.0
+     ],
+     [
+      3642.16,
+      9111.96
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 4,
+      "path": "src/helpers.py",
+      "window": "w520470537758"
+     }
+    ],
+    "display": "env:DB_URL",
+    "id": "env:DB_URL",
+    "key": "DB_URL",
+    "producers": [
+     {
+      "line": 1,
+      "path": ".env.example",
+      "window": "w8a97636e48ec"
+     },
+     {
+      "line": 2,
+      "path": "Dockerfile",
+      "window": "wa42f613539cd"
+     }
+    ],
+    "protocol": "env",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 1577.39,
+     "y": 7272.96
+    }
+   }
+  ],
+  "laneDefs": [
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "infra",
+    "label": "Infra",
+    "order": 0,
+    "texture": "hatch"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "config",
+    "label": "Config",
+    "order": 1,
+    "texture": "dots"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "code",
+    "label": "Code",
+    "order": 2,
+    "texture": "plain"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "test",
+    "label": "Tests",
+    "order": 3,
+    "texture": "lines"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "docs",
+    "label": "Docs",
+    "order": 4,
+    "texture": "cross"
+   }
+  ],
+  "lanes": [
+   {
+    "clusters": 1,
+    "files": 2,
+    "lane": "infra",
+    "rect": {
+     "h": 1884.8,
+     "w": 6146.3,
+     "x": 0.0,
+     "y": 1800.0
+    },
+    "rows": [
+     {
+      "conn": 4,
+      "h": 1084.8,
+      "y": 2200.0
+     }
+    ]
+   },
+   {
+    "clusters": 1,
+    "files": 2,
+    "lane": "config",
+    "rect": {
+     "h": 1768.16,
+     "w": 6146.3,
+     "x": 0.0,
+     "y": 5084.8
+    },
+    "rows": [
+     {
+      "conn": 4,
+      "h": 968.16,
+      "y": 5484.8
+     }
+    ]
+   },
+   {
+    "clusters": 1,
+    "files": 2,
+    "lane": "code",
+    "rect": {
+     "h": 2837.36,
+     "w": 6146.3,
+     "x": 0.0,
+     "y": 8252.96
+    },
+    "rows": [
+     {
+      "conn": 4,
+      "h": 2037.36,
+      "y": 8652.96
+     }
+    ]
+   },
+   {
+    "clusters": 1,
+    "files": 1,
+    "lane": "test",
+    "rect": {
+     "h": 1632.08,
+     "w": 6146.3,
+     "x": 0.0,
+     "y": 12490.3
+    },
+    "rows": [
+     {
+      "conn": 0,
+      "h": 832.08,
+      "y": 12890.3
+     }
+    ]
+   },
+   {
+    "clusters": 1,
+    "files": 2,
+    "lane": "docs",
+    "rect": {
+     "h": 1787.6,
+     "w": 6146.3,
+     "x": 0.0,
+     "y": 15522.4
+    },
+    "rows": [
+     {
+      "conn": 0,
+      "h": 987.6,
+      "y": 15922.4
+     }
+    ]
+   }
+  ],
+  "view": {
+   "id": "<id1>",
+   "layoutVersion": 1,
+   "resolved": {
+    "commits": [
+     "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+    ],
+    "head": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+    "op": "<volatile>"
+   },
+   "spec": {
+    "mode": "snapshot",
+    "rev": "@"
+   },
+   "stats": {
+    "clusters": 5,
+    "files": 9,
+    "windows": 13
+   },
+   "status": "ready",
+   "warnings": []
+  },
+  "world": {
+   "h": 17310.0,
+   "w": 6146.3,
+   "x": 0.0,
+   "y": 0.0
+  }
+ },
+ "route": "GET /api/v1/views/:viewId/bootstrap",
+ "status": 200
+}

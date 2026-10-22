@@ -1,0 +1,64 @@
+{
+ "body": {
+  "after": 3,
+  "before": 3
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id2>/windows/w85a48e7c7471/expand",
+ "response": {
+  "blob": "livebb2a01d6f238be8d",
+  "change": "opvrmxwvxuwuzrvsqptonyopknkuulyt",
+  "cluster": "c0",
+  "conn": {
+   "dependents2": 0,
+   "fanIn": 0,
+   "fanOut": 0,
+   "grade": 0,
+   "reach": 0,
+   "tests": 0
+  },
+  "counts": {
+   "conflicts": 0,
+   "openThreads": 0,
+   "ports": 0
+  },
+  "flags": {
+   "minimized": false,
+   "pinned": false,
+   "truncated": false,
+   "unsnapshotted": true
+  },
+  "heat": {
+   "ci": [
+    0.0945273,
+    0.90547
+   ],
+   "grade": 3,
+   "rate": 0.499996,
+   "settled": false,
+   "touches": 1
+  },
+  "id": "w85a48e7c7471",
+  "key": "settings.yaml#file",
+  "kind": "chunk",
+  "lane": "config",
+  "lang": "yaml",
+  "lines": {
+   "end": 1,
+   "fileLines": 1,
+   "start": 1
+  },
+  "path": "settings.yaml",
+  "rect": {
+   "h": 54.0,
+   "w": 540.0,
+   "x": 320.0,
+   "y": 2560.0
+  },
+  "rev": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+  "reviewFirst": false,
+  "risk": 0.0
+ },
+ "route": "POST /api/v1/views/:viewId/windows/:windowId/expand",
+ "status": 200
+}

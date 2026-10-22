@@ -1,0 +1,15 @@
+[package]
+name = "cv-spike"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+jj-lib = "=0.45"
+rusqlite = { version = "0.40", features = ["bundled"] }
+tree-sitter = "0.27"
+tree-sitter-python = "0.25"
+tree-sitter-typescript = "0.23"
+tree-sitter-rust = "0.24"
+tree-sitter-cpp = "0.23"
+pollster = "0.4"

@@ -1,0 +1,34 @@
+{
+ "method": "GET",
+ "path": "/api/v1/workspaces",
+ "response": [
+  {
+   "files": [
+    "engine.py",
+    "notes.py"
+   ],
+   "lastOp": {
+    "description": "new empty commit",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "default",
+   "overlaps": [],
+   "root": "<ROOT>",
+   "serving": true,
+   "stack": {
+    "changes": 6,
+    "conflicts": 3,
+    "files": 2,
+    "revset": "trunk()..default@"
+   },
+   "unsnapshottedFiles": 1,
+   "wc": {
+    "change": "wkzpyywqukmxooynuoxmylmmkktlumwq",
+    "commit": "a1056a0356d93a0916212ae8364516733aab5de5"
+   }
+  }
+ ],
+ "route": "GET /api/v1/workspaces",
+ "status": 200
+}

@@ -1,0 +1,75 @@
+<style>
+.wf-svg .v4-weak{opacity:.45}
+.wf-svg .v4-hub{fill:var(--bp-bg);stroke:var(--edge-config);stroke-width:1.5}
+.wf-svg .v4-def{fill:none;stroke:var(--edge-config);stroke-width:1.5}
+.wf-svg .v4-read{fill:none;stroke:var(--edge-config);stroke-width:2}
+.wf-svg .v4-tk{fill:var(--edge-config)}
+.wf-svg .v4-u{fill:none;stroke:var(--edge-config);stroke-width:1.25}
+</style>
+<figure class="wf" id="wf-config-fields"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 450" role="img" aria-labelledby="wf-config-fields-t"><title id="wf-config-fields-t">Config field usage: keys in a node.yaml file linked to the code that reads them, through a family hub, with scores and a faded low-confidence link</title>
+<defs>
+<pattern id="wf14-tx-config" width="10" height="10" patternUnits="userSpaceOnUse"><circle class="e-txd" cx="3" cy="3" r="1.2"/></pattern>
+<marker id="wf14-ag" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="v4-tk" d="M0 0L8 4L0 8z"/></marker>
+</defs>
+<text class="l b" x="16" y="28">Config field usage</text>
+<text class="s d end" x="1104" y="28">score = read kind + key rarity + proximity + loader mention · generic keys × 0.5</text>
+<rect class="e-band" x="16" y="42" width="1088" height="170"/>
+<rect x="96" y="42" width="1008" height="170" fill="url(#wf14-tx-config)"/>
+<rect class="e-rail" x="16" y="42" width="78" height="170"/>
+<text class="s b" x="26" y="62">Config</text>
+<rect class="pn" x="118" y="54" width="352" height="148" rx="4"/><rect class="h3" x="118" y="54" width="352" height="3"/>
+<rect class="g0" x="119" y="57" width="350" height="20"/>
+<text class="s m" x="126" y="71"><tspan class="d">nodes/tools/pdf_export/</tspan><tspan class="b">node.yaml</tspan></text>
+<text class="s m d end" x="150" y="96">9</text><text class="s m" x="160" y="96">inputs:</text>
+<text class="s m d end" x="150" y="114">10</text><text class="s m" x="174" y="114">- name: upload</text>
+<text class="s m d end" x="150" y="132">11</text><text class="s m" x="188" y="132">capacity: 4</text>
+<text class="s m d end" x="150" y="150">16</text><text class="s m" x="160" y="150">config:</text>
+<text class="s m d end" x="150" y="168">18</text><text class="s m" x="188" y="168">node_id: "12"</text>
+<text class="s m d end" x="150" y="186">21</text><text class="s m" x="160" y="186">trigger: on_upload</text>
+<rect class="pc" x="380" y="122" width="86" height="16" rx="8"/><text class="s m tc" x="386" y="134">→ 41 reads</text>
+<rect class="pc" x="380" y="158" width="86" height="16" rx="8"/><text class="s m tc" x="386" y="170">→ tool.py</text>
+<g class="v4-weak"><rect class="pc" x="380" y="176" width="86" height="16" rx="8"/><text class="s m tc" x="386" y="188">→ 1 read ?</text></g>
+<rect class="v4-hub" x="520" y="200" width="250" height="26" rx="13"/>
+<text class="s m mid" x="645" y="217">config:node.yaml#capacity · 237 files</text>
+<path class="v4-def" d="M466 130C500 130 500 213 518 213" marker-end="url(#wf14-ag)"/>
+<rect class="e-band" x="16" y="234" width="1088" height="200"/>
+<rect class="e-rail" x="16" y="234" width="78" height="200"/>
+<text class="s b" x="26" y="254">Code</text>
+<rect class="pn" x="560" y="252" width="300" height="70" rx="4"/><rect class="h2" x="560" y="252" width="300" height="3"/>
+<rect class="g0" x="561" y="255" width="298" height="20"/>
+<text class="s m" x="568" y="269"><tspan class="d">core/</tspan><tspan class="b">loader.py</tspan><tspan class="d"> · _parse_input</tspan></text>
+<text class="s m d end" x="598" y="298">838</text><text class="s m" x="606" y="298">item.get("capacity")</text>
+<line class="v4-u" x1="660" y1="302" x2="752" y2="302"/>
+<path class="v4-read" d="M645 226V250" marker-end="url(#wf14-ag)"/>
+<text class="s d" x="870" y="292">0.96 · access + loader</text><text class="s d" x="870" y="308">(mentions node.yaml)</text>
+<rect class="pn" x="118" y="330" width="352" height="88" rx="4"/><rect class="h3" x="118" y="330" width="352" height="3"/>
+<rect class="g0" x="119" y="333" width="350" height="20"/>
+<text class="s m" x="126" y="347"><tspan class="d">nodes/tools/pdf_export/</tspan><tspan class="b">tool.py</tspan></text>
+<text class="s m d end" x="156" y="378">383</text><text class="s m" x="164" y="378">node_id = entry["node_id"]</text>
+<line class="v4-u" x1="241" y1="382" x2="330" y2="382"/>
+<path class="v4-read" d="M472 166C520 166 520 374 474 374" marker-end="url(#wf14-ag)"/>
+<text class="s d" x="300" y="408">1.00 · access + same directory + rare key</text>
+<g class="v4-weak">
+<rect class="pn" x="880" y="340" width="216" height="72" rx="4"/><rect class="h1" x="880" y="340" width="216" height="3"/>
+<text class="s m b" x="888" y="358">audit_handlers.py</text>
+<text class="s m d end" x="916" y="388">130</text><text class="s m" x="922" y="388">get("trigger")</text>
+<path class="pd" d="M466 184C700 184 860 230 880 372"/>
+</g>
+<text class="s d" x="900" y="430">0.68 ? · generic key × 0.5</text>
+<g class="wf-callout" transform="translate(106 60)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(372 130)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(782 213)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(866 260)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(484 300)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(1100 330)"><circle r="9"/><text y="4">6</text></g>
+</svg></div>
+<figcaption><h4>Config field usage</h4>
+<p>Config files get their own lane, and every key line that code reads carries a port. The links come from a scored heuristic, not a parser of every loader, so their confidence is drawn: solid when the evidence is strong, faded with "?" when it is thin.</p>
+<ol class="wf-legend">
+<li><b>Config window</b> — one window per YAML, TOML or JSON file (or per top-level block in big ones); every key path is known with its line. <span class="ws l">L3</span> <code>ConfigKeyFact</code></li>
+<li><b>Field ports</b> — on each key line that has readers, with the reader count or the single reader's name. <span class="ws f">F3</span> <span class="ws p">P5</span></li>
+<li><b>Family hub</b> — one hub per file family and key: 237 <code>node.yaml</code> files define <code>capacity</code>, and the generic loader that reads it appears once, not 237 times. A hub with one definer and one reader is drawn as a direct edge. <span class="ws p">P5</span> <code>Hub.family</code></li>
+<li><b>Loader evidence</b> — code that mentions the config file's name or path gets a higher score for every key of that family. <span class="ws p">P5</span> <code>LinkContext.mentions</code></li>
+<li><b>Strong link</b> — an access with a string literal in the same directory, for a rare key: drawn solid. <span class="ws p">P5</span> <span class="ws f">F1</span> <code>Link.confidence</code></li>
+<li><b>Weak link</b> — generic keys score half, so <code>trigger</code> read in unrelated code stays faded with "?"; <code>rate_link</code> confirms or removes it. <span class="ws p">P5</span> <span class="ws">B9</span> <code>rate_link</code></li>
+</ol></figcaption></figure>

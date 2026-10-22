@@ -1,0 +1,27 @@
+{
+ "method": "GET",
+ "path": "/api/v1/search",
+ "query": {
+  "limit": 5,
+  "q": "speed",
+  "viewId": "<id1>"
+ },
+ "response": [
+  {
+   "detail": "engine.py:1",
+   "kind": "symbol",
+   "label": "speed",
+   "score": 1.0,
+   "target": {
+    "site": {
+     "line": 1,
+     "path": "engine.py",
+     "window": "w9693b98bf584"
+    },
+    "window": "w9693b98bf584"
+   }
+  }
+ ],
+ "route": "GET /api/v1/search",
+ "status": 200
+}

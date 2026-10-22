@@ -1,0 +1,134 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id4>/tiles/1/0/0",
+ "response": {
+  "edges": [
+   {
+    "a": [
+     950.0,
+     2605.0
+    ],
+    "b": [
+     320.0,
+     5559.32
+    ],
+    "confidence": 1.0,
+    "from": "w2d63ca59b09d",
+    "fromCluster": "c0",
+    "id": "<id3>",
+    "kind": "reference",
+    "to": "w9f2213a4350b",
+    "toCluster": "c1"
+   }
+  ],
+  "layoutVersion": 1,
+  "windows": [
+   {
+    "blob": "833a6efefbe0b8c569c9a8a80156ed27e3252b26",
+    "change": "nryzrrzmwvvwztsksvzmqxyxspmtruoy",
+    "cluster": "c0",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 0
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.0945273,
+      0.90547
+     ],
+     "grade": 3,
+     "rate": 0.499996,
+     "settled": false,
+     "touches": 1
+    },
+    "id": "w2d63ca59b09d",
+    "key": "settings.yaml#file",
+    "kind": "chunk",
+    "lane": "config",
+    "lang": "yaml",
+    "lines": {
+     "end": 1,
+     "fileLines": 1,
+     "start": 1
+    },
+    "path": "settings.yaml",
+    "rect": {
+     "h": 54.0,
+     "w": 540.0,
+     "x": 410.0,
+     "y": 2560.0
+    },
+    "rev": "de3b9164c85332d3573fdeb4996de7ddaed79e3a",
+    "reviewFirst": false,
+    "risk": 0.0
+   },
+   {
+    "blob": "c41d2ff5346d08c7035b726bfd3fc39e8476fc01",
+    "change": "nryzrrzmwvvwztsksvzmqxyxspmtruoy",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 0
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.342372,
+      1.0
+     ],
+     "grade": 4,
+     "rate": 1.0,
+     "settled": false,
+     "touches": 2
+    },
+    "id": "w9f2213a4350b",
+    "key": "app.py#file",
+    "kind": "chunk",
+    "lane": "code",
+    "lang": "python",
+    "lines": {
+     "end": 6,
+     "fileLines": 6,
+     "start": 1
+    },
+    "path": "app.py",
+    "rect": {
+     "h": 144.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 5514.32
+    },
+    "rev": "de3b9164c85332d3573fdeb4996de7ddaed79e3a",
+    "reviewFirst": true,
+    "risk": 0.707107
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/tiles/:z/:x/:y",
+ "status": 200
+}

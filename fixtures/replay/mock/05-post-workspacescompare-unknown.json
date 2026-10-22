@@ -1,0 +1,19 @@
+{
+ "body": {
+  "a": "default",
+  "b": "nope"
+ },
+ "expectStatus": 404,
+ "method": "POST",
+ "path": "/api/v1/workspaces:compare",
+ "response": {
+  "code": "not-found",
+  "error": {
+   "code": "not-found",
+   "message": "no workspace \"nope\"; GET /workspaces lists them"
+  },
+  "message": "no workspace \"nope\"; GET /workspaces lists them"
+ },
+ "route": "POST /api/v1/workspaces:compare",
+ "status": 404
+}

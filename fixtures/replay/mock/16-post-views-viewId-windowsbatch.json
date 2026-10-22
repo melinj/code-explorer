@@ -1,0 +1,335 @@
+{
+ "body": {
+  "ids": [
+   "w10",
+   "w11",
+   "w14",
+   "w15",
+   "w22",
+   "w24"
+  ],
+  "layoutVersion": 1,
+  "parts": [
+   "outline",
+   "diff"
+  ]
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id2>/windows:batch",
+ "response": {
+  "diffs": [],
+  "links": [
+   {
+    "confidence": 0.5,
+    "from": {
+     "line": 8,
+     "path": "deploy/plan_6.sh",
+     "window": "w11"
+    },
+    "id": "dyn-w11",
+    "kind": "publish",
+    "label": "⇢ ? world.*.district",
+    "provenance": "tree-sitter",
+    "to": {
+     "dynamic": {
+      "hint": "f\"world.{district_kind}.district\"",
+      "partial": "world.*.district",
+      "protocol": "bus"
+     }
+    }
+   },
+   {
+    "confidence": 0.9,
+    "from": {
+     "line": 202,
+     "path": "deploy/camera_4.sh",
+     "window": "w6"
+    },
+    "id": "l11",
+    "kind": "call",
+    "label": "← Item",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 319,
+     "path": "deploy/plan_6.sh",
+     "window": "w14"
+    }
+   },
+   {
+    "confidence": 0.9,
+    "from": {
+     "line": 16,
+     "path": "deploy/signal_5.sh",
+     "window": "w10"
+    },
+    "id": "l17",
+    "kind": "call",
+    "label": "→ client_edge",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 214,
+     "path": "src/config/camera/parse_672.py",
+     "window": "w914"
+    }
+   },
+   {
+    "confidence": 0.9,
+    "from": {
+     "line": 51,
+     "path": "deploy/plan_6.sh",
+     "window": "w11"
+    },
+    "id": "l18",
+    "kind": "call",
+    "label": "→ spawn_graph",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 373,
+     "path": "deploy/market_8.sh",
+     "window": "w22"
+    }
+   },
+   {
+    "confidence": 0.9,
+    "from": {
+     "line": 125,
+     "path": "deploy/plan_6.sh",
+     "window": "w11"
+    },
+    "id": "l19",
+    "kind": "publish",
+    "label": "→ agent_server",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 2,
+     "path": "deploy/tick_10.sh",
+     "window": "w24"
+    }
+   },
+   {
+    "confidence": 0.9,
+    "from": {
+     "line": 91,
+     "path": "deploy/plan_6.sh",
+     "window": "w11"
+    },
+    "id": "l20",
+    "kind": "call",
+    "label": "→ spawn_graph",
+    "provenance": "tree-sitter",
+    "to": {
+     "line": 373,
+     "path": "deploy/market_8.sh",
+     "window": "w22"
+    }
+   }
+  ],
+  "missing": [],
+  "outlines": [
+   {
+    "headings": [],
+    "id": "w10",
+    "ports": [
+     {
+      "id": "out17",
+      "kind": "call",
+      "label": "→ client_edge",
+      "line": 16,
+      "links": [
+       "l17"
+      ],
+      "side": "out"
+     }
+    ],
+    "silhouette": "Ag4MAAAPAgYMBAYMBgsMBhACBhYCBhUCAAAPBgoDBgYMCBICCBRCCAoMCAoMCAsMCAsMCBICCAwMAAAPCBQCCAwMCBICCAwMCAwMCAgCCAYDCA4MCAoMAAAPCAkCCBQCCAcCCAkCCAsMCAsMCAkDCAsMCAkDCAUD"
+   },
+   {
+    "headings": [],
+    "id": "w11",
+    "ports": [
+     {
+      "id": "out18",
+      "kind": "call",
+      "label": "→ spawn_graph",
+      "line": 51,
+      "links": [
+       "l18"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "out19",
+      "kind": "publish",
+      "label": "→ agent_server",
+      "line": 125,
+      "links": [
+       "l19"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "out20",
+      "kind": "call",
+      "label": "→ spawn_graph",
+      "line": 91,
+      "links": [
+       "l20"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "in26",
+      "kind": "call",
+      "label": "← config_parse",
+      "line": 6,
+      "links": [
+       "l26"
+      ],
+      "side": "in"
+     },
+     {
+      "id": "dyn-w11",
+      "kind": "publish",
+      "label": "⇢ ? world.*.district",
+      "line": 8,
+      "links": [
+       "dyn-w11"
+      ],
+      "side": "out"
+     }
+    ],
+    "silhouette": "AglMBAoMBAtMBAwMAAAPBAgDBA4MBAkMBg4MBhICBhMCBgwMBhICBhUCBgkEBgYCBgUMCAsMCAkECAoMCAsMCAoMCAoMCBQCCAcDCAYDCA0MCA0MCAsMCAoMCAkDCAsMCBECCAYCBhICBhUCBhQCBgcCBgcCBAcC"
+   },
+   {
+    "headings": [],
+    "id": "w14",
+    "ports": [
+     {
+      "id": "out22",
+      "kind": "call",
+      "label": "→ spawn_graph",
+      "line": 322,
+      "links": [
+       "l22"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "in11",
+      "kind": "call",
+      "label": "← Item",
+      "line": 319,
+      "links": [
+       "l11"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "CA1MCAcCBgoCBAlDBAgMBgQMCAoDCAoMCAsMCAkCCBQCCAcDCBQCCAYDCBUCCBUCCAkM"
+   },
+   {
+    "headings": [],
+    "id": "w15",
+    "ports": [
+     {
+      "id": "in21",
+      "kind": "call",
+      "label": "← job_worker",
+      "line": 346,
+      "links": [
+       "l21"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "CA1MAAAPCAoMCBYCCAgCCAwMCBMCCAoMCAwMCAsMAAAPCBICCAkMCAUC"
+   },
+   {
+    "headings": [],
+    "id": "w22",
+    "ports": [
+     {
+      "id": "out23",
+      "kind": "call",
+      "label": "→ Market",
+      "line": 382,
+      "links": [
+       "l23"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "in18",
+      "kind": "call",
+      "label": "← cache_signal",
+      "line": 373,
+      "links": [
+       "l18"
+      ],
+      "side": "in"
+     },
+     {
+      "id": "in20",
+      "kind": "call",
+      "label": "← cache_signal",
+      "line": 373,
+      "links": [
+       "l20"
+      ],
+      "side": "in"
+     },
+     {
+      "id": "in22",
+      "kind": "call",
+      "label": "← turn_client",
+      "line": 373,
+      "links": [
+       "l22"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "CAxMCAcCBgcCBgwMBhMCBgoMBgcCBgoCBAkMBApMBAsMBAwMBAgCAgwMAgYCAAoMAAcCABICAAcDAAQMAgsMAhQCAg0MAgcCAgcCAA0MAAcMAgYCAAAPAggMBAkCAgQMBAcCAAAPBBMCBBYCBBQCBAkEBAUMAAAP"
+   },
+   {
+    "headings": [],
+    "id": "w24",
+    "ports": [
+     {
+      "id": "out33",
+      "kind": "call",
+      "label": "→ session_prompt",
+      "line": 16,
+      "links": [
+       "l33"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "out34",
+      "kind": "call",
+      "label": "→ item_spawn",
+      "line": 18,
+      "links": [
+       "l34"
+      ],
+      "side": "out"
+     },
+     {
+      "id": "in19",
+      "kind": "publish",
+      "label": "← cache_signal",
+      "line": 2,
+      "links": [
+       "l19"
+      ],
+      "side": "in"
+     }
+    ],
+    "silhouette": "ABhCAAsMAAYMAgsMAggMBAUMBhMCBhICBgcCAAAPBgsMBhUCBhYCBg8CBgdCBBICBAxMBBQCBAcCAhACAhEC"
+   }
+  ]
+ },
+ "route": "POST /api/v1/views/:viewId/windows:batch",
+ "status": 200
+}

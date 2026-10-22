@@ -1,0 +1,28 @@
+{
+ "body": {
+  "verdict": "confirmed",
+  "viewId": "<id4>"
+ },
+ "method": "POST",
+ "path": "/api/v1/links/<id3>/rate",
+ "response": {
+  "confidence": 1.0,
+  "feedback": "confirmed",
+  "from": {
+   "line": 1,
+   "path": "settings.yaml",
+   "window": "w2d63ca59b09d"
+  },
+  "id": "<id3>",
+  "kind": "reference",
+  "label": "replay",
+  "provenance": "human",
+  "to": {
+   "line": 1,
+   "path": "app.py",
+   "window": "w9f2213a4350b"
+  }
+ },
+ "route": "POST /api/v1/links/:linkId/rate",
+ "status": 200
+}

@@ -1,0 +1,16 @@
+{
+ "method": "GET",
+ "path": "/api/v1/ws",
+ "response": {
+  "event": {
+   "cursor": "<volatile>",
+   "op": "<volatile>",
+   "serverVersion": "cv-mock",
+   "session": "<volatile>",
+   "type": "hello"
+  },
+  "seq": "<volatile>"
+ },
+ "route": "WS /api/v1/ws",
+ "status": 101
+}

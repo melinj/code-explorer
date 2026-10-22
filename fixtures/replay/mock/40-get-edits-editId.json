@@ -1,0 +1,26 @@
+{
+ "method": "GET",
+ "path": "/api/v1/edits/e153",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "id": "e153",
+  "predicted": true,
+  "rewritten": [
+   "pprklvvmkwulvnstlwqqwmqqvopxprou"
+  ],
+  "status": "previewed",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": true,
+    "updated": true
+   }
+  ]
+ },
+ "route": "GET /api/v1/edits/:editId",
+ "status": 200
+}

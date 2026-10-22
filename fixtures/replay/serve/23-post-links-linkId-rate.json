@@ -1,0 +1,28 @@
+{
+ "body": {
+  "verdict": "confirmed",
+  "viewId": "<id1>"
+ },
+ "method": "POST",
+ "path": "/api/v1/links/l2/rate",
+ "response": {
+  "confidence": 0.85,
+  "feedback": "confirmed",
+  "from": {
+   "line": 7,
+   "path": ".github/workflows/ci.yml",
+   "window": "w18c6bc35815c"
+  },
+  "id": "l2",
+  "kind": "deploy",
+  "label": "⇢ pytest tests",
+  "provenance": "rule:ci.run",
+  "to": {
+   "line": 1,
+   "path": "tests/test_shapes.py",
+   "window": "wa4dc73c0f459"
+  }
+ },
+ "route": "POST /api/v1/links/:linkId/rate",
+ "status": 200
+}

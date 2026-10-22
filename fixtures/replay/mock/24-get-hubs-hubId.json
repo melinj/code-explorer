@@ -1,0 +1,45 @@
+{
+ "method": "GET",
+ "path": "/api/v1/hubs/bus%3Aworld.district.moved",
+ "query": {
+  "viewId": "<id2>"
+ },
+ "response": {
+  "anchors": [
+   [
+    950.0,
+    66699.0
+   ],
+   [
+    1450.0,
+    68013.0
+   ]
+  ],
+  "consumers": [
+   {
+    "line": 91,
+    "path": "src/edge/district/entity_236.py",
+    "window": "w299"
+   }
+  ],
+  "display": "world.district.moved",
+  "id": "bus:world.district.moved",
+  "key": "world.district.moved",
+  "producers": [
+   {
+    "line": 20,
+    "path": "src/edge/district/node_229.py",
+    "window": "w290"
+   }
+  ],
+  "protocol": "bus",
+  "rect": {
+   "h": 240.0,
+   "w": 240.0,
+   "x": 0.0,
+   "y": 64930.0
+  }
+ },
+ "route": "GET /api/v1/hubs/:hubId",
+ "status": 200
+}

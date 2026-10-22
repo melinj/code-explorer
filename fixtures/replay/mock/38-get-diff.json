@@ -1,0 +1,50 @@
+{
+ "method": "GET",
+ "path": "/api/v1/diff",
+ "query": {
+  "from": "trunk()",
+  "to": "@"
+ },
+ "response": {
+  "files": [
+   {
+    "hunks": [
+     {
+      "lines": [
+       {
+        "kind": "ctx",
+        "newLine": 3,
+        "oldLine": 3,
+        "text": "    let n = items.len();"
+       },
+       {
+        "kind": "del",
+        "oldLine": 4,
+        "text": "    let limit = 10;"
+       },
+       {
+        "kind": "add",
+        "newLine": 4,
+        "text": "    let limit = 20;"
+       }
+      ],
+      "new": [
+       3,
+       2
+      ],
+      "old": [
+       3,
+       2
+      ]
+     }
+    ],
+    "path": "src/scene/graph/worker_801.py",
+    "status": "modified"
+   }
+  ],
+  "from": "trunk()",
+  "to": "@"
+ },
+ "route": "GET /api/v1/diff",
+ "status": 200
+}

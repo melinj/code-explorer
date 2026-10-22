@@ -1,0 +1,764 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/bootstrap",
+ "response": {
+  "bundles": [
+   {
+    "from": "c0",
+    "kinds": {
+     "call": 1
+    },
+    "to": "c1",
+    "weight": 1.0
+   },
+   {
+    "from": "c0",
+    "kinds": {
+     "call": 1
+    },
+    "to": "c30",
+    "weight": 1.0
+   },
+   {
+    "from": "c1",
+    "kinds": {
+     "call": 1
+    },
+    "to": "c2",
+    "weight": 1.0
+   },
+   {
+    "from": "c1",
+    "kinds": {
+     "publish": 1
+    },
+    "to": "c3",
+    "weight": 1.0
+   },
+   {
+    "from": "c1",
+    "kinds": {
+     "call": 1
+    },
+    "to": "c74",
+    "weight": 1.0
+   },
+   {
+    "from": "c10",
+    "kinds": {
+     "call": 2
+    },
+    "to": "c11",
+    "weight": 2.0
+   }
+  ],
+  "clusters": [
+   {
+    "conflicts": 0,
+    "conn": 1,
+    "heat": 1,
+    "id": "c0",
+    "label": "entity · market",
+    "labelSource": "auto",
+    "lane": "infra",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 8804.0,
+     "w": 2010.0,
+     "x": 33024.1,
+     "y": 14862.0
+    },
+    "windows": 10
+   },
+   {
+    "conflicts": 0,
+    "conn": 3,
+    "heat": 4,
+    "id": "c1",
+    "label": "loader · player",
+    "labelSource": "auto",
+    "lane": "infra",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 6050.0,
+     "w": 2100.0,
+     "x": 240.0,
+     "y": 2440.0
+    },
+    "windows": 7
+   },
+   {
+    "conflicts": 0,
+    "conn": 2,
+    "heat": 2,
+    "id": "c2",
+    "label": "zone · entity",
+    "labelSource": "auto",
+    "lane": "infra",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 4412.0,
+     "w": 2100.0,
+     "x": 14447.4,
+     "y": 9470.0
+    },
+    "windows": 7
+   },
+   {
+    "conflicts": 0,
+    "conn": 3,
+    "heat": 4,
+    "id": "c3",
+    "label": "trade · schema",
+    "labelSource": "auto",
+    "lane": "infra",
+    "openThreads": 2,
+    "pinned": false,
+    "rect": {
+     "h": 4196.0,
+     "w": 2010.0,
+     "x": 2500.0,
+     "y": 2440.0
+    },
+    "windows": 6
+   },
+   {
+    "conflicts": 0,
+    "conn": 1,
+    "heat": 0,
+    "id": "c4",
+    "label": "signal · edge",
+    "labelSource": "auto",
+    "lane": "config",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 2936.0,
+     "w": 1830.0,
+     "x": 65512.1,
+     "y": 53412.0
+    },
+    "windows": 3
+   },
+   {
+    "conflicts": 0,
+    "conn": 3,
+    "heat": 1,
+    "id": "c5",
+    "label": "turn · market",
+    "labelSource": "auto",
+    "lane": "config",
+    "openThreads": 5,
+    "pinned": false,
+    "rect": {
+     "h": 8948.0,
+     "w": 2960.0,
+     "x": 33024.1,
+     "y": 33898.0
+    },
+    "windows": 11
+   }
+  ],
+  "columns": [
+   {
+    "clusters": 9,
+    "heat": 4,
+    "w": 4841.64,
+    "x": 0.0
+   },
+   {
+    "clusters": 10,
+    "heat": 3,
+    "w": 6165.75,
+    "x": 6441.64
+   },
+   {
+    "clusters": 29,
+    "heat": 2,
+    "w": 16976.7,
+    "x": 14207.4
+   },
+   {
+    "clusters": 39,
+    "heat": 1,
+    "w": 22208.0,
+    "x": 32784.1
+   },
+   {
+    "clusters": 75,
+    "heat": 0,
+    "w": 40415.7,
+    "x": 56592.1
+   }
+  ],
+  "heatLabels": [
+   "Frozen",
+   "Cool",
+   "Mild",
+   "Warm",
+   "Hot"
+  ],
+  "hubs": [
+   {
+    "anchors": [
+     [
+      950.0,
+      66699.0
+     ],
+     [
+      1450.0,
+      68013.0
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 91,
+      "path": "src/edge/district/entity_236.py",
+      "window": "w299"
+     }
+    ],
+    "display": "world.district.moved",
+    "id": "bus:world.district.moved",
+    "key": "world.district.moved",
+    "producers": [
+     {
+      "line": 20,
+      "path": "src/edge/district/node_229.py",
+      "window": "w290"
+     }
+    ],
+    "protocol": "bus",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 0.0,
+     "y": 64930.0
+    }
+   },
+   {
+    "anchors": [
+     [
+      9561.64,
+      67815.0
+     ],
+     [
+      8521.64,
+      66897.0
+     ],
+     [
+      6761.64,
+      67149.0
+     ],
+     [
+      6761.64,
+      70425.0
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 38,
+      "path": "src/event/theme/zone_313.py",
+      "window": "w406"
+     },
+     {
+      "line": 74,
+      "path": "src/event/theme/route_314.py",
+      "window": "w409"
+     }
+    ],
+    "display": "event.config.built",
+    "id": "bus:event.config.built",
+    "key": "event.config.built",
+    "producers": [
+     {
+      "line": 78,
+      "path": "src/event/theme/sync_317.py",
+      "window": "w414"
+     },
+     {
+      "line": 112,
+      "path": "src/event/theme/route_314.py",
+      "window": "w410"
+     }
+    ],
+    "protocol": "bus",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 8722.97,
+     "y": 64930.0
+    }
+   },
+   {
+    "anchors": [
+     [
+      33824.1,
+      66663.0
+     ],
+     [
+      33914.1,
+      67221.0
+     ],
+     [
+      33824.1,
+      68463.0
+     ],
+     [
+      35364.1,
+      67203.0
+     ],
+     [
+      35364.1,
+      68679.0
+     ],
+     [
+      34234.1,
+      75249.0
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 14,
+      "path": "src/render/store/server_791.py",
+      "window": "w1086"
+     },
+     {
+      "line": 388,
+      "path": "src/prompt/tick/signal_649.py",
+      "window": "w879"
+     },
+     {
+      "line": 71,
+      "path": "src/render/store/loader_789.py",
+      "window": "w1083"
+     }
+    ],
+    "display": "map.tick.changed",
+    "id": "bus:map.tick.changed",
+    "key": "map.tick.changed",
+    "producers": [
+     {
+      "line": 19,
+      "path": "src/render/store/movement_783.py",
+      "window": "w1077"
+     },
+     {
+      "line": 19,
+      "path": "src/render/store/render_784.py",
+      "window": "w1078"
+     },
+     {
+      "line": 45,
+      "path": "src/render/store/world_785.py",
+      "window": "w1079"
+     }
+    ],
+    "protocol": "bus",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 26770.2,
+     "y": 64930.0
+    }
+   },
+   {
+    "anchors": [
+     [
+      36174.1,
+      66663.0
+     ],
+     [
+      33104.1,
+      68463.0
+     ],
+     [
+      34234.1,
+      75249.0
+     ],
+     [
+      35184.1,
+      98039.0
+     ],
+     [
+      36314.1,
+      97913.0
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 45,
+      "path": "src/render/store/world_785.py",
+      "window": "w1079"
+     },
+     {
+      "line": 71,
+      "path": "src/render/store/loader_789.py",
+      "window": "w1083"
+     },
+     {
+      "line": 32,
+      "path": "src/sync/cache/turn_714.py",
+      "window": "w972"
+     },
+     {
+      "line": 25,
+      "path": "src/index/worker/queue_532.py",
+      "window": "w720"
+     }
+    ],
+    "display": "district.client.ready",
+    "id": "bus:district.client.ready",
+    "key": "district.client.ready",
+    "producers": [
+     {
+      "line": 105,
+      "path": "src/render/store/plan_790.py",
+      "window": "w1085"
+     }
+    ],
+    "protocol": "bus",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 35227.0,
+     "y": 64930.0
+    }
+   },
+   {
+    "anchors": [
+     [
+      73952.1,
+      80263.0
+     ],
+     [
+      74042.1,
+      80659.0
+     ],
+     [
+      71062.1,
+      81091.0
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 14,
+      "path": "src/camera/route/node_817.py",
+      "window": "w1121"
+     }
+    ],
+    "display": "agent.entity.moved",
+    "id": "bus:agent.entity.moved",
+    "key": "agent.entity.moved",
+    "producers": [
+     {
+      "line": 13,
+      "path": "src/store/signal/camera_516.py",
+      "window": "w692"
+     },
+     {
+      "line": 52,
+      "path": "src/store/signal/camera_516.py",
+      "window": "w693"
+     }
+    ],
+    "protocol": "bus",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 75991.7,
+     "y": 64930.0
+    }
+   },
+   {
+    "anchors": [
+     [
+      4430.0,
+      66573.0
+     ],
+     [
+      4520.0,
+      66969.0
+     ],
+     [
+      4430.0,
+      67815.0
+     ],
+     [
+      2580.0,
+      69381.0
+     ],
+     [
+      2580.0,
+      71685.0
+     ]
+    ],
+    "consumers": [
+     {
+      "line": 47,
+      "path": "src/edge/district/token_243.py",
+      "window": "w308"
+     },
+     {
+      "line": 53,
+      "path": "src/edge/district/client_244.py",
+      "window": "w309"
+     }
+    ],
+    "display": "turn.spawn.built",
+    "id": "bus:turn.spawn.built",
+    "key": "turn.spawn.built",
+    "producers": [
+     {
+      "line": 7,
+      "path": "src/edge/district/session_247.py",
+      "window": "w312"
+     },
+     {
+      "line": 21,
+      "path": "src/edge/district/plan_248.py",
+      "window": "w313"
+     },
+     {
+      "line": 20,
+      "path": "src/edge/district/trade_249.py",
+      "window": "w314"
+     }
+    ],
+    "protocol": "bus",
+    "rect": {
+     "h": 240.0,
+     "w": 240.0,
+     "x": 4115.4,
+     "y": 64930.0
+    }
+   }
+  ],
+  "laneDefs": [
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "infra",
+    "label": "Infra",
+    "order": 0,
+    "texture": "hatch"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "config",
+    "label": "Config",
+    "order": 1,
+    "texture": "dots"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "code",
+    "label": "Code",
+    "order": 2,
+    "texture": "plain"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "test",
+    "label": "Tests",
+    "order": 3,
+    "texture": "lines"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "docs",
+    "label": "Docs",
+    "order": 4,
+    "texture": "cross"
+   }
+  ],
+  "lanes": [
+   {
+    "clusters": 4,
+    "files": 16,
+    "lane": "infra",
+    "rect": {
+     "h": 22506.0,
+     "w": 97007.8,
+     "x": 0.0,
+     "y": 1800.0
+    },
+    "rows": [
+     {
+      "conn": 3,
+      "h": 6530.0,
+      "y": 2200.0
+     },
+     {
+      "conn": 2,
+      "h": 4892.0,
+      "y": 9230.0
+     },
+     {
+      "conn": 1,
+      "h": 9284.0,
+      "y": 14622.0
+     }
+    ]
+   },
+   {
+    "clusters": 25,
+    "files": 213,
+    "lane": "config",
+    "rect": {
+     "h": 38644.0,
+     "w": 97007.8,
+     "x": 0.0,
+     "y": 25706.0
+    },
+    "rows": [
+     {
+      "conn": 4,
+      "h": 7052.0,
+      "y": 26106.0
+     },
+     {
+      "conn": 3,
+      "h": 9428.0,
+      "y": 33658.0
+     },
+     {
+      "conn": 2,
+      "h": 9086.0,
+      "y": 43586.0
+     },
+     {
+      "conn": 1,
+      "h": 10778.0,
+      "y": 53172.0
+     }
+    ]
+   },
+   {
+    "clusters": 76,
+    "files": 676,
+    "lane": "code",
+    "rect": {
+     "h": 88550.0,
+     "w": 97007.8,
+     "x": 0.0,
+     "y": 65750.0
+    },
+    "rows": [
+     {
+      "conn": 4,
+      "h": 13172.0,
+      "y": 66150.0
+     },
+     {
+      "conn": 3,
+      "h": 16448.0,
+      "y": 79822.0
+     },
+     {
+      "conn": 2,
+      "h": 21038.0,
+      "y": 96770.0
+     },
+     {
+      "conn": 1,
+      "h": 23846.0,
+      "y": 118308.0
+     },
+     {
+      "conn": 0,
+      "h": 11246.0,
+      "y": 142654.0
+     }
+    ]
+   },
+   {
+    "clusters": 48,
+    "files": 499,
+    "lane": "test",
+    "rect": {
+     "h": 50802.0,
+     "w": 97007.8,
+     "x": 0.0,
+     "y": 155700.0
+    },
+    "rows": [
+     {
+      "conn": 2,
+      "h": 15728.0,
+      "y": 156100.0
+     },
+     {
+      "conn": 1,
+      "h": 20552.0,
+      "y": 172328.0
+     },
+     {
+      "conn": 0,
+      "h": 12722.0,
+      "y": 193380.0
+     }
+    ]
+   },
+   {
+    "clusters": 9,
+    "files": 74,
+    "lane": "docs",
+    "rect": {
+     "h": 23378.0,
+     "w": 97007.8,
+     "x": 0.0,
+     "y": 207902.0
+    },
+    "rows": [
+     {
+      "conn": 1,
+      "h": 10328.0,
+      "y": 208302.0
+     },
+     {
+      "conn": 0,
+      "h": 11750.0,
+      "y": 219130.0
+     }
+    ]
+   }
+  ],
+  "view": {
+   "id": "<id2>",
+   "layoutVersion": 1,
+   "resolved": {
+    "commits": [
+     "c0ffee"
+    ],
+    "head": "c0ffee",
+    "op": "<volatile>"
+   },
+   "spec": {
+    "mode": "snapshot",
+    "rev": "@"
+   },
+   "stats": {
+    "clusters": 162,
+    "files": 1478,
+    "windows": 2000
+   },
+   "status": "ready",
+   "warnings": []
+  },
+  "world": {
+   "h": 231280.0,
+   "w": 97007.8,
+   "x": 0.0,
+   "y": 0.0
+  }
+ },
+ "route": "GET /api/v1/views/:viewId/bootstrap",
+ "status": 200
+}

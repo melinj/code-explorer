@@ -1,0 +1,35 @@
+{
+ "method": "POST",
+ "path": "/api/v1/edits/<id7>/undo",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "files": [
+   {
+    "newBlob": "e6baa630cf8e426a190ccc6926c75968b839ea20",
+    "path": "config/app.yaml"
+   }
+  ],
+  "id": "<id7>",
+  "opAfter": "<volatile>",
+  "opBefore": "<volatile>",
+  "predicted": false,
+  "rewritten": [
+   "pqkwwwtswwsyxutrtsvqkuzyorxzstop",
+   "muoulswlvsusqsxtvvzmupplskxxxpvr"
+  ],
+  "status": "undone",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": true,
+    "updated": true
+   }
+  ]
+ },
+ "route": "POST /api/v1/edits/:editId/undo",
+ "status": 200
+}

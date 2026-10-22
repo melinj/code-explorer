@@ -1,0 +1,68 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id4>/metrics",
+ "query": {
+  "level": "file"
+ },
+ "response": {
+  "cochange": [],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.342372,
+      1.0
+     ],
+     "grade": 4,
+     "rate": 1.0,
+     "settled": false,
+     "touches": 2
+    },
+    "heatPct": 0.75,
+    "key": "app.py#file",
+    "label": "app.py",
+    "lane": "code",
+    "risk": 0.612372,
+    "window": "w9f2213a4350b"
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.5,
+    "heat": {
+     "ci": [
+      0.0945273,
+      0.90547
+     ],
+     "grade": 3,
+     "rate": 0.499996,
+     "settled": false,
+     "touches": 1
+    },
+    "heatPct": 0.25,
+    "key": "settings.yaml#file",
+    "label": "settings.yaml",
+    "lane": "config",
+    "risk": 0.353553,
+    "window": "w2d63ca59b09d"
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

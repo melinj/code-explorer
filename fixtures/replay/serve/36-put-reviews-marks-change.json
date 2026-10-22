@@ -1,0 +1,16 @@
+{
+ "body": {
+  "commit": "6f6464936dd64ee833c43cb87e976a463073bc4a"
+ },
+ "method": "PUT",
+ "path": "/api/v1/reviews/marks/movzpqyzyppxxytnosmllumqklzlksxt",
+ "response": {
+  "change": "movzpqyzyppxxytnosmllumqklzlksxt",
+  "changedSinceReview": false,
+  "openThreads": 1,
+  "reviewedAt": "6f6464936dd64ee833c43cb87e976a463073bc4a",
+  "touchedByAgent": false
+ },
+ "route": "PUT /api/v1/reviews/marks/:change",
+ "status": 200
+}

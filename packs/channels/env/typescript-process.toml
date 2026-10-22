@@ -1,0 +1,21 @@
+# Env readers in TypeScript / JavaScript (pack P3): process.env.X, process.env["X"], import.meta.env.X.
+
+[[endpoints]]
+id = "typescript.process.env"
+lang = "typescript"
+role = "read"
+hints = [".env"]
+query = '''
+(member_expression
+  object: (member_expression object: (identifier) @_p property: (property_identifier) @_e)
+  property: (property_identifier) @name
+  (#eq? @_p "process") (#eq? @_e "env"))
+(subscript_expression
+  object: (member_expression object: (identifier) @_p property: (property_identifier) @_e)
+  index: (_) @key
+  (#eq? @_p "process") (#eq? @_e "env"))
+(member_expression
+  object: (member_expression object: (_) @_m property: (property_identifier) @_e)
+  property: (property_identifier) @name
+  (#eq? @_e "env") (#match? @_m "^import\\.meta$"))
+'''

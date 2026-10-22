@@ -1,0 +1,506 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/tiles/6/0/0",
+ "response": {
+  "edges": [
+   {
+    "a": [
+     34954.1,
+     17709.0
+    ],
+    "b": [
+     1450.0,
+     2605.0
+    ],
+    "confidence": 0.9,
+    "from": "w6",
+    "fromCluster": "c0",
+    "id": "l11",
+    "kind": "call",
+    "to": "w14",
+    "toCluster": "c1"
+   },
+   {
+    "a": [
+     950.0,
+     2821.0
+    ],
+    "b": [
+     10061.6,
+     100145.0
+    ],
+    "confidence": 0.9,
+    "from": "w10",
+    "fromCluster": "c1",
+    "id": "l17",
+    "kind": "call",
+    "to": "w914",
+    "toCluster": "c74"
+   },
+   {
+    "a": [
+     950.0,
+     4423.0
+    ],
+    "b": [
+     1450.0,
+     3415.0
+    ],
+    "confidence": 0.9,
+    "from": "w11",
+    "fromCluster": "c1",
+    "id": "l18",
+    "kind": "call",
+    "to": "w22",
+    "toCluster": "c1"
+   },
+   {
+    "a": [
+     950.0,
+     5755.0
+    ],
+    "b": [
+     2580.0,
+     2605.0
+    ],
+    "confidence": 0.9,
+    "from": "w11",
+    "fromCluster": "c1",
+    "id": "l19",
+    "kind": "publish",
+    "to": "w24",
+    "toCluster": "c3"
+   },
+   {
+    "a": [
+     950.0,
+     5143.0
+    ],
+    "b": [
+     1450.0,
+     3415.0
+    ],
+    "confidence": 0.9,
+    "from": "w11",
+    "fromCluster": "c1",
+    "id": "l20",
+    "kind": "call",
+    "to": "w22",
+    "toCluster": "c1"
+   },
+   {
+    "a": [
+     1130.0,
+     7645.0
+    ],
+    "b": [
+     1450.0,
+     3037.0
+    ],
+    "confidence": 0.9,
+    "from": "w13",
+    "fromCluster": "c1",
+    "id": "l21",
+    "kind": "call",
+    "to": "w15",
+    "toCluster": "c1"
+   }
+  ],
+  "layoutVersion": 1,
+  "windows": [
+   {
+    "blob": "b1e8b68fb0d8e4b9c",
+    "change": "kxwqmnpo",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 24,
+     "fanIn": 8,
+     "fanOut": 10,
+     "grade": 3,
+     "reach": 72,
+     "tests": 3
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 1
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.0654763,
+      0.121599
+     ],
+     "grade": 4,
+     "rate": 0.0935375,
+     "settled": true,
+     "touches": 37
+    },
+    "id": "w10",
+    "key": "deploy/signal_5.sh#prompt_trade",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 52,
+     "fileLines": 71,
+     "start": 4
+    },
+    "path": "deploy/signal_5.sh",
+    "rect": {
+     "h": 918.0,
+     "w": 630.0,
+     "x": 320.0,
+     "y": 2560.0
+    },
+    "rev": "c0ffee",
+    "reviewFirst": false,
+    "risk": 0.887572,
+    "symbol": {
+     "kind": "function",
+     "name": "prompt_trade",
+     "qualname": "prompt_trade"
+    }
+   },
+   {
+    "blob": "ba718b5937468a392",
+    "change": "kxwqmnpo",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 36,
+     "fanIn": 12,
+     "fanOut": 7,
+     "grade": 3,
+     "reach": 108,
+     "tests": 3
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 4
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "fragment": {
+     "chip": 8,
+     "index": 1,
+     "of": 5,
+     "siblings": [
+      "w11",
+      "w12",
+      "w13",
+      "w14",
+      "w15"
+     ]
+    },
+    "heat": {
+     "ci": [
+      0.0584811,
+      0.108608
+     ],
+     "grade": 4,
+     "rate": 0.0835444,
+     "settled": false,
+     "touches": 33
+    },
+    "id": "w11",
+    "key": "deploy/plan_6.sh#cache_signal",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 158,
+     "fileLines": 364,
+     "start": 6
+    },
+    "path": "deploy/plan_6.sh",
+    "rect": {
+     "h": 2790.0,
+     "w": 630.0,
+     "x": 320.0,
+     "y": 3568.0
+    },
+    "rev": "c0ffee",
+    "reviewFirst": false,
+    "risk": 0.89539,
+    "symbol": {
+     "kind": "function",
+     "name": "cache_signal",
+     "qualname": "cache_signal"
+    }
+   },
+   {
+    "blob": "ba718b5937468a392",
+    "change": "kxwqmnpo",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 204,
+     "fanIn": 68,
+     "fanOut": 4,
+     "grade": 4,
+     "reach": 612,
+     "tests": 1
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 2
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "fragment": {
+     "chip": 8,
+     "index": 4,
+     "of": 5,
+     "siblings": [
+      "w11",
+      "w12",
+      "w13",
+      "w14",
+      "w15"
+     ]
+    },
+    "heat": {
+     "ci": [
+      0.0596747,
+      0.110824
+     ],
+     "grade": 4,
+     "rate": 0.0852495,
+     "settled": true,
+     "touches": 34
+    },
+    "id": "w14",
+    "key": "deploy/plan_6.sh#turn_client",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 335,
+     "fileLines": 364,
+     "start": 319
+    },
+    "path": "deploy/plan_6.sh",
+    "rect": {
+     "h": 342.0,
+     "w": 810.0,
+     "x": 1450.0,
+     "y": 2560.0
+    },
+    "rev": "c0ffee",
+    "reviewFirst": false,
+    "risk": 0.955995,
+    "symbol": {
+     "kind": "function",
+     "name": "turn_client",
+     "qualname": "turn_client"
+    }
+   },
+   {
+    "blob": "ba718b5937468a392",
+    "change": "kxwqmnpo",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 7,
+     "fanIn": 2,
+     "fanOut": 12,
+     "grade": 2,
+     "reach": 21,
+     "tests": 5
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 1
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "fragment": {
+     "chip": 8,
+     "index": 5,
+     "of": 5,
+     "siblings": [
+      "w11",
+      "w12",
+      "w13",
+      "w14",
+      "w15"
+     ]
+    },
+    "heat": {
+     "ci": [
+      0.0635304,
+      0.117985
+     ],
+     "grade": 4,
+     "rate": 0.0907577,
+     "settled": true,
+     "touches": 36
+    },
+    "id": "w15",
+    "key": "deploy/plan_6.sh#session_node",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 359,
+     "fileLines": 364,
+     "start": 346
+    },
+    "path": "deploy/plan_6.sh",
+    "rect": {
+     "h": 288.0,
+     "w": 720.0,
+     "x": 1450.0,
+     "y": 2992.0
+    },
+    "rev": "c0ffee",
+    "reviewFirst": false,
+    "risk": 0.74641,
+    "symbol": {
+     "kind": "function",
+     "name": "session_node",
+     "qualname": "session_node"
+    }
+   },
+   {
+    "blob": "bf8d9834cf58435f9",
+    "change": "kxwqmnpo",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 42,
+     "fanIn": 14,
+     "fanOut": 4,
+     "grade": 3,
+     "reach": 126,
+     "tests": 4
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 4
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "fragment": {
+     "chip": 1,
+     "index": 6,
+     "of": 6,
+     "siblings": [
+      "w17",
+      "w18",
+      "w19",
+      "w20",
+      "w21",
+      "w22"
+     ]
+    },
+    "heat": {
+     "ci": [
+      0.0358096,
+      0.0665035
+     ],
+     "grade": 2,
+     "rate": 0.0511565,
+     "settled": true,
+     "touches": 20
+    },
+    "id": "w22",
+    "key": "deploy/market_8.sh#spawn_graph",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 412,
+     "fileLines": 416,
+     "start": 373
+    },
+    "path": "deploy/market_8.sh",
+    "rect": {
+     "h": 756.0,
+     "w": 810.0,
+     "x": 1450.0,
+     "y": 3370.0
+    },
+    "rev": "c0ffee",
+    "reviewFirst": false,
+    "risk": 0.815306,
+    "symbol": {
+     "kind": "function",
+     "name": "spawn_graph",
+     "qualname": "spawn_graph"
+    }
+   },
+   {
+    "blob": "b4a984a70f8c7abb3",
+    "change": "kxwqmnpo",
+    "cluster": "c3",
+    "conn": {
+     "dependents2": 36,
+     "fanIn": 12,
+     "fanOut": 6,
+     "grade": 3,
+     "reach": 108,
+     "tests": 5
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 3
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.069244,
+      0.128596
+     ],
+     "grade": 4,
+     "rate": 0.0989199,
+     "settled": true,
+     "touches": 39
+    },
+    "id": "w24",
+    "key": "deploy/tick_10.sh#agent_server",
+    "kind": "chunk",
+    "lane": "infra",
+    "lang": "other",
+    "lines": {
+     "end": 22,
+     "fileLines": 28,
+     "start": 2
+    },
+    "path": "deploy/tick_10.sh",
+    "rect": {
+     "h": 414.0,
+     "w": 720.0,
+     "x": 2580.0,
+     "y": 2560.0
+    },
+    "rev": "c0ffee",
+    "reviewFirst": false,
+    "risk": 0.915369,
+    "symbol": {
+     "kind": "function",
+     "name": "agent_server",
+     "qualname": "agent_server"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/tiles/:z/:x/:y",
+ "status": 200
+}

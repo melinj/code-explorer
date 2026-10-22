@@ -1,0 +1,876 @@
+<style>
+.wf{margin:0 0 2.75rem;display:grid;gap:.75rem;min-width:0}
+.wf-scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--bp-bg)}
+.wf-svg{display:block;width:100%;height:auto;min-width:760px}
+.wf figcaption{display:grid;gap:.45rem;min-width:0;color:var(--ink-2);font-family:var(--font-ui)}
+.wf figcaption h4{margin:0;color:var(--ink);font-size:1rem;text-wrap:balance}
+.wf figcaption p{margin:0;max-width:72ch;line-height:1.55}
+.wf-legend{margin:0;padding-left:1.6rem;display:grid;gap:.4rem;font-size:.875rem;line-height:1.55}
+.wf-legend li{padding-left:.2rem}
+.wf-legend b{color:var(--ink);font-weight:600}
+.wf-legend .ws{margin-left:.2rem;vertical-align:1px}
+.wf-legend code{font-family:var(--font-mono);font-size:.78rem;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:3px;padding:0 .3rem;overflow-wrap:anywhere}
+.wf-svg text{font-family:var(--font-ui);font-size:13px;fill:var(--bp-ink)}
+.wf-svg .m{font-family:var(--font-mono)}
+.wf-svg .d{fill:var(--bp-dim)}
+.wf-svg .s{font-size:11px}
+.wf-svg .l{font-size:15px}
+.wf-svg .xl{font-family:var(--font-display);font-size:20px}
+.wf-svg .b{font-weight:700}
+.wf-svg .mid{text-anchor:middle}
+.wf-svg .end{text-anchor:end}
+.wf-svg .g0{fill:var(--bp-bg)}
+.wf-svg .g1{fill:var(--bp-bg-2)}
+.wf-svg .pn{fill:var(--bp-bg-2);stroke:var(--bp-line);stroke-width:1.25}
+.wf-svg .pg{fill:var(--bp-bg);stroke:var(--bp-line);stroke-width:1.25}
+.wf-svg .po{fill:none;stroke:var(--bp-line);stroke-width:1.25}
+.wf-svg .pd{fill:none;stroke:var(--bp-line);stroke-width:1.25;stroke-dasharray:4 4}
+.wf-svg .ru{fill:none;stroke:var(--bp-line);stroke-width:1}
+.wf-svg .ln2{fill:none;stroke:var(--bp-dim);stroke-width:1.5}
+.wf-svg .w4{stroke-width:4}
+.wf-svg .rg{fill:var(--bp-bg-2);fill-opacity:.5;stroke:var(--bp-line);stroke-width:1;stroke-dasharray:2 5}
+.wf-svg .dot{fill:var(--bp-line);opacity:.55}
+.wf-svg .bar{fill:var(--bp-dim);opacity:.5}
+.wf-svg .bar2{fill:var(--bp-ink);opacity:.34}
+.wf-svg .bk{fill:var(--bp-bg);opacity:.74}
+.wf-svg .mm{opacity:.55}
+.wf-svg .h0{fill:var(--heat-0)}
+.wf-svg .h1{fill:var(--heat-1)}
+.wf-svg .h2{fill:var(--heat-2)}
+.wf-svg .h3{fill:var(--heat-3)}
+.wf-svg .h4{fill:var(--heat-4)}
+.wf-svg .ec{fill:none;stroke:var(--edge-call);stroke-width:1.5}
+.wf-svg .ei{fill:none;stroke:var(--edge-inherit);stroke-width:1.5;stroke-dasharray:6 4}
+.wf-svg .ee{fill:none;stroke:var(--edge-event);stroke-width:1.5}
+.wf-svg .eed{fill:none;stroke:var(--edge-event);stroke-width:1.5;stroke-dasharray:1 4;stroke-linecap:round}
+.wf-svg .eh{fill:none;stroke:var(--edge-http);stroke-width:1.5}
+.wf-svg .eg{fill:none;stroke:var(--edge-config);stroke-width:1.5;stroke-dasharray:1 4;stroke-linecap:round}
+.wf-svg .eo{fill:none;stroke:var(--bp-ink);stroke-width:1;stroke-dasharray:2 3;opacity:.7}
+.wf-svg .fc{fill:var(--edge-call)}
+.wf-svg .fe{fill:var(--edge-event)}
+.wf-svg .fh{fill:var(--edge-http)}
+.wf-svg .fi{fill:var(--bp-bg);stroke:var(--edge-inherit);stroke-width:1.5}
+.wf-svg .tc{fill:var(--edge-call)}
+.wf-svg .te{fill:var(--edge-event)}
+.wf-svg .th{fill:var(--edge-http)}
+.wf-svg .hub-e{fill:var(--bp-bg);stroke:var(--edge-event);stroke-width:1.5}
+.wf-svg .hub-h{fill:var(--bp-bg);stroke:var(--edge-http);stroke-width:1.5}
+.wf-svg .pc{fill:var(--bp-bg);stroke:var(--edge-call);stroke-width:1}
+.wf-svg .pe{fill:var(--bp-bg);stroke:var(--edge-event);stroke-width:1}
+.wf-svg .ph{fill:var(--bp-bg);stroke:var(--edge-http);stroke-width:1}
+.wf-svg .low{opacity:.4}
+.wf-svg .ag{fill:var(--agent)}
+.wf-svg .tag{fill:var(--agent)}
+.wf-svg .sag{fill:none;stroke:var(--agent);stroke-width:1.5}
+.wf-svg .sagd{fill:none;stroke:var(--agent);stroke-width:1.5;stroke-dasharray:5 4}
+.wf-svg .pag{fill:var(--bp-bg);stroke:var(--agent);stroke-width:1.25}
+.wf-svg .add{fill:var(--add);fill-opacity:.2}
+.wf-svg .del{fill:var(--del);fill-opacity:.2}
+.wf-svg .tad{fill:var(--add)}
+.wf-svg .tdl{fill:var(--del)}
+.wf-svg .xf{fill:var(--conflict)}
+.wf-svg .tx{fill:var(--conflict)}
+.wf-svg .px{fill:var(--bp-bg);stroke:var(--conflict);stroke-width:1.25}
+.wf-svg .wn{fill:var(--warn);fill-opacity:.14;stroke:var(--warn);stroke-width:1}
+.wf-svg .twn{fill:var(--warn)}
+.wf-svg .sel{fill:var(--accent);fill-opacity:.16}
+.wf-svg .sls{fill:none;stroke:var(--accent);stroke-width:1.5}
+.wf-svg .fac{fill:var(--accent)}
+.wf-svg .tbg{fill:var(--bp-bg)}
+.wf-svg .ck{fill:none;stroke:var(--bp-ink);stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.wf-svg .sk0{stop-color:var(--bp-bg);stop-opacity:0}
+.wf-svg .sk1{stop-color:var(--bp-bg);stop-opacity:.97}
+.wf-svg .wf-callout circle{fill:var(--bp-bg);stroke:var(--bp-ink);stroke-width:1.5}
+.wf-svg .wf-callout text{font-size:12px;font-weight:700;text-anchor:middle;fill:var(--bp-ink)}
+</style>
+<figure class="wf" id="wf-main"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 700" role="img" aria-labelledby="wf-main-t"><title id="wf-main-t">Main screen: top bar, canvas at Outline zoom with clusters, windows, ports, hubs and edges, the jj history panel and the status bar</title>
+<defs>
+<clipPath id="wf1-clip"><rect x="10" y="10" width="1100" height="680" rx="8"/></clipPath>
+<pattern id="wf1-grid" width="24" height="24" patternUnits="userSpaceOnUse"><circle class="dot" cx="2" cy="2" r="1"/></pattern>
+<marker id="wf1-ac" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fc" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf1-ae" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fe" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf1-ah" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fh" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf1-ai" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path class="fi" d="M1 1L11 6L1 11z"/></marker>
+<g id="wf1-silL"><rect class="bar2" x="0" y="0" width="92" height="3" rx="1.5"/><rect class="bar" x="10" y="7" width="70" height="3" rx="1.5"/><rect class="bar" x="10" y="14" width="108" height="3" rx="1.5"/><rect class="bar" x="20" y="21" width="64" height="3" rx="1.5"/><rect class="bar" x="20" y="28" width="88" height="3" rx="1.5"/><rect class="bar" x="10" y="35" width="40" height="3" rx="1.5"/><rect class="bar2" x="10" y="42" width="76" height="3" rx="1.5"/><rect class="bar" x="20" y="49" width="98" height="3" rx="1.5"/><rect class="bar" x="20" y="56" width="52" height="3" rx="1.5"/><rect class="bar" x="30" y="63" width="80" height="3" rx="1.5"/><rect class="bar" x="10" y="70" width="60" height="3" rx="1.5"/><rect class="bar" x="10" y="77" width="100" height="3" rx="1.5"/><rect class="bar" x="20" y="84" width="44" height="3" rx="1.5"/><rect class="bar" x="0" y="91" width="30" height="3" rx="1.5"/></g>
+<g id="wf1-silS"><rect class="bar2" x="0" y="0" width="84" height="3" rx="1.5"/><rect class="bar" x="10" y="7" width="62" height="3" rx="1.5"/><rect class="bar" x="10" y="14" width="96" height="3" rx="1.5"/><rect class="bar" x="20" y="21" width="54" height="3" rx="1.5"/><rect class="bar" x="20" y="28" width="76" height="3" rx="1.5"/><rect class="bar" x="10" y="35" width="34" height="3" rx="1.5"/></g>
+<g id="wf1-silN"><rect class="bar2" x="0" y="0" width="56" height="3" rx="1.5"/><rect class="bar" x="8" y="7" width="44" height="3" rx="1.5"/><rect class="bar" x="8" y="14" width="60" height="3" rx="1.5"/><rect class="bar" x="8" y="21" width="36" height="3" rx="1.5"/><rect class="bar" x="0" y="28" width="50" height="3" rx="1.5"/><rect class="bar" x="8" y="35" width="28" height="3" rx="1.5"/></g>
+</defs>
+<g clip-path="url(#wf1-clip)">
+<rect class="pn" x="10" y="10" width="1100" height="70"/>
+<line class="ru" x1="10" y1="54" x2="1110" y2="54"/>
+<text class="l b" x="24" y="37">Code Viewer</text>
+<rect class="pg" x="136" y="20" width="120" height="24" rx="4"/>
+<rect class="sel" x="202" y="20" width="54" height="24"/>
+<line class="ru" x1="202" y1="20" x2="202" y2="44"/>
+<text class="s mid" x="169" y="36">Snapshot</text>
+<text class="s b mid" x="229" y="36">Range</text>
+<rect class="pg" x="266" y="20" width="100" height="24" rx="12"/>
+<text class="s m mid" x="316" y="36">trunk()..@</text>
+<rect class="pg" x="376" y="20" width="200" height="24" rx="4"/>
+<text class="s d" x="386" y="36">Search symbols, topics…</text>
+<text class="s d m end" x="568" y="36">⌘K</text>
+<circle class="ag" cx="954" cy="32" r="5"/>
+<text class="s" x="966" y="36">claude · reading</text>
+<text class="s d" x="24" y="72">Links</text>
+<rect class="pg" x="64" y="59" width="56" height="18" rx="9"/><line class="ec" x1="72" y1="68" x2="82" y2="68"/><text class="s" x="86" y="72">Calls</text>
+<rect class="pg" x="126" y="59" width="66" height="18" rx="9"/><line class="ei" x1="134" y1="68" x2="144" y2="68"/><text class="s" x="148" y="72">Inherit</text>
+<rect class="pg" x="198" y="59" width="62" height="18" rx="9"/><line class="ee" x1="206" y1="68" x2="216" y2="68"/><text class="s" x="220" y="72">Events</text>
+<rect class="pg" x="266" y="59" width="56" height="18" rx="9"/><line class="eh" x1="274" y1="68" x2="284" y2="68"/><text class="s" x="288" y="72">HTTP</text>
+<rect class="pg" x="328" y="59" width="62" height="18" rx="9"/><line class="eg" x1="336" y1="68" x2="346" y2="68"/><text class="s" x="350" y="72">Config</text>
+<text class="s d" x="560" y="72">Heat</text>
+<rect class="h0" x="594" y="63" width="10" height="10" rx="2"/><text class="s" x="608" y="72">Frozen</text>
+<rect class="h1" x="650" y="63" width="10" height="10" rx="2"/><text class="s" x="664" y="72">Cool</text>
+<rect class="h2" x="694" y="63" width="10" height="10" rx="2"/><text class="s" x="708" y="72">Mild</text>
+<rect class="h3" x="738" y="63" width="10" height="10" rx="2"/><text class="s" x="752" y="72">Warm</text>
+<rect class="h4" x="788" y="63" width="10" height="10" rx="2"/><text class="s" x="802" y="72">Hot</text>
+<text class="s d" x="836" y="72">graded over 340 commits · 93% settled</text>
+<rect class="g0" x="10" y="80" width="820" height="582"/>
+<rect x="10" y="80" width="820" height="582" fill="url(#wf1-grid)"/>
+<rect class="rg" x="24" y="300" width="194" height="250" rx="14"/>
+<rect class="h3" x="38" y="309" width="4" height="13" rx="1"/><text class="b" x="48" y="320">order · checkout</text>
+<rect class="rg" x="232" y="96" width="196" height="336" rx="14"/>
+<rect class="h4" x="246" y="105" width="4" height="13" rx="1"/><text class="b" x="256" y="116">events · EventBus</text>
+<rect class="pd" x="241" y="123" width="178" height="304" rx="6"/>
+<rect class="rg" x="448" y="96" width="370" height="160" rx="14"/>
+<rect class="h2" x="462" y="105" width="4" height="13" rx="1"/><text class="b" x="472" y="116">web api</text>
+<rect class="rg" x="448" y="276" width="370" height="290" rx="14"/>
+<rect class="h3" x="462" y="285" width="4" height="13" rx="1"/><text class="b" x="472" y="296">pay · InvoiceBuilder</text>
+<path class="ec" d="M204 382C226 382 222 160 244 160" marker-end="url(#wf1-ac)"/>
+<path class="ee" d="M204 434C262 434 270 488 319 488"/>
+<path class="ee" d="M341 488C400 488 410 340 460 340" marker-end="url(#wf1-ae)"/>
+<path class="eh" d="M574 179L588 179"/>
+<path class="eh" d="M714 179C719 179 717 150 722 150" marker-end="url(#wf1-ah)"/>
+<path class="ei" d="M624 326C644 326 642 392 662 392" marker-end="url(#wf1-ai)"/>
+<rect class="pn" x="38" y="334" width="166" height="156" rx="4"/><rect class="g0" x="39" y="335" width="164" height="20"/><rect class="h3" x="38" y="334" width="166" height="3"/>
+<text class="s m" x="44" y="349"><tspan class="b">ship_item</tspan><tspan class="d"> checkout.py</tspan></text>
+<use href="#wf1-silL" x="54" y="362"/>
+<rect class="pc" x="100" y="374" width="102" height="16" rx="8"/><text class="s m tc" x="107" y="386">→ EventBus.emit</text>
+<rect class="pe" x="68" y="426" width="134" height="16" rx="8"/><text class="s m te" x="75" y="438">⇢ order.item.shipped</text>
+<rect class="pn" x="246" y="128" width="168" height="128" rx="4"/><rect class="g0" x="247" y="129" width="166" height="20"/><rect class="h4" x="246" y="128" width="168" height="3"/>
+<text class="s m" x="252" y="143"><tspan class="b">EventBus.emit</tspan><tspan class="d"> bus.py</tspan></text>
+<use href="#wf1-silL" x="262" y="158"/><circle class="fc" cx="246" cy="160" r="3"/>
+<rect class="pn" x="246" y="266" width="168" height="76" rx="4"/><rect class="g0" x="247" y="267" width="166" height="20"/><rect class="h3" x="246" y="266" width="168" height="3"/>
+<text class="s m" x="252" y="281"><tspan class="b">EventBus.on</tspan><tspan class="d"> bus.py</tspan></text>
+<use href="#wf1-silS" x="262" y="296"/>
+<rect class="pn" x="246" y="352" width="168" height="70" rx="4"/><rect class="g0" x="247" y="353" width="166" height="20"/><rect class="h4" x="246" y="352" width="168" height="3"/>
+<text class="s m" x="252" y="367"><tspan class="b">_topic_matches</tspan><tspan class="d"> bus.py</tspan></text>
+<use href="#wf1-silS" x="262" y="380"/>
+<path class="pag" d="M248 389h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-4 4v-4h-2a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><text class="s b mid tag" x="255" y="400">1</text>
+<path class="hub-e" d="M330 479L339 488L330 497L321 488Z"/>
+<text class="s m mid te" x="330" y="514">order.item.shipped</text>
+<text class="s mid d" x="330" y="528">1 producer → 2 consumers</text>
+<rect class="pn" x="462" y="128" width="112" height="112" rx="4"/><rect class="g0" x="463" y="129" width="110" height="20"/><rect class="h2" x="462" y="128" width="112" height="3"/>
+<text class="s m b" x="468" y="143">ItemPanel.tsx</text>
+<use href="#wf1-silN" x="478" y="158"/>
+<rect class="ph" x="506" y="171" width="66" height="16" rx="8"/><text class="s m th" x="512" y="183">⇢ /item/{}</text>
+<rect class="hub-h" x="590" y="166" width="124" height="26" rx="13"/><rect class="fh" x="594" y="170" width="32" height="18" rx="9"/>
+<text class="s b mid tbg" x="610" y="183">GET</text><text class="s m th" x="632" y="183">/api/item/{}</text>
+<rect class="pn" x="724" y="128" width="86" height="112" rx="4"/><rect class="g0" x="725" y="129" width="84" height="20"/><rect class="h2" x="724" y="128" width="86" height="3"/>
+<text class="s m b" x="730" y="143">get_item</text>
+<use href="#wf1-silN" x="734" y="158"/><circle class="fh" cx="724" cy="150" r="3"/>
+<rect class="pn" x="462" y="308" width="160" height="104" rx="4"/><rect class="g0" x="463" y="309" width="158" height="20"/><rect class="h2" x="462" y="308" width="160" height="3"/>
+<text class="s m b" x="468" y="323">ShipmentBuildTrigger</text>
+<rect class="pe" x="464" y="332" width="104" height="16" rx="8"/><text class="s m te" x="470" y="344">← item.shipped</text>
+<use href="#wf1-silS" x="478" y="358"/><circle class="fi" cx="622" cy="326" r="3"/>
+<rect class="pn" x="462" y="424" width="160" height="132" rx="4"/><rect class="g0" x="463" y="425" width="158" height="20"/><rect class="h3" x="462" y="424" width="160" height="3"/>
+<text class="s m b" x="468" y="439">InvoiceBuilder.build</text><text class="b mid tx" x="614" y="440">×</text>
+<use href="#wf1-silL" x="478" y="454"/>
+<path class="pn" d="M466 469h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-4 4v-4h-2a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><text class="s b mid" x="473" y="480">2</text>
+<rect class="sagd" x="457" y="419" width="170" height="142" rx="6"/>
+<circle class="ag" cx="622" cy="490" r="6"/><text class="s tag" x="634" y="494">claude · read_window</text>
+<rect class="pn" x="664" y="360" width="140" height="84" rx="4"/><rect class="g0" x="665" y="361" width="138" height="20"/><rect class="h0" x="664" y="360" width="140" height="3"/>
+<text class="s m" x="670" y="375"><tspan class="b">BaseHook</tspan><tspan class="d"> base.py</tspan></text>
+<use href="#wf1-silS" x="680" y="390"/><circle class="fi" cx="664" cy="392" r="3"/>
+<rect class="pg" x="24" y="586" width="140" height="66" rx="4"/>
+<rect class="h3 mm" x="30" y="616" width="29" height="30"/><rect class="h4 mm" x="63" y="592" width="32" height="40"/><rect class="h2 mm" x="98" y="592" width="60" height="19"/><rect class="h3 mm" x="98" y="613" width="60" height="35"/>
+<rect class="sls" x="56" y="600" width="74" height="42" rx="2"/>
+<rect class="pg" x="770" y="586" width="44" height="66" rx="4"/><line class="ru" x1="770" y1="608" x2="814" y2="608"/><line class="ru" x1="770" y1="630" x2="814" y2="630"/>
+<text class="l mid" x="792" y="603">+</text><text class="l mid" x="792" y="625">−</text><text class="s mid" x="792" y="645">Fit</text>
+<rect class="pn" x="830" y="80" width="280" height="582"/>
+<text class="s b" x="846" y="99">History</text><rect class="fac" x="842" y="104" width="52" height="2"/>
+<text class="s d" x="912" y="99">Review</text><rect class="pg" x="954" y="89" width="18" height="14" rx="7"/><text class="s mid" x="963" y="100">3</text>
+<text class="s d" x="990" y="99">Agent</text><circle class="ag" cx="1028" cy="95" r="3"/>
+<line class="ru" x1="830" y1="108" x2="1110" y2="108"/>
+<rect class="sel" x="832" y="116" width="276" height="152"/>
+<line class="ln2" x1="850" y1="135" x2="850" y2="158"/><line class="ln2" x1="850" y1="173" x2="850" y2="196"/><line class="ln2" x1="850" y1="211" x2="850" y2="234"/><line class="ln2" x1="850" y1="249" x2="850" y2="348"/><line class="ln2" x1="850" y1="363" x2="850" y2="386"/>
+<line class="ln2" x1="866" y1="287" x2="866" y2="310"/><path class="ln2" d="M866 325C866 338 850 336 850 346"/>
+<text class="m b mid" x="850" y="131">@</text><text class="s m" x="872" y="131"><tspan class="b">vr</tspan>krmtqyz</text>
+<rect class="pg" x="1034" y="120" width="66" height="16" rx="8"/><text class="s m mid" x="1067" y="132">default@</text><text class="s d" x="872" y="146">(empty)</text>
+<text class="m b mid tx" x="850" y="169">×</text><text class="s m" x="872" y="169"><tspan class="b">ql</tspan>nsoxwy</text>
+<rect class="pg" x="950" y="158" width="86" height="16" rx="8"/><text class="s m mid" x="993" y="170">review-stack</text>
+<rect class="pg" x="1040" y="158" width="60" height="16" rx="8"/><text class="s mid" x="1070" y="170">2 threads</text>
+<text class="s d" x="872" y="184">pay: retry invoice builds on timeout</text>
+<text class="m mid" x="850" y="207">○</text><text class="s m" x="872" y="207"><tspan class="b">zm</tspan>pyrnvk</text><text class="s d" x="872" y="222">events: allow '#' in subscriptions</text>
+<text class="m mid" x="850" y="245">○</text><text class="s m" x="872" y="245"><tspan class="b">kx</tspan>wqmnpo</text>
+<rect class="wn" x="986" y="234" width="114" height="16" rx="8"/><text class="s mid twn" x="1043" y="246">changed since review</text>
+<text class="s d" x="872" y="260">order: emit item.shipped with invoice id</text>
+<text class="m mid" x="866" y="283">○</text><text class="s m" x="888" y="283"><tspan class="b">mo</tspan>sxqunt</text>
+<rect class="pg" x="1056" y="272" width="44" height="16" rx="8"/><text class="s m mid" x="1078" y="284">tax@</text><text class="s d" x="888" y="298">(no description set)</text>
+<text class="m mid" x="866" y="321">○</text><text class="s m" x="888" y="321"><tspan class="b">tp</tspan>wlkzrs</text><text class="s d" x="888" y="336">tax: rounding per line</text>
+<text class="m mid" x="850" y="359">◆</text><text class="s m" x="872" y="359"><tspan class="b">tt</tspan>xlpwsk</text>
+<rect class="pg" x="966" y="348" width="86" height="16" rx="8"/><text class="s m mid" x="1009" y="360">refunds@</text>
+<rect class="pg" x="1056" y="348" width="44" height="16" rx="8"/><text class="s m mid" x="1078" y="360">trunk</text>
+<text class="s d" x="872" y="374">reports: totals per billing period</text>
+<text class="m mid d" x="850" y="397">⋯</text><text class="s d" x="872" y="397">214 more</text>
+<line class="ru" x1="846" y1="414" x2="1094" y2="414"/>
+<text class="s b" x="846" y="434">Workspaces</text>
+<text class="s m" x="846" y="456">default@</text><text class="s d" x="940" y="456">on vrkmtqyz · range tip</text>
+<text class="s m" x="846" y="478">tax@</text><text class="s d" x="940" y="478">on mosxqunt · 2 changes</text>
+<text class="s m" x="846" y="500">refunds@</text><text class="s d" x="940" y="500">on ttxlpwsk · trunk</text>
+<rect class="pg" x="846" y="618" width="76" height="26" rx="4"/><text class="s mid" x="884" y="635">Range…</text>
+<rect class="fac" x="930" y="618" width="110" height="26" rx="4"/><text class="s b mid tbg" x="985" y="635">Review range</text>
+<rect class="pn" x="10" y="662" width="1100" height="28"/>
+<text class="s m" x="24" y="680">L2 Outline · 42% · 312 / 2,140 windows · loading 3 · op 4eb0965a · indexed</text>
+</g>
+<rect class="po" x="10" y="10" width="1100" height="680" rx="8"/>
+<g class="wf-callout" transform="translate(130 15)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(372 15)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(402 68)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(548 68)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(938 32)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(232 96)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(88 382)"><circle r="9"/><text y="4">7</text></g>
+<g class="wf-callout" transform="translate(330 460)"><circle r="9"/><text y="4">8</text></g>
+<g class="wf-callout" transform="translate(452 477)"><circle r="9"/><text y="4">9</text></g>
+<g class="wf-callout" transform="translate(768 490)"><circle r="9"/><text y="4">10</text></g>
+<g class="wf-callout" transform="translate(24 586)"><circle r="9"/><text y="4">11</text></g>
+<g class="wf-callout" transform="translate(838 114)"><circle r="9"/><text y="4">12</text></g>
+<g class="wf-callout" transform="translate(536 676)"><circle r="9"/><text y="4">13</text></g>
+</svg></div>
+<figcaption><h4>Main screen (desktop)</h4>
+<p>The canvas owns the screen and the chrome stays thin. Everything drawn at Outline zoom comes from the view bootstrap, viewport tiles and per-window outline parts, never from file text.</p>
+<ol class="wf-legend">
+<li><b>View switcher</b> — Snapshot or Range, plus the revision/revset chip; changing either opens a new view. <span class="ws f">F4</span> <code>POST /api/v1/views</code> <code>GET /api/v1/revisions?revset&amp;limit</code></li>
+<li><b>Search</b> — symbols, files, topics, endpoints and threads; Enter flies the camera to the hit. <span class="ws f">F4</span> <code>GET /api/v1/search?q</code></li>
+<li><b>Link filters</b> — toggle edge kinds on the client; the kinds present in a view arrive with it. <span class="ws f">F1</span> <code>GET /api/v1/views/{id}/bootstrap</code></li>
+<li><b>Heat legend</b> — the five churn grades, how many commits were scanned and how settled the grading is. <span class="ws f">F4</span> <span class="ws">B5</span> <code>GET /api/v1/views/{id}/bootstrap</code></li>
+<li><b>Agent status</b> — what the connected agent is doing right now. <span class="ws f">F4</span> <code>ws: agent.attention</code></li>
+<li><b>Clusters and windows</b> — regions from dependency clustering; a file's windows stack in source order inside a dashed file group; silhouettes stand in for text. <span class="ws f">F1</span> <span class="ws f">F2</span> <code>GET /api/v1/views/{id}/tiles/{z}/{x}/{y}</code> <code>POST /api/v1/views/{id}/windows:batch</code> (outline)</li>
+<li><b>Port pills</b> — outgoing on the right edge at the callsite line, incoming on the left edge at the definition line. <span class="ws f">F1</span> <code>POST /api/v1/views/{id}/windows:batch</code> (ports)</li>
+<li><b>Hubs and edges</b> — topic hub <code>order.item.shipped</code> and endpoint hub <code>GET /api/item/{}</code>; edges are styled by kind. <span class="ws f">F1</span> <span class="ws">B4</span> <code>GET /api/v1/views/{id}/bootstrap</code> (hubs) <code>GET /api/v1/links?viewId&amp;target&amp;dir&amp;kinds&amp;depth</code></li>
+<li><b>Thread and conflict markers</b> — gutter bubble with a count (agent-authored threads use the agent pen); × in the header when the window's commit is conflicted. <span class="ws f">F3</span> <code>GET /api/v1/threads</code> <code>GET /api/v1/conflicts?revset</code> <code>ws: thread.upserted · conflicts.changed</code></li>
+<li><b>Agent presence</b> — dashed outline and pin on the window the agent last read, with the tool it used. <span class="ws f">F1</span> <code>ws: agent.attention</code></li>
+<li><b>Minimap and zoom</b> — cluster boxes tinted by heat, the viewport frame, and +, −, Fit. <span class="ws f">F1</span> <code>GET /api/v1/views/{id}/bootstrap</code></li>
+<li><b>Side panel</b> — History, Review, Workspaces, Hotspots and Agent tabs (three drawn here); History is the jj graph with the current range shaded and each workspace's @ listed. <span class="ws f">F4</span> <code>GET /api/v1/revisions?revset&amp;limit</code> <code>ws: op.changed · view.state</code></li>
+<li><b>Status bar</b> — zoom tier, visible and total windows, loads in flight, operation id and index state. <span class="ws f">F2</span> <code>ws: index.progress · op.changed</code></li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-tiers"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 496" role="img" aria-labelledby="wf-tiers-t"><title id="wf-tiers-t">The same part of the canvas at the four zoom tiers, with what each tier draws and which data tier it loads</title>
+<defs>
+<clipPath id="wf2-c0"><rect x="0" y="56" width="192" height="320" rx="6"/></clipPath>
+<clipPath id="wf2-c1"><rect x="0" y="56" width="230" height="320" rx="6"/></clipPath>
+<clipPath id="wf2-c2"><rect x="0" y="56" width="250" height="320" rx="6"/></clipPath>
+<clipPath id="wf2-c3"><rect x="0" y="56" width="402" height="320" rx="6"/></clipPath>
+<marker id="wf2-ac" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fc" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf2-ae" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fe" d="M0 0L8 4L0 8z"/></marker>
+<linearGradient id="wf2-ft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sk1"/><stop offset="1" class="sk0"/></linearGradient>
+<linearGradient id="wf2-fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sk0"/><stop offset="1" class="sk1"/></linearGradient>
+<g id="wf2-silN"><rect class="bar2" x="0" y="0" width="56" height="3" rx="1.5"/><rect class="bar" x="8" y="7" width="44" height="3" rx="1.5"/><rect class="bar" x="8" y="14" width="60" height="3" rx="1.5"/><rect class="bar" x="8" y="21" width="36" height="3" rx="1.5"/><rect class="bar" x="0" y="28" width="50" height="3" rx="1.5"/><rect class="bar" x="8" y="35" width="28" height="3" rx="1.5"/></g>
+</defs>
+<g transform="translate(8 0)">
+<text class="l b" x="0" y="26">L0 Galaxy</text><text class="s m d" x="0" y="44">zoom &lt; 0.03 · line &lt; 0.5 px</text>
+<rect class="pg" x="0" y="56" width="192" height="320" rx="6"/>
+<g clip-path="url(#wf2-c0)">
+<path class="ln2 w4" d="M84 160C96 172 98 178 108 186"/><path class="ln2 w4" d="M48 176C46 192 50 208 52 226"/><path class="ln2 w4" d="M90 112C100 104 106 102 112 104"/>
+<rect class="h4 mm" x="14" y="92" width="76" height="84" rx="28"/><text class="xl mid" x="52" y="140">events</text>
+<rect class="h3 mm" x="104" y="160" width="80" height="92" rx="28"/><text class="xl mid" x="144" y="210">pay</text>
+<rect class="h2 mm" x="16" y="226" width="74" height="58" rx="22"/><text class="xl mid" x="53" y="262">web</text>
+<rect class="h1 mm" x="112" y="74" width="66" height="56" rx="20"/><text class="xl mid" x="145" y="109">store</text>
+<rect class="h0 mm" x="14" y="304" width="64" height="46" rx="18"/><text class="l mid" x="46" y="332">util</text>
+<rect class="h0 mm" x="98" y="276" width="86" height="74" rx="24"/><text class="l mid" x="141" y="318">scripts</text>
+<rect class="pg" x="84" y="164" width="24" height="16" rx="8"/><text class="s mid" x="96" y="176">14</text>
+<rect class="pg" x="22" y="194" width="20" height="16" rx="8"/><text class="s mid" x="32" y="206">6</text>
+<rect class="pg" x="92" y="88" width="20" height="16" rx="8"/><text class="s mid" x="102" y="100">9</text>
+<path class="hub-e" d="M98 134L104 140L98 146L92 140Z"/><rect class="hub-h" x="92" y="264" width="16" height="9" rx="4.5"/>
+<rect class="pg" x="112" y="228" width="54" height="16" rx="8"/><text class="s mid" x="139" y="240">3 threads</text>
+<rect class="px" x="168" y="228" width="22" height="16" rx="8"/><text class="s b mid tx" x="179" y="240">×1</text>
+</g>
+<text class="s" x="4" y="396">Draws: clusters, bundled edges,</text><text class="s" x="4" y="412">hub glyphs, aggregate badges</text><text class="s b" x="4" y="432">Loads: T0 bootstrap</text>
+</g>
+<path class="ln2" d="M202 210l5 6-5 6"/><path class="ln2" d="M442 210l5 6-5 6"/><path class="ln2" d="M702 210l5 6-5 6"/>
+<g transform="translate(210 0)">
+<text class="l b" x="0" y="26">L1 Map</text><text class="s m d" x="0" y="44">0.03 – 0.09 · line 0.5 – 1.6 px</text>
+<rect class="pg" x="0" y="56" width="230" height="320" rx="6"/>
+<g clip-path="url(#wf2-c1)">
+<rect class="rg" x="6" y="150" width="62" height="120" rx="10"/><text class="s b" x="12" y="166">order</text>
+<rect class="rg" x="84" y="66" width="92" height="128" rx="10"/><text class="s b" x="90" y="82">events</text><rect class="pd" x="89" y="88" width="82" height="100" rx="4"/>
+<rect class="rg" x="148" y="206" width="78" height="120" rx="10"/><text class="s b" x="154" y="222">pay</text>
+<rect class="rg" x="6" y="286" width="118" height="80" rx="10"/><text class="s b" x="12" y="302">web api</text>
+<path class="ec" d="M64 188C80 188 76 108 91 108" marker-end="url(#wf2-ac)"/>
+<path class="ee" d="M64 212C84 212 86 244 101 244"/><path class="ee" d="M115 244L151 245" marker-end="url(#wf2-ae)"/>
+<path class="eh" d="M58 327L64 327M78 327L84 327"/>
+<rect class="pn" x="10" y="174" width="54" height="52" rx="3"/><rect class="h3" x="10" y="174" width="54" height="3"/><text class="s m" x="14" y="190">ship…</text>
+<rect class="pn" x="10" y="232" width="54" height="30" rx="3"/><rect class="h1" x="10" y="232" width="54" height="3"/><text class="s m" x="14" y="248">sweep</text>
+<rect class="pn" x="92" y="92" width="76" height="36" rx="3"/><rect class="h4" x="92" y="92" width="76" height="3"/><text class="s m" x="96" y="108">emit</text>
+<rect class="pn" x="92" y="132" width="76" height="24" rx="3"/><rect class="h3" x="92" y="132" width="76" height="3"/><text class="s m" x="96" y="148">on</text>
+<rect class="pn" x="92" y="160" width="76" height="24" rx="3"/><rect class="h4" x="92" y="160" width="76" height="3"/><text class="s m" x="96" y="176">_topic…</text>
+<rect class="pn" x="152" y="230" width="70" height="30" rx="3"/><rect class="h2" x="152" y="230" width="70" height="3"/><text class="s m" x="156" y="246">…Trigger</text>
+<rect class="pn" x="152" y="264" width="70" height="34" rx="3"/><rect class="h3" x="152" y="264" width="70" height="3"/><text class="s m" x="156" y="280">build</text><text class="b mid tx" x="212" y="281">×</text>
+<rect class="pn" x="152" y="302" width="70" height="20" rx="3"/><rect class="h0" x="152" y="302" width="70" height="3"/><text class="s m" x="156" y="317">BaseHook</text>
+<path class="hub-e" d="M108 238L114 244L108 250L102 244Z"/><text class="s m mid te" x="108" y="264">item.shipped</text>
+<rect class="pn" x="10" y="310" width="48" height="34" rx="3"/><rect class="h2" x="10" y="310" width="48" height="3"/><text class="s m" x="14" y="326">Item…</text>
+<rect class="hub-h" x="64" y="322" width="14" height="9" rx="4.5"/>
+<rect class="pn" x="84" y="310" width="36" height="34" rx="3"/><rect class="h2" x="84" y="310" width="36" height="3"/><text class="s m" x="88" y="326">get…</text>
+<text class="s m th" x="12" y="360">GET /api/item/{}</text>
+</g>
+<text class="s" x="4" y="396">Draws: window tiles and titles, file</text><text class="s" x="4" y="412">groups, single edges, hub labels</text><text class="s b" x="4" y="432">Loads: + T1 tiles (window headers)</text>
+</g>
+<g transform="translate(450 0)">
+<text class="l b" x="0" y="26">L2 Outline</text><text class="s m d" x="0" y="44">0.09 – 0.5 · line 1.6 – 9 px</text>
+<rect class="pg" x="0" y="56" width="250" height="320" rx="6"/>
+<g clip-path="url(#wf2-c2)">
+<path class="ec" d="M126 142C150 142 152 100 140 80" marker-end="url(#wf2-ac)"/>
+<rect class="pc" x="52" y="62" width="108" height="16" rx="8"/><text class="s m tc" x="58" y="74">↑ EventBus.emit</text>
+<path class="ee" d="M126 184C140 184 132 236 143 236"/><path class="ee" d="M157 236C180 236 136 136 157 136" marker-end="url(#wf2-ae)"/>
+<rect class="pn" x="10" y="92" width="118" height="132" rx="4"/><rect class="g0" x="11" y="93" width="116" height="20"/><rect class="h3" x="10" y="92" width="118" height="3"/>
+<text class="s m b" x="16" y="107">ship_item</text>
+<use href="#wf2-silN" x="28" y="122"/><use href="#wf2-silN" x="28" y="166"/>
+<rect class="pc" x="20" y="134" width="106" height="16" rx="8"/><text class="s m tc" x="25" y="146">→ EventBus.emit</text>
+<rect class="pe" x="28" y="176" width="98" height="16" rx="8"/><text class="s m te" x="31" y="188">⇢ item.shipped</text>
+<path class="pn" d="M12 198h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-7l-4 4v-4h-1a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><text class="s b mid" x="18" y="208">1</text>
+<path class="hub-e" d="M150 230L156 236L150 242L144 236Z"/><text class="s m mid te" x="150" y="258">order.item.shipped</text>
+<rect class="pn" x="158" y="92" width="88" height="120" rx="4"/><rect class="g0" x="159" y="93" width="86" height="20"/><rect class="h2" x="158" y="92" width="88" height="3"/>
+<text class="s m b" x="164" y="107">BuildTrigger</text>
+<rect class="pe" x="160" y="128" width="68" height="16" rx="8"/><text class="s m te" x="164" y="140">← shipped</text>
+<use href="#wf2-silN" x="174" y="154"/>
+<rect class="pn" x="158" y="268" width="88" height="96" rx="4"/><rect class="g0" x="159" y="269" width="86" height="20"/><rect class="h3" x="158" y="268" width="88" height="3"/>
+<text class="s m b" x="164" y="283">build</text><text class="b mid tx" x="236" y="284">×</text>
+<use href="#wf2-silN" x="170" y="298"/>
+<rect class="pn" x="10" y="268" width="118" height="96" rx="4"/><rect class="g0" x="11" y="269" width="116" height="20"/><rect class="h1" x="10" y="268" width="118" height="3"/>
+<text class="s m b" x="16" y="283">sweep</text>
+<line class="pd" x1="26" y1="302" x2="98" y2="302"/><line class="pd" x1="36" y1="312" x2="110" y2="312"/><line class="pd" x1="36" y1="322" x2="84" y2="322"/><line class="pd" x1="26" y1="332" x2="92" y2="332"/>
+<text class="s d" x="26" y="354">T2 loading</text><circle class="fac" cx="94" cy="350" r="2"/><circle class="fac" cx="102" cy="350" r="2"/><circle class="fac" cx="110" cy="350" r="2"/>
+</g>
+<text class="s" x="4" y="396">Draws: silhouettes, port pills with</text><text class="s" x="4" y="412">labels, thread markers, skeletons</text><text class="s b" x="4" y="432">Loads: + T2 outline and ports</text>
+</g>
+<g transform="translate(710 0)">
+<text class="l b" x="0" y="26">L3 Code</text><text class="s m d" x="0" y="44">≥ 0.5 · line ≥ 9 px</text>
+<rect class="pg" x="0" y="56" width="402" height="320" rx="6"/>
+<g clip-path="url(#wf2-c3)">
+<rect class="pn" x="8" y="70" width="386" height="254" rx="4"/><rect class="g0" x="9" y="71" width="384" height="21"/><rect class="h3" x="8" y="70" width="386" height="3"/>
+<text class="s m" x="14" y="86"><tspan class="b">ship_item</tspan><tspan class="d"> src/order/checkout.py</tspan></text>
+<rect class="pg" x="330" y="75" width="58" height="14" rx="7"/><text class="s m mid" x="359" y="86"><tspan class="b">kx</tspan>wq</text>
+<text class="s m d end" x="34" y="112">39</text><text class="s m" x="68" y="112">return qty.clamp(limits)</text>
+<text class="s m d end" x="34" y="130">40</text>
+<text class="s m d end" x="34" y="148">41</text><text class="s m d" x="42" y="148">@traced("order.ship")</text>
+<text class="s m d end" x="34" y="166">42</text><text class="s m" x="42" y="166"><tspan class="b">def</tspan> ship_item(o, i, to):</text>
+<text class="s m d end" x="34" y="184">43</text><text class="s m" x="68" y="184">inv = o.invoice_for(i)</text>
+<text class="s m d end" x="34" y="202">44</text><text class="s m" x="68" y="202">i.address = to</text>
+<text class="s m d end" x="34" y="220">45</text><text class="s m" x="68" y="220">bus.emit(EventEnvelope(</text>
+<text class="s m d end" x="34" y="238">46</text><text class="s m" x="95" y="238">topic=ITEM_SHIPPED,</text>
+<text class="s m d end" x="34" y="256">47</text><text class="s m" x="95" y="256">payload=Shipped(i, inv)))</text>
+<text class="s m d end" x="34" y="274">48</text><text class="s m" x="68" y="274"><tspan class="b">return</tspan> i</text>
+<text class="s m d end" x="34" y="292">49</text>
+<text class="s m d end" x="34" y="310">50</text><text class="s m" x="42" y="310"><tspan class="b">def</tspan> _clamp(qty, limits):</text>
+<line class="ec" x1="68" y1="223" x2="121" y2="223"/><line class="ee" x1="135" y1="241" x2="214" y2="241"/>
+<circle class="fc" cx="8" cy="162" r="3"/>
+<rect class="pc" x="266" y="208" width="120" height="16" rx="8"/><text class="s m tc" x="274" y="220">→ EventBus.emit</text>
+<rect class="pe" x="244" y="226" width="144" height="16" rx="8"/><text class="s m te" x="251" y="238">⇢ order.item.shipped</text>
+<rect x="9" y="92" width="384" height="44" fill="url(#wf2-ft)"/>
+<rect class="pg" x="122" y="96" width="158" height="18" rx="9"/><text class="s mid" x="201" y="109">↑ 38 lines above · +20</text>
+<rect x="9" y="280" width="384" height="43" fill="url(#wf2-fb)"/>
+<rect class="pg" x="122" y="300" width="158" height="18" rx="9"/><text class="s mid" x="201" y="313">↓ 41 lines below · +20</text>
+<rect class="pn" x="8" y="334" width="386" height="38" rx="4"/><rect class="g0" x="9" y="335" width="384" height="18"/><rect class="h4" x="8" y="334" width="386" height="3"/>
+<text class="s m" x="14" y="348"><tspan class="b">EventBus.emit</tspan><tspan class="d"> bus.py</tspan></text>
+<rect class="bar" x="26" y="359" width="150" height="3" rx="1.5"/><rect class="bar" x="36" y="365" width="110" height="3" rx="1.5"/>
+<text class="s d" x="200" y="367">silhouette until T3 arrives</text>
+</g>
+<text class="s" x="4" y="396">Draws: code text and tokens, callsite underlines, port</text><text class="s" x="4" y="412">pills on their lines, fades with expand hints, inline threads</text><text class="s b" x="4" y="432">Loads: + T3 text (T4 editor session on activation)</text>
+</g>
+<rect class="pn" x="8" y="452" width="1104" height="30" rx="4"/>
+<text class="s" x="24" y="471">Tier from screen line height h = 18 · zoom px, with ±10% hysteresis · the silhouette is the placeholder until T3 arrives · loads that leave the predicted viewport are cancelled</text>
+<g class="wf-callout" transform="translate(8 56)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(210 56)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(450 56)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(710 56)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(16 452)"><circle r="9"/><text y="4">5</text></g>
+</svg></div>
+<figcaption><h4>Zoom tiers and data tiers</h4>
+<p>Each zoom tier adds detail and pulls in one more data tier. Panning never waits on the network: a frame draws whatever is cached and the loader fills in behind it.</p>
+<ol class="wf-legend">
+<li><b>L0 Galaxy</b> — cluster regions tinted by heat, bundled edges with counts, hub glyphs, thread and conflict totals per cluster. <span class="ws f">F1</span> <span class="ws f">F2</span> <code>GET /api/v1/views/{id}/bootstrap</code></li>
+<li><b>L1 Map</b> — every window as a titled tile; headers arrive per quadtree tile and are cached by tile key. <span class="ws f">F2</span> <code>GET /api/v1/views/{id}/tiles/{z}/{x}/{y}</code></li>
+<li><b>L2 Outline</b> — silhouettes at a few bytes per line, labelled port pills, thread markers; a skeleton shows while T2 is in flight. <span class="ws f">F2</span> <span class="ws f">F1</span> <code>POST /api/v1/views/{id}/windows:batch</code> (outline, ports)</li>
+<li><b>L3 Code</b> — text and highlight tokens from immutable blob ranges, port pills on their lines, fades with expand hints; neighbours keep their silhouette until their text lands. <span class="ws f">F3</span> <code>GET /api/v1/blobs/{blobId}/text?from&amp;to</code> <code>GET /api/v1/threads?path</code></li>
+<li><b>Loader rules</b> — tier thresholds with hysteresis, priority by distance to the predicted viewport, cancellation, and refetch when the server invalidates parts. <span class="ws f">F2</span> <code>ws: view.invalidated</code></li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-window"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 740" role="img" aria-labelledby="wf-window-t"><title id="wf-window-t">Anatomy of one code window at Code zoom: header, blackout fades with expand hints, ports at callsites, gutter plus, and an inline review thread with a suggestion</title>
+<defs>
+<marker id="wf3-ac" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fc" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf3-ae" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fe" d="M0 0L8 4L0 8z"/></marker>
+<linearGradient id="wf3-ft" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sk1"/><stop offset="1" class="sk0"/></linearGradient>
+<linearGradient id="wf3-fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="sk0"/><stop offset="1" class="sk1"/></linearGradient>
+</defs>
+<path class="ec" d="M10 110C40 110 44 132 70 132"/><path class="ec" d="M10 160C40 160 44 132 70 132"/>
+<rect class="pn" x="150" y="24" width="700" height="692" rx="6"/>
+<rect class="g0" x="151" y="25" width="698" height="31"/><rect class="h3" x="150" y="24" width="700" height="3"/><line class="ru" x1="150" y1="56" x2="850" y2="56"/>
+<text class="m" x="164" y="45"><tspan class="d">src/pay/</tspan><tspan class="b">builder.py</tspan></text>
+<text class="m" x="310" y="45">· InvoiceBuilder.build</text>
+<rect class="pg" x="504" y="31" width="78" height="18" rx="9"/><text class="s m mid" x="543" y="44"><tspan class="b">ql</tspan>nsoxwy</text>
+<rect class="pg" x="590" y="31" width="112" height="18" rx="9"/><rect class="h3" x="598" y="36" width="8" height="8" rx="2"/><text class="s" x="610" y="44">Warm</text>
+<rect class="h3" x="642" y="43" width="3" height="3"/><rect class="h3" x="646.6" y="41" width="3" height="5"/><rect class="h3" x="651.2" y="44" width="3" height="2"/><rect class="h3" x="655.8" y="40" width="3" height="6"/><rect class="h3" x="660.4" y="38" width="3" height="8"/><rect class="h3" x="665" y="42" width="3" height="4"/><rect class="h3" x="669.6" y="37" width="3" height="9"/><rect class="h3" x="674.2" y="39" width="3" height="7"/><rect class="h3" x="678.8" y="41" width="3" height="5"/><rect class="h3" x="683.4" y="36" width="3" height="10"/><rect class="h3" x="688" y="38" width="3" height="8"/><rect class="h3" x="692.6" y="35" width="3" height="11"/>
+<path class="pn" d="M714 32h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-4 4v-4h-2a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2z"/><text class="s b mid" x="721" y="43">2</text>
+<rect class="px" x="738" y="31" width="76" height="18" rx="9"/><text class="s mid tx" x="776" y="44">× conflict</text>
+<rect class="sel" x="151" y="283" width="698" height="60"/><rect class="fac" x="151" y="283" width="3" height="60"/>
+<text class="s m d end" x="206" y="76">195</text><text class="m d" x="253" y="76"># Invoices are built lazily, on first shipment.</text>
+<text class="s m d end" x="206" y="96">196</text><text class="m" x="253" y="96">max_retries: int = 8</text>
+<text class="s m d end" x="206" y="116">197</text><text class="m d" x="253" y="116">@traced("pay.build")</text>
+<text class="s m d end" x="206" y="136">198</text><text class="m" x="253" y="136"><tspan class="b">def</tspan> build(self, request: BuildRequest) -&gt; Invoice:</text>
+<text class="s m d end" x="206" y="156">199</text><text class="m d" x="284" y="156">"""Build one invoice; retry on timeout."""</text>
+<text class="s m d end" x="206" y="176">200</text><text class="m" x="284" y="176">attempts = 0</text>
+<text class="s m d end" x="206" y="196">201</text><text class="m" x="284" y="196"><tspan class="b">while</tspan> True:</text>
+<text class="s m d end" x="206" y="216">202</text><text class="m" x="316" y="216"><tspan class="b">try</tspan>:</text>
+<text class="s m d end" x="206" y="236">203</text><text class="m" x="347" y="236">invoice = self._generate(request)</text>
+<text class="s m d end" x="206" y="256">204</text><text class="m" x="347" y="256"><tspan class="b">break</tspan></text>
+<text class="s m d end" x="206" y="276">205</text><text class="m" x="316" y="276"><tspan class="b">except</tspan> BuildTimeout:</text>
+<text class="s m d end" x="206" y="296">206</text><text class="m" x="347" y="296">attempts += 1</text>
+<text class="s m d end" x="206" y="316">207</text><text class="m" x="347" y="316"><tspan class="b">if</tspan> attempts &gt; self.max_retries:</text>
+<text class="s m d end" x="206" y="336">208</text><text class="m" x="378" y="336"><tspan class="b">raise</tspan></text>
+<rect class="fac" x="160" y="305" width="16" height="16" rx="3"/><text class="b mid tbg" x="168" y="318">+</text>
+<line class="ec" x1="425" y1="239" x2="534" y2="239"/>
+<rect class="pc" x="830" y="224" width="192" height="16" rx="8"/><text class="s m tc" x="838" y="236">→ InvoiceBuilder._generate</text>
+<path class="ec" d="M1022 232L1104 232" marker-end="url(#wf3-ac)"/>
+<rect class="pc" x="72" y="124" width="88" height="16" rx="8"/><text class="s m tc" x="80" y="136">← 2 callers</text>
+<rect class="pg" x="214" y="348" width="600" height="156" rx="6"/>
+<circle class="pn" cx="236" cy="366" r="10"/><text class="s b mid" x="236" y="370">Y</text>
+<text class="s b" x="252" y="370">you</text><text class="s d" x="276" y="370">· 2 min ago · lines 206–208</text>
+<rect class="pag" x="560" y="357" width="122" height="18" rx="9"/><text class="s mid tag" x="621" y="370">Assigned to agent</text>
+<rect class="pg" x="690" y="357" width="50" height="18" rx="9"/><text class="s b mid" x="715" y="370">Open</text>
+<text class="s m d" x="752" y="370">t12</text>
+<text x="230" y="396">Cap retries at 5 and back off; unbounded retries hide a stuck builder.</text>
+<text class="s b" x="230" y="422">Suggested change</text>
+<rect class="del" x="230" y="428" width="570" height="18" rx="2"/><text class="s m" x="236" y="441"><tspan class="tdl b">−</tspan>   if attempts &gt; self.max_retries:</text>
+<rect class="add" x="230" y="448" width="570" height="18" rx="2"/><text class="s m" x="236" y="461"><tspan class="tad b">+</tspan>   if attempts &gt;= min(self.max_retries, 5):</text>
+<rect class="pn" x="230" y="476" width="56" height="20" rx="4"/><text class="s mid" x="258" y="490">Reply</text>
+<rect class="pn" x="292" y="476" width="64" height="20" rx="4"/><text class="s mid" x="324" y="490">Resolve</text>
+<rect class="fac" x="362" y="476" width="104" height="20" rx="4"/><text class="s b mid tbg" x="414" y="490">Send to agent</text>
+<text class="s d" x="480" y="490">applies at qlns as an amend</text>
+<text class="s m d end" x="206" y="528">209</text><text class="m" x="347" y="528">time.sleep(self.backoff(attempts))</text>
+<text class="s m d end" x="206" y="548">210</text><text class="m" x="284" y="548">self.store.put(invoice.key, invoice)</text>
+<text class="s m d end" x="206" y="568">211</text><text class="m" x="284" y="568">self.bus.emit(EventEnvelope(topic=BUILD_COMPLETED,</text>
+<text class="s m d end" x="206" y="588">212</text><text class="m" x="503" y="588">payload=invoice.summary()))</text>
+<text class="s m d end" x="206" y="608">213</text><text class="m" x="284" y="608"><tspan class="b">return</tspan> invoice</text>
+<line class="ec" x1="284" y1="551" x2="394" y2="551"/><line class="ee" x1="284" y1="571" x2="386" y2="571"/>
+<rect class="pc" x="830" y="536" width="100" height="16" rx="8"/><text class="s m tc" x="838" y="548">→ KVStore.put</text>
+<path class="ec" d="M930 544L1104 544" marker-end="url(#wf3-ac)"/>
+<rect class="pe" x="830" y="556" width="214" height="16" rx="8"/><text class="s m te" x="838" y="568">⇢ pay.invoice.build.completed</text>
+<path class="ee" d="M1044 564L1074 564"/><path class="hub-e" d="M1082 556L1090 564L1082 572L1074 564Z"/>
+<line class="pd" x1="151" y1="624" x2="849" y2="624"/><rect class="g1" x="420" y="613" width="160" height="22" rx="4"/><text class="s d mid" x="500" y="628">⋯ lines 214–689 folded ⋯</text>
+<text class="s m d end" x="206" y="662">690</text><text class="m" x="253" y="662"><tspan class="b">def</tspan> describe(self) -&gt; str:</text>
+<text class="s m d end" x="206" y="682">691</text><text class="m" x="284" y="682"><tspan class="b">return</tspan> f"{self.name} ({self.size})"</text>
+<text class="s m d end" x="206" y="702">692</text>
+<rect x="151" y="57" width="698" height="66" fill="url(#wf3-ft)"/>
+<rect class="pg" x="357" y="62" width="286" height="22" rx="11"/><text class="s" x="369" y="77">↑ 194 lines above</text>
+<rect class="pn" x="476" y="65" width="40" height="16" rx="8"/><text class="s mid" x="496" y="77">+20</text>
+<rect class="pn" x="524" y="65" width="108" height="16" rx="8"/><text class="s mid" x="578" y="77">to class start</text>
+<rect x="151" y="648" width="698" height="67" fill="url(#wf3-fb)"/>
+<rect class="pg" x="300" y="688" width="400" height="22" rx="11"/><text class="s" x="312" y="703">↓ 118 more lines · showing 500 of 812</text>
+<rect class="pn" x="536" y="691" width="40" height="16" rx="8"/><text class="s mid" x="556" y="703">+20</text>
+<rect class="pn" x="584" y="691" width="104" height="16" rx="8"/><text class="s mid" x="636" y="703">to file end</text>
+<g class="wf-callout" transform="translate(150 24)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(344 73)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(58 132)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(826 210)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(140 313)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(214 348)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(288 699)"><circle r="9"/><text y="4">7</text></g>
+<g class="wf-callout" transform="translate(870 300)"><circle r="9"/><text y="4">8</text></g>
+</svg></div>
+<figcaption><h4>Code window anatomy (L3)</h4>
+<p>One window focuses on one function or one diff cluster and shows at most 500 lines. Context beyond its range fades to black at either edge, and the hint loads more on request.</p>
+<ol class="wf-legend">
+<li><b>Header</b> — dimmed directory, file name, symbol, change id with its shortest prefix in bold, heat grade with a touch sparkline, thread count and conflict state. <span class="ws f">F3</span> <code>GET /api/v1/views/{id}/tiles/{z}/{x}/{y}</code> (WindowHeader)</li>
+<li><b>Top blackout and expand hint</b> — the window starts mid-file, so its first lines fade out; +20 or to class start asks for more context. <span class="ws f">F3</span> <code>POST /api/v1/views/{id}/windows/{wid}/expand</code> (before)</li>
+<li><b>Incoming port</b> — on the left edge at the definition line, with the caller count; a click lists the callers. <span class="ws f">F3</span> <span class="ws f">F1</span> <code>GET /api/v1/links?viewId&amp;target&amp;dir&amp;kinds&amp;depth</code> (dir=in)</li>
+<li><b>Callsites and outgoing ports</b> — the call token is underlined in its link colour and its pill sits on the right edge at the same line; a click flies to the target. <span class="ws f">F3</span> <code>POST /api/v1/views/{id}/windows:batch</code> (ports)</li>
+<li><b>Gutter +</b> — appears on the hovered line; drag to widen the range before commenting. <span class="ws f">F3</span> <code>POST /api/v1/threads</code></li>
+<li><b>Inline thread</b> — GitHub-style thread under its anchored lines, the suggestion shown as a diff, assignee and status; Send to agent queues it for the MCP loop. <span class="ws f">F3</span> <span class="ws">B8</span> <code>POST /api/v1/threads/{id}/comments</code> <code>PATCH /api/v1/threads/{id}</code> <code>POST /api/v1/reviews:submit</code> <code>ws: thread.upserted</code></li>
+<li><b>Bottom blackout and the 500-line cap</b> — the hint says how much remains and loads more on request; long bodies can fold. <span class="ws f">F3</span> <code>POST /api/v1/views/{id}/windows/{wid}/expand</code> (after)</li>
+<li><b>Text and tokens</b> — code arrives as an immutable, content-addressed line range with highlight tokens, so the browser cache keeps it. <span class="ws f">F2</span> <span class="ws f">F3</span> <code>GET /api/v1/blobs/{blobId}/text?from&amp;to</code></li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-edges"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 590" role="img" aria-labelledby="wf-edges-t"><title id="wf-edges-t">Link kinds as drawn on the canvas: port placement, fan-out, topic and endpoint hubs, wildcard subscribers, dispatch, config consumers, confidence, runtime evidence and off-screen portals</title>
+<defs>
+<marker id="wf4-ac" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fc" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf4-ae" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fe" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf4-ah" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="fh" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf4-ai" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path class="fi" d="M1 1L11 6L1 11z"/></marker>
+<g id="wf4-sil"><rect class="bar2" x="0" y="0" width="90" height="3" rx="1.5"/><rect class="bar" x="10" y="12" width="70" height="3" rx="1.5"/><rect class="bar" x="10" y="24" width="120" height="3" rx="1.5"/><rect class="bar" x="20" y="36" width="60" height="3" rx="1.5"/><rect class="bar" x="20" y="48" width="96" height="3" rx="1.5"/><rect class="bar" x="10" y="60" width="40" height="3" rx="1.5"/><rect class="bar2" x="10" y="72" width="80" height="3" rx="1.5"/><rect class="bar" x="20" y="84" width="104" height="3" rx="1.5"/><rect class="bar" x="20" y="96" width="56" height="3" rx="1.5"/><rect class="bar" x="30" y="108" width="84" height="3" rx="1.5"/><rect class="bar" x="10" y="120" width="64" height="3" rx="1.5"/><rect class="bar" x="10" y="132" width="110" height="3" rx="1.5"/><rect class="bar" x="20" y="144" width="48" height="3" rx="1.5"/><rect class="bar" x="0" y="156" width="30" height="3" rx="1.5"/></g>
+</defs>
+<text class="b" x="20" y="36">Port placement</text>
+<text class="b" x="560" y="36">Event and HTTP links</text>
+<line class="ru" x1="545" y1="24" x2="545" y2="276"/>
+<path class="ec" d="M238 108C284 108 284 92 328 92" marker-end="url(#wf4-ac)"/>
+<path class="ec" d="M282 168C306 168 306 160 328 160" marker-end="url(#wf4-ac)"/>
+<path class="ec" d="M282 168C306 168 306 202 328 202" marker-end="url(#wf4-ac)"/>
+<path class="ec" d="M282 168C306 168 306 244 328 244" marker-end="url(#wf4-ac)"/>
+<rect class="pn" x="30" y="52" width="180" height="200" rx="4"/><rect class="g0" x="31" y="53" width="178" height="19"/>
+<text class="s m" x="36" y="66"><tspan class="b">ship_item</tspan><tspan class="d"> checkout.py</tspan></text>
+<use href="#wf4-sil" x="46" y="84"/>
+<rect class="fc" x="66" y="108" width="52" height="3" rx="1.5"/><rect class="fc" x="76" y="168" width="60" height="3" rx="1.5"/>
+<rect class="pc" x="186" y="100" width="52" height="16" rx="8"/><text class="s m tc" x="192" y="112">→ emit</text>
+<rect class="pc" x="186" y="160" width="96" height="16" rx="8"/><text class="s m tc" x="192" y="172">→ resolve ×3</text>
+<rect class="pn" x="330" y="52" width="180" height="70" rx="4"/><rect class="g0" x="331" y="53" width="178" height="19"/>
+<text class="s m" x="336" y="66"><tspan class="b">EventBus.emit</tspan><tspan class="d"> bus.py</tspan></text>
+<rect class="bar2" x="346" y="91" width="110" height="3" rx="1.5"/><rect class="bar" x="356" y="103" width="80" height="3" rx="1.5"/><circle class="fc" cx="330" cy="92" r="3.5"/>
+<rect class="pn" x="330" y="140" width="180" height="32" rx="4"/><text class="s m" x="346" y="160"><tspan class="b">resolve</tspan><tspan class="d"> fx/index.py</tspan></text><circle class="fc" cx="330" cy="160" r="3.5"/>
+<rect class="pn" x="330" y="182" width="180" height="32" rx="4"/><text class="s m" x="346" y="202"><tspan class="b">resolve</tspan><tspan class="d"> tax.py</tspan></text><circle class="fc" cx="330" cy="202" r="3.5"/>
+<rect class="pn" x="330" y="224" width="180" height="32" rx="4"/><text class="s m" x="346" y="244"><tspan class="b">resolve</tspan><tspan class="d"> ship/zones.py</tspan></text><circle class="fc" cx="330" cy="244" r="3.5"/>
+<text class="s d" x="30" y="272">outgoing: right edge, at the callsite line</text>
+<text class="s d" x="330" y="272">incoming: left edge, at the definition line</text>
+<path class="ee" d="M712 92L740 92"/><path class="ee" d="M760 92L798 92" marker-end="url(#wf4-ae)"/>
+<path class="ee" d="M750 102C750 150 770 176 798 176" marker-end="url(#wf4-ae)"/>
+<path class="eed" d="M950 112C964 112 962 92 976 92" marker-end="url(#wf4-ae)"/>
+<rect class="pn" x="570" y="52" width="130" height="68" rx="4"/><rect class="g0" x="571" y="53" width="128" height="19"/><text class="s m b" x="576" y="66">ship_item</text>
+<rect class="bar" x="586" y="84" width="70" height="3" rx="1.5"/><rect class="fe" x="586" y="92" width="56" height="3" rx="1.5"/><rect class="bar" x="596" y="104" width="64" height="3" rx="1.5"/>
+<rect class="pe" x="664" y="84" width="48" height="16" rx="8"/><text class="s m te" x="670" y="96">⇢ emit</text>
+<path class="hub-e" d="M750 82L760 92L750 102L740 92Z"/>
+<text class="s m mid te" x="750" y="74">order.item.shipped</text><text class="s mid d" x="750" y="118">1 → 2</text>
+<rect class="pn" x="800" y="52" width="150" height="80" rx="4"/><rect class="g0" x="801" y="53" width="148" height="19"/><text class="s m b" x="806" y="66">BuildTrigger.start</text>
+<text class="s m" x="812" y="96">bus.on(ITEM_SHIPPED,</text><text class="s m" x="826" y="114">self._on_shipped)</text><circle class="fe" cx="800" cy="92" r="3.5"/>
+<rect class="pn" x="978" y="52" width="122" height="68" rx="4"/><rect class="g0" x="979" y="53" width="120" height="19"/><text class="s m b" x="984" y="66">_on_shipped</text>
+<rect class="bar2" x="994" y="91" width="80" height="3" rx="1.5"/><rect class="bar" x="1004" y="103" width="60" height="3" rx="1.5"/>
+<text class="s d" x="924" y="146">dispatch</text>
+<rect class="pn" x="800" y="152" width="150" height="40" rx="4"/><rect class="g0" x="801" y="153" width="148" height="17"/><text class="s m b" x="806" y="165">audit/log.py</text>
+<text class="s m" x="812" y="184">bus.on("<tspan class="te b">order.#</tspan>", …)</text><circle class="fe" cx="800" cy="176" r="3.5"/>
+<path class="eh" d="M730 228L760 228"/><path class="eh" d="M900 228L928 228" marker-end="url(#wf4-ah)"/>
+<rect class="pn" x="570" y="200" width="160" height="60" rx="4"/><rect class="g0" x="571" y="201" width="158" height="19"/><text class="s m b" x="576" y="214">ItemPanel.tsx</text>
+<text class="s m" x="576" y="240">request(`/item/${id}`)</text><circle class="fh" cx="730" cy="228" r="3.5"/>
+<rect class="hub-h" x="760" y="216" width="140" height="24" rx="12"/><rect class="fh" x="764" y="219" width="32" height="18" rx="9"/>
+<text class="s b mid tbg" x="780" y="232">GET</text><text class="s m th" x="802" y="232">/api/item/{}</text>
+<text class="s d mid" x="830" y="256">api.ts adds the /api prefix</text>
+<rect class="pn" x="930" y="200" width="170" height="60" rx="4"/><rect class="g0" x="931" y="201" width="168" height="19"/><text class="s m" x="936" y="214"><tspan class="b">get_item</tspan><tspan class="d"> items.py</tspan></text>
+<text class="s m" x="942" y="236">@router.get(</text><text class="s m" x="950" y="252">"/api/item/{item_id}")</text><circle class="fh" cx="930" cy="232" r="3.5"/>
+<line class="ru" x1="20" y1="290" x2="1100" y2="290"/>
+<path class="ec" d="M40 330L150 330" marker-end="url(#wf4-ac)"/>
+<text class="b" x="180" y="326">Call</text><text class="s d" x="180" y="344">solid with arrow, callsite port to definition port</text>
+<path class="ei" d="M40 394L148 394" marker-end="url(#wf4-ai)"/>
+<text class="b" x="180" y="390">Inheritance / implements</text><text class="s d" x="180" y="408">dashed, hollow triangle at the base class</text>
+<path class="ee" d="M40 458L80 458"/><path class="hub-e" d="M88 450L96 458L88 466L80 458Z"/><path class="ee" d="M96 458L122 458" marker-end="url(#wf4-ae)"/><path class="eed" d="M128 458L152 458"/>
+<text class="b" x="180" y="454">Event: publish, topic hub, subscribe</text><text class="s d" x="180" y="472">one hub per topic; dotted dispatch to the handler</text>
+<path class="eh" d="M40 522L62 522"/><rect class="hub-h" x="62" y="512" width="56" height="20" rx="10"/><text class="s b mid th" x="90" y="526">GET</text><path class="eh" d="M118 522L150 522" marker-end="url(#wf4-ah)"/>
+<text class="b" x="180" y="518">HTTP: client, endpoint hub, route</text><text class="s d" x="180" y="536">keyed by method and normalized path</text>
+<path class="eg" d="M600 330L690 330"/><rect class="pn" x="694" y="318" width="18" height="24" rx="2"/><line class="ru" x1="698" y1="326" x2="708" y2="326"/><line class="ru" x1="698" y1="332" x2="706" y2="332"/>
+<text class="b" x="750" y="326">Config consumer</text><text class="s d" x="750" y="344">dotted, hub to the YAML line naming the topic</text>
+<path class="ec low" d="M600 394L708 394" marker-end="url(#wf4-ac)"/><text class="b tc" x="650" y="388">?</text>
+<text class="b" x="750" y="390">Low confidence</text><text class="s d" x="750" y="408">name-match guess, faded until confirmed</text>
+<path class="pd" d="M600 456L688 456"/><circle class="pc" cx="700" cy="456" r="9"/><text class="b mid tc" x="700" y="461">?</text>
+<text class="b" x="750" y="454">Dynamic target</text><text class="s d" x="750" y="472">key built at runtime: an open stub, never a guessed edge</text>
+<line class="pd" x1="712" y1="500" x2="712" y2="548"/><path class="ec" d="M600 524L620 524"/><rect class="pc" x="620" y="516" width="90" height="16" rx="8"/><text class="s m tc" x="626" y="528">→ KVStore.put</text>
+<text class="b" x="750" y="518">Off-screen portal</text><text class="s d" x="750" y="536">clipped at the viewport edge; the chip flies there</text>
+<g class="wf-callout" transform="translate(250 90)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(318 78)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(240 188)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(724 106)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(786 146)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(968 127)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(752 206)"><circle r="9"/><text y="4">7</text></g>
+<g class="wf-callout" transform="translate(20 306)"><circle r="9"/><text y="4">8</text></g>
+<g class="wf-callout" transform="translate(588 506)"><circle r="9"/><text y="4">9</text></g>
+</svg></div>
+<figcaption><h4>Links, ports and hubs</h4>
+<p>Every link starts at a port on the line where it happens. Many-to-many channels (event topics, HTTP endpoints) get a hub, so N producers and M consumers draw N + M edges rather than N × M.</p>
+<ol class="wf-legend">
+<li><b>Outgoing port</b> — on the right edge at the callsite line; the token itself is underlined in the link colour. <span class="ws f">F1</span> <code>POST /api/v1/views/{id}/windows:batch</code> (ports)</li>
+<li><b>Incoming port</b> — on the left edge at the definition line. <span class="ws f">F1</span> <code>POST /api/v1/views/{id}/windows:batch</code> (ports)</li>
+<li><b>Fan-out</b> — one callsite with several targets shows one pill with a count; hover lists the targets. <span class="ws f">F1</span> <span class="ws">B4</span> <code>GET /api/v1/links?viewId&amp;target&amp;dir&amp;kinds&amp;depth</code></li>
+<li><b>Topic hub</b> — keyed by the resolved topic, with producer and consumer counts; agents read it through <code>get_hub</code>. <span class="ws">B4</span> <span class="ws f">F1</span> <code>GET /api/v1/views/{id}/bootstrap</code> (hubs)</li>
+<li><b>Wildcard subscriber</b> — <code>order.#</code> attaches to every hub it matches (MQTT style: * is one segment, # is the rest). <span class="ws">B4</span> <code>GET /api/v1/links?viewId&amp;target&amp;dir&amp;kinds&amp;depth</code></li>
+<li><b>Dispatch</b> — a dotted edge from the subscription site to the handler it registers. <span class="ws">B4</span> <code>POST /api/v1/views/{id}/windows:batch</code> (ports)</li>
+<li><b>Endpoint hub</b> — client calls and routes meet on method plus normalized path, across languages; wrapper prefixes come from rule packs. <span class="ws">B4</span> <span class="ws f">F1</span> <code>GET /api/v1/views/{id}/bootstrap</code> (hubs)</li>
+<li><b>Link kinds</b> — each link carries kind, confidence and source (static rule, precise index, agent), which select the stroke; a key that only exists at runtime ends in an open "?" stub. <span class="ws">B4</span> <span class="ws f">F1</span> <code>GET /api/v1/links?viewId&amp;target&amp;dir&amp;kinds&amp;depth</code></li>
+<li><b>Off-screen portal</b> — an edge whose target is outside the viewport ends in a chip at the edge; clicking flies there and leaves a back crumb. <span class="ws f">F1</span></li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-history"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 600" role="img" aria-labelledby="wf-history-t"><title id="wf-history-t">The History tab: jj graph with workspaces, bookmarks, review badges and a selected range with tip and base handles</title>
+<text class="s b" x="24" y="96">Glyphs</text>
+<text class="m b mid" x="40" y="120">@</text><text class="s" x="64" y="120">working copy</text>
+<text class="m mid" x="40" y="146">○</text><text class="s" x="64" y="146">mutable</text>
+<text class="m mid" x="40" y="172">◆</text><text class="s" x="64" y="172">immutable</text>
+<text class="m b mid tx" x="40" y="198">×</text><text class="s" x="64" y="198">conflicted</text>
+<text class="m mid d" x="40" y="224">⋯</text><text class="s" x="64" y="224">elided history</text>
+<text class="s b" x="24" y="270">Change ids</text><text class="s" x="24" y="290">shortest unique prefix in bold:</text><text class="m" x="24" y="310"><tspan class="b">kx</tspan>wqmnpo</text>
+<text class="s b" x="24" y="350">Selecting</text><text class="s" x="24" y="370">click: snapshot at that change</text><text class="s" x="24" y="388">shift-click: range between two rows</text>
+<rect class="pn" x="300" y="20" width="520" height="560" rx="6"/>
+<text class="s b" x="318" y="41">History</text><rect class="fac" x="314" y="46" width="56" height="2"/>
+<text class="s d" x="392" y="41">Review</text><rect class="pg" x="434" y="31" width="18" height="14" rx="7"/><text class="s mid" x="443" y="42">3</text>
+<text class="s d" x="470" y="41">Agent</text><circle class="ag" cx="508" cy="37" r="3"/>
+<line class="ru" x1="300" y1="52" x2="820" y2="52"/>
+<text class="s d" x="316" y="73">Log revset</text><rect class="pg" x="380" y="60" width="270" height="20" rx="4"/><text class="s m" x="388" y="74">default (revsets.log)</text>
+<rect class="pg" x="660" y="60" width="140" height="20" rx="10"/><text class="s" x="672" y="74">Workspaces: shown</text>
+<line class="ru" x1="300" y1="90" x2="820" y2="90"/>
+<rect class="sel" x="302" y="152" width="516" height="156"/>
+<line class="ln2" x1="330" y1="123" x2="330" y2="157"/><line class="ln2" x1="330" y1="175" x2="330" y2="209"/><line class="ln2" x1="330" y1="227" x2="330" y2="261"/><line class="ln2" x1="330" y1="279" x2="330" y2="417"/><line class="ln2" x1="330" y1="435" x2="330" y2="469"/>
+<line class="ln2" x1="350" y1="331" x2="350" y2="365"/><path class="ln2" d="M350 383C350 400 330 398 330 414"/>
+<text class="l m b mid" x="330" y="118">@</text><text class="m" x="372" y="118"><tspan class="b">vr</tspan>krmtqyz</text><text class="s d" x="372" y="136">(empty)</text>
+<rect class="pg" x="724" y="106" width="74" height="18" rx="9"/><text class="s m mid" x="761" y="119">default@</text>
+<text class="l m b mid tx" x="330" y="170">×</text><text class="m" x="372" y="170"><tspan class="b">ql</tspan>nsoxwy</text><text class="s d" x="372" y="188">pay: retry invoice builds on timeout</text>
+<rect class="pg" x="560" y="158" width="92" height="18" rx="9"/><text class="s m mid" x="606" y="171">review-stack</text>
+<rect class="pg" x="658" y="158" width="64" height="18" rx="9"/><text class="s mid" x="690" y="171">2 threads</text>
+<rect class="px" x="728" y="158" width="70" height="18" rx="9"/><text class="s mid tx" x="763" y="171">× conflict</text>
+<text class="l m mid" x="330" y="222">○</text><text class="m" x="372" y="222"><tspan class="b">zm</tspan>pyrnvk</text><text class="s d" x="372" y="240">events: allow '#' in subscriptions</text>
+<rect class="pg" x="734" y="210" width="64" height="18" rx="9"/><text class="s mid" x="766" y="223">1 thread</text>
+<text class="l m mid" x="330" y="274">○</text><text class="m" x="372" y="274"><tspan class="b">kx</tspan>wqmnpo</text><text class="s d" x="372" y="292">order: emit item.shipped with invoice id</text>
+<rect class="wn" x="600" y="262" width="198" height="18" rx="9"/><text class="s mid twn" x="699" y="275">changed since review → interdiff</text>
+<text class="l m mid" x="350" y="326">○</text><text class="m" x="392" y="326"><tspan class="b">mo</tspan>sxqunt</text><text class="s d" x="392" y="344">(no description set)</text>
+<rect class="pg" x="748" y="314" width="50" height="18" rx="9"/><text class="s m mid" x="773" y="327">tax@</text>
+<text class="l m mid" x="350" y="378">○</text><text class="m" x="392" y="378"><tspan class="b">tp</tspan>wlkzrs</text><text class="s d" x="392" y="396">tax: rounding per line</text>
+<text class="l m mid" x="330" y="430">◆</text><text class="m" x="372" y="430"><tspan class="b">tt</tspan>xlpwsk</text><text class="s d" x="372" y="448">reports: totals per billing period</text>
+<rect class="pg" x="644" y="418" width="96" height="18" rx="9"/><text class="s m mid" x="692" y="431">refunds@</text>
+<rect class="pg" x="746" y="418" width="52" height="18" rx="9"/><text class="s m mid" x="772" y="431">trunk</text>
+<text class="l m mid d" x="330" y="482">⋯</text><text class="s d" x="372" y="482">214 more</text>
+<rect class="fac" x="256" y="161" width="40" height="18" rx="9"/><text class="s b mid tbg" x="276" y="174">tip</text>
+<rect class="fac" x="256" y="421" width="40" height="18" rx="9"/><text class="s b mid tbg" x="276" y="434">base</text>
+<path class="sls" d="M298 170H302M298 430H302"/>
+<line class="ru" x1="300" y1="512" x2="820" y2="512"/>
+<rect class="pg" x="316" y="528" width="80" height="28" rx="4"/><text class="s mid" x="356" y="546">Range…</text>
+<rect class="fac" x="404" y="528" width="116" height="28" rx="4"/><text class="s b mid tbg" x="462" y="546">Review range</text>
+<text class="s d end" x="800" y="546">op 4eb0965a · 12 s ago</text>
+<text class="s b" x="840" y="96">Badges</text>
+<text class="s" x="840" y="120">2 threads: open threads in the change</text>
+<text class="s" x="840" y="146">× conflict: jj reports a conflict here</text>
+<text class="s" x="840" y="172">changed since review: rewritten after</text><text class="s" x="840" y="188">you marked it reviewed; opens interdiff</text>
+<text class="s" x="840" y="214">default@ tax@ refunds@: each</text><text class="s" x="840" y="230">workspace's working copy</text>
+<text class="s" x="840" y="256">review-stack, trunk: bookmarks</text>
+<text class="s b" x="840" y="300">Live updates</text>
+<text class="s" x="840" y="324">a new jj operation refreshes rows in</text><text class="s" x="840" y="340">place; the selection goes to the agent</text>
+<g class="wf-callout" transform="translate(314 108)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(372 96)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(714 106)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(655 148)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(590 262)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(244 170)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(312 524)"><circle r="9"/><text y="4">7</text></g>
+<g class="wf-callout" transform="translate(828 296)"><circle r="9"/><text y="4">8</text></g>
+</svg></div>
+<figcaption><h4>Version tree (History tab)</h4>
+<p>The tree reads like <code>jj log</code>, plus what review needs: thread counts, conflicts, every workspace's working copy, and whether a change moved since you last reviewed it.</p>
+<ol class="wf-legend">
+<li><b>Graph lanes</b> — jj's own glyphs: @ working copy, ○ mutable, ◆ immutable, × conflicted, ⋯ elided. <span class="ws f">F4</span> <code>GET /api/v1/revisions?revset&amp;limit</code></li>
+<li><b>Change ids</b> — shortest unique prefix in bold, as jj prints them; they stay stable across rewrites, so threads follow the change. <span class="ws f">F4</span> <span class="ws">B1</span> <code>GET /api/v1/revisions?revset&amp;limit</code></li>
+<li><b>Bookmarks and workspaces</b> — each workspace's working copy is listed, so other agents' stacks are visible next to yours. <span class="ws f">F4</span> <span class="ws">B1</span> <code>GET /api/v1/revisions?revset&amp;limit</code></li>
+<li><b>Badges</b> — open thread counts and conflict state per change. <span class="ws f">F4</span> <code>GET /api/v1/threads</code> <code>GET /api/v1/conflicts?revset</code></li>
+<li><b>Changed since review</b> — the change was rewritten after you marked it reviewed; opens an interdiff view from the reviewed commit to the current one. <span class="ws f">F4</span> <span class="ws">B8</span> <code>GET /api/v1/interdiff?change&amp;from</code></li>
+<li><b>Range selection</b> — click a row for a snapshot, shift-click a second row for a range; the tip and base handles show what the diff compares. <span class="ws f">F4</span> <code>ws: view.state</code> <code>POST /api/v1/views</code></li>
+<li><b>Range… and Review range</b> — open the range dialog, or review the shaded selection directly. <span class="ws f">F4</span> <code>POST /api/v1/views</code></li>
+<li><b>Live updates</b> — a new jj operation refreshes the rows in place. <span class="ws f">F4</span> <code>ws: op.changed</code></li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-range"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 640" role="img" aria-labelledby="wf-range-t"><title id="wf-range-t">Range dialog: revset input with live validation, presets, saved ranges, commit picker with a gap warning, path filter, options, and an error state</title>
+<rect class="pn" x="20" y="40" width="130" height="120" rx="4"/><rect class="pn" x="40" y="190" width="110" height="160" rx="4"/><rect class="pn" x="20" y="390" width="130" height="90" rx="4"/><rect class="pn" x="940" y="300" width="150" height="140" rx="4"/><rect class="pn" x="960" y="470" width="120" height="110" rx="4"/>
+<rect class="bk" x="0" y="0" width="1120" height="640"/>
+<rect class="pn" x="180" y="20" width="720" height="600" rx="8"/>
+<text class="l b" x="204" y="48">Review range</text>
+<rect class="pg" x="690" y="30" width="120" height="22" rx="4"/><text class="s" x="702" y="45">Saved ranges ▾</text>
+<text class="s d end" x="884" y="45">Esc to close</text>
+<line class="ru" x1="180" y1="62" x2="900" y2="62"/>
+<text class="s b" x="204" y="86">Revset</text>
+<rect class="pg" x="204" y="94" width="672" height="30" rx="4"/><text class="m" x="214" y="114">trunk()..@</text><line class="sls" x1="296" y1="100" x2="296" y2="118"/>
+<path class="ck" d="M206 137l3 3 6-7"/><text class="s" x="224" y="142">3 commits · 7 files · <tspan class="tad b">+142</tspan> <tspan class="tdl b">−38</tspan> · one root, one head</text>
+<text class="s b" x="204" y="172">Presets</text>
+<rect class="sel" x="204" y="180" width="150" height="22" rx="11"/><rect class="sls" x="204" y="180" width="150" height="22" rx="11"/><text class="s" x="216" y="195"><tspan class="b">My stack</tspan> <tspan class="m">trunk()..@</tspan></text>
+<rect class="pg" x="360" y="180" width="176" height="22" rx="11"/><text class="s" x="372" y="195"><tspan class="b">Mine</tspan> <tspan class="m">mine() &amp; trunk()..</tspan></text>
+<rect class="pg" x="542" y="180" width="176" height="22" rx="11"/><text class="s" x="554" y="195"><tspan class="b">Agent tax</tspan> <tspan class="m">trunk()..tax@</tspan></text>
+<rect class="pg" x="204" y="208" width="268" height="22" rx="11"/><text class="s" x="216" y="223"><tspan class="b">Last 10</tspan> <tspan class="m">ancestors(@, 10) ~ immutable()</tspan></text>
+<rect class="pg" x="478" y="208" width="140" height="22" rx="11"/><text class="s" x="490" y="223"><tspan class="b">Single change</tspan> <tspan class="m">kxwq</tspan></text>
+<text class="s b" x="204" y="254">Commits in range</text><text class="s d end" x="876" y="254">base and tip follow the selection</text>
+<rect class="pg" x="204" y="262" width="672" height="170" rx="4"/>
+<line class="ln2" x1="246" y1="295" x2="246" y2="308"/><line class="ln2" x1="246" y1="325" x2="246" y2="338"/><line class="ln2" x1="246" y1="355" x2="246" y2="368"/><line class="ln2" x1="246" y1="385" x2="246" y2="398"/>
+<rect class="pg" x="216" y="278" width="14" height="14" rx="3"/><path class="ck" d="M219 285l3 3 6-7"/>
+<text class="m b mid" x="246" y="290">@</text><text class="m" x="262" y="290"><tspan class="b">vr</tspan>krmtqyz</text><text class="s d" x="360" y="290">(empty)</text>
+<rect class="fac" x="820" y="277" width="44" height="16" rx="8"/><text class="s b mid tbg" x="842" y="289">tip</text>
+<rect class="pg" x="216" y="308" width="14" height="14" rx="3"/>
+<text class="m b mid tx" x="246" y="320">×</text><text class="m d" x="262" y="320"><tspan class="b">ql</tspan>nsoxwy</text><text class="s d" x="360" y="320">pay: retry invoice builds on timeout</text>
+<rect class="pg" x="216" y="338" width="14" height="14" rx="3"/><path class="ck" d="M219 345l3 3 6-7"/>
+<text class="m mid" x="246" y="350">○</text><text class="m" x="262" y="350"><tspan class="b">zm</tspan>pyrnvk</text><text class="s d" x="360" y="350">events: allow '#' in subscriptions</text>
+<rect class="pg" x="216" y="368" width="14" height="14" rx="3"/><path class="ck" d="M219 375l3 3 6-7"/>
+<text class="m mid" x="246" y="380">○</text><text class="m" x="262" y="380"><tspan class="b">kx</tspan>wqmnpo</text><text class="s d" x="360" y="380">order: emit item.shipped with invoice id</text>
+<text class="m mid" x="246" y="410">◆</text><text class="m" x="262" y="410"><tspan class="b">tt</tspan>xlpwsk</text><text class="s d" x="360" y="410">reports: totals per billing period</text>
+<rect class="fac" x="820" y="397" width="44" height="16" rx="8"/><text class="s b mid tbg" x="842" y="409">base</text>
+<rect class="wn" x="204" y="440" width="672" height="34" rx="4"/>
+<text class="b twn" x="218" y="462">!</text><text class="s" x="236" y="461">qlns is excluded but its descendants are not.</text>
+<rect class="pg" x="676" y="446" width="80" height="22" rx="4"/><text class="s mid" x="716" y="461">Fill gap</text>
+<rect class="pg" x="764" y="446" width="100" height="22" rx="4"/><text class="s mid" x="814" y="461">Per-commit</text>
+<text class="s b" x="204" y="496">Paths (jj fileset)</text>
+<rect class="pg" x="204" y="502" width="420" height="26" rx="4"/><text class="s m" x="212" y="519">glob:"src/**" &amp; ~glob:"**/tests/**"</text>
+<text class="s b" x="204" y="564">Diff</text>
+<rect class="pg" x="236" y="550" width="170" height="22" rx="4"/><rect class="sel" x="236" y="550" width="84" height="22"/><line class="ru" x1="320" y1="550" x2="320" y2="572"/>
+<text class="s b mid" x="278" y="565">Cumulative</text><text class="s mid" x="363" y="565">Per commit</text>
+<text class="s b" x="424" y="564">Context</text>
+<rect class="pg" x="476" y="550" width="120" height="22" rx="4"/><rect class="sel" x="508" y="550" width="32" height="22"/><line class="ru" x1="508" y1="550" x2="508" y2="572"/><line class="ru" x1="540" y1="550" x2="540" y2="572"/>
+<text class="s mid" x="492" y="565">0</text><text class="s b mid" x="524" y="565">1</text><text class="s mid" x="568" y="565">2 hops</text>
+<rect class="pg" x="616" y="554" width="14" height="14" rx="3"/><text class="s" x="638" y="565">Ignore whitespace</text>
+<line class="ru" x1="180" y1="580" x2="900" y2="580"/>
+<text class="s" x="204" y="605">3 commits · 7 files · <tspan class="tad b">+142</tspan> <tspan class="tdl b">−38</tspan> · 2 open threads in range</text>
+<rect class="pg" x="704" y="588" width="76" height="26" rx="4"/><text class="s mid" x="742" y="605">Cancel</text>
+<rect class="fac" x="790" y="588" width="86" height="26" rx="4"/><text class="s b mid tbg" x="833" y="605">Apply</text>
+<rect class="pn" x="916" y="80" width="192" height="132" rx="6"/>
+<text class="s b" x="928" y="100">Error state</text>
+<rect class="px" x="928" y="110" width="168" height="26" rx="4"/><text class="m" x="936" y="128">trunks()..@</text>
+<text class="s tx" x="928" y="156">Unknown function trunks()</text><text class="s tx" x="928" y="172">did you mean trunk()?</text>
+<text class="s d" x="928" y="196">Apply stays disabled</text>
+<g class="wf-callout" transform="translate(194 108)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(916 80)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(194 190)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(684 30)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(194 270)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(194 452)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(194 514)"><circle r="9"/><text y="4">7</text></g>
+<g class="wf-callout" transform="translate(190 560)"><circle r="9"/><text y="4">8</text></g>
+<g class="wf-callout" transform="translate(786 586)"><circle r="9"/><text y="4">9</text></g>
+</svg></div>
+<figcaption><h4>Range dialog</h4>
+<p>The revset is the source of truth: presets, the commit picker and saved ranges all just rewrite it, and the server validates every keystroke against the real repo.</p>
+<ol class="wf-legend">
+<li><b>Revset input</b> — validated as you type; the line under it counts commits and files and shows the line delta. <span class="ws f">F4</span> <span class="ws">B1</span> <code>POST /api/v1/revsets:validate</code></li>
+<li><b>Error state</b> — jj's own parse error with a suggestion; Apply stays disabled. <span class="ws f">F4</span> <code>POST /api/v1/revsets:validate</code></li>
+<li><b>Presets</b> — my stack, mine, one per agent workspace, last 10, a single change. <span class="ws f">F4</span> <code>GET /api/v1/repo</code> (workspaces)</li>
+<li><b>Saved ranges</b> — named revset, fileset and options. <span class="ws f">F4</span> <code>GET /api/v1/ranges</code></li>
+<li><b>Commit picker</b> — toggling rows rewrites the revset; tip and base show what the diff compares. <span class="ws f">F4</span> <code>GET /api/v1/revisions?revset&amp;limit</code></li>
+<li><b>Gap warning</b> — the selection skips a commit whose descendants are included; fill the gap or review per commit. <span class="ws f">F4</span> <span class="ws">B1</span> <code>POST /api/v1/revsets:validate</code> (gaps)</li>
+<li><b>Paths</b> — a jj fileset narrows which files become windows. <span class="ws f">F4</span> <code>POST /api/v1/revsets:validate</code> (fileset)</li>
+<li><b>Options</b> — cumulative or per-commit diff, context windows 0–2 hops, whitespace handling. <span class="ws f">F4</span> <span class="ws c">C0</span> ViewSpec fields</li>
+<li><b>Apply</b> — creates the range view and switches the canvas to it. <span class="ws f">F4</span> <span class="ws">B6</span> <code>POST /api/v1/views</code> (ViewSpec → ViewRef)</li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-edit"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 536" role="img" aria-labelledby="wf-edit-t"><title id="wf-edit-t">Storyboard of editing a past change: edit, preview, applied with a conflict, agent resolves it</title>
+<path class="ln2" d="M278 254l6 6-6 6"/><path class="ln2" d="M556 254l6 6-6 6"/><path class="ln2" d="M834 254l6 6-6 6"/>
+<g transform="translate(12 0)">
+<text class="l b" x="0" y="28">a · Edit</text><text class="s m d" x="0" y="46">builder.py at kxwqmnpo</text>
+<rect class="pg" x="0" y="56" width="262" height="414" rx="6"/>
+<rect class="pn" x="10" y="68" width="242" height="196" rx="4"/><rect class="g0" x="11" y="69" width="240" height="20"/><rect class="h3" x="10" y="68" width="242" height="3"/>
+<text class="s m" x="16" y="83"><tspan class="b">InvoiceBuilder.build</tspan><tspan class="d"> @ kxwq</tspan></text>
+<rect class="sel" x="11" y="90" width="240" height="20"/><text class="s" x="18" y="104">Editing at <tspan class="m b">kx</tspan><tspan class="m">wqmnpo</tspan></text>
+<text class="s m" x="30" y="128"><tspan class="b">while</tspan> True:</text>
+<text class="s m" x="44" y="145"><tspan class="b">try</tspan>:</text>
+<text class="s m" x="58" y="162">invoice = self._generate(r)</text>
+<text class="s m" x="44" y="179"><tspan class="b">except</tspan> BuildTimeout:</text>
+<text class="s m" x="58" y="196">attempts += 1</text>
+<rect class="add" x="11" y="202" width="240" height="16"/><text class="s m" x="58" y="213"><tspan class="b">if</tspan> attempts &gt;= 3:</text><line class="sls" x1="172" y1="203" x2="172" y2="217"/>
+<text class="s m" x="72" y="230"><tspan class="b">raise</tspan></text>
+<text class="s m" x="58" y="247">sleep(backoff(attempts))</text>
+<text class="s b" x="12" y="292">Save as</text>
+<circle class="po" cx="20" cy="310" r="6"/><circle class="fac" cx="20" cy="310" r="3"/><text class="s b" x="34" y="314">Amend <tspan class="m b">kx</tspan><tspan class="m">wq</tspan></text>
+<circle class="po" cx="20" cy="334" r="6"/><text class="s" x="34" y="338">New change after <tspan class="m">kxwq</tspan></text>
+<circle class="po" cx="20" cy="358" r="6"/><text class="s" x="34" y="362">Branch from <tspan class="m b">kx</tspan><tspan class="m">wq</tspan></text>
+<rect class="fac" x="12" y="380" width="84" height="24" rx="4"/><text class="s b mid tbg" x="54" y="396">Save ⌘S</text>
+<rect class="pg" x="104" y="380" width="70" height="24" rx="4"/><text class="s mid" x="139" y="396">Cancel</text>
+<text class="s m d" x="12" y="432">jj-lib: rewrite kxwq in a</text><text class="s m d" x="12" y="450">transaction, rebase descendants</text>
+</g>
+<g transform="translate(290 0)">
+<text class="l b" x="0" y="28">b · Preview</text><text class="s m d" x="0" y="46">POST /api/v1/edits · dryRun</text>
+<rect class="pg" x="0" y="56" width="262" height="414" rx="6"/>
+<text class="s b" x="12" y="80">Preview</text>
+<rect class="pn" x="10" y="90" width="242" height="92" rx="4"/><text class="s m d" x="16" y="106">src/pay/builder.py</text>
+<rect class="del" x="11" y="114" width="240" height="18"/><text class="s m" x="16" y="127"><tspan class="tdl b">−</tspan> if attempts &gt; self.max_retries:</text>
+<rect class="add" x="11" y="134" width="240" height="18"/><text class="s m" x="16" y="147"><tspan class="tad b">+</tspan> if attempts &gt;= 3:</text>
+<text class="s m d" x="16" y="168">  raise</text>
+<text class="s b" x="12" y="206">Impact</text>
+<text class="s" x="12" y="226">Amends <tspan class="m b">kx</tspan><tspan class="m">wqmnpo</tspan> (same change id)</text>
+<text class="s" x="12" y="244">Rebases 3 descendants incl. default@</text>
+<text class="s d" x="12" y="262">tax@ and refunds@ unaffected</text>
+<rect class="wn" x="10" y="274" width="242" height="44" rx="4"/><text class="s b twn" x="20" y="292">Likely conflict</text><text class="s" x="20" y="309">in <tspan class="m">qlns</tspan> · src/pay/builder.py</text>
+<rect class="fac" x="12" y="336" width="76" height="26" rx="4"/><text class="s b mid tbg" x="50" y="353">Apply</text>
+<rect class="pg" x="96" y="336" width="70" height="26" rx="4"/><text class="s mid" x="131" y="353">Cancel</text>
+<text class="s m d" x="12" y="400">{ dryRun: true }</text><text class="s m d" x="12" y="418">→ EditResult (previewed)</text>
+<text class="s d" x="12" y="446">exact: transaction dropped</text>
+</g>
+<g transform="translate(568 0)">
+<text class="l b" x="0" y="28">c · Applied</text><text class="s m d" x="0" y="46">edit.updated · conflicts.changed</text>
+<rect class="pg" x="0" y="56" width="262" height="414" rx="6"/>
+<line class="ln2" x1="24" y1="97" x2="24" y2="109"/><line class="ln2" x1="24" y1="127" x2="24" y2="139"/><line class="ln2" x1="24" y1="157" x2="24" y2="169"/><line class="ln2" x1="24" y1="187" x2="24" y2="199"/>
+<text class="m b mid tx" x="24" y="92">×</text><text class="s m" x="42" y="92"><tspan class="b">vr</tspan>krmtqyz</text><rect class="pg" x="180" y="81" width="70" height="16" rx="8"/><text class="s m mid" x="215" y="93">default@</text>
+<text class="m b mid tx" x="24" y="122">×</text><text class="s m" x="42" y="122"><tspan class="b">ql</tspan>nsoxwy</text><rect class="px" x="186" y="111" width="64" height="16" rx="8"/><text class="s mid tx" x="218" y="123">conflict</text>
+<text class="m mid" x="24" y="152">○</text><text class="s m" x="42" y="152"><tspan class="b">zm</tspan>pyrnvk</text>
+<rect class="sel" x="2" y="168" width="258" height="22"/><text class="m mid" x="24" y="182">○</text><text class="s m" x="42" y="182"><tspan class="b">kx</tspan>wqmnpo</text><rect class="fac" x="186" y="171" width="64" height="16" rx="8"/><text class="s b mid tbg" x="218" y="183">amended</text>
+<text class="m mid" x="24" y="212">◆</text><text class="s m" x="42" y="212"><tspan class="b">tt</tspan>xlpwsk</text>
+<rect class="pn" x="10" y="234" width="242" height="176" rx="4"/><rect class="xf" x="10" y="234" width="242" height="3"/>
+<text class="s m" x="16" y="252"><tspan class="b">builder.py</tspan><tspan class="d"> @ qlns</tspan></text><text class="s tx end" x="246" y="252">conflict 1 of 1</text>
+<text class="s b" x="16" y="274">kxwq + edit</text><text class="s b" x="134" y="274">qlns</text>
+<rect class="pg" x="16" y="280" width="112" height="50" rx="3"/><text class="s m" x="22" y="298">attempts &gt;= 3</text><text class="s m" x="22" y="316">raise</text>
+<rect class="pg" x="134" y="280" width="112" height="50" rx="3"/><text class="s m" x="140" y="298">attempts &gt; 5</text><text class="s m" x="140" y="316">backoff()</text>
+<rect class="pg" x="16" y="342" width="70" height="22" rx="4"/><text class="s mid" x="51" y="357">Take left</text>
+<rect class="pg" x="92" y="342" width="76" height="22" rx="4"/><text class="s mid" x="130" y="357">Take right</text>
+<rect class="pg" x="174" y="342" width="72" height="22" rx="4"/><text class="s mid" x="210" y="357">Edit</text>
+<rect class="pag" x="16" y="372" width="230" height="24" rx="4"/><text class="s b mid tag" x="131" y="388">Ask agent</text>
+<text class="s m d" x="12" y="432">GET /api/v1/conflicts/</text><text class="s m d" x="12" y="450">{commit}/{path}</text>
+</g>
+<g transform="translate(846 0)">
+<text class="l b" x="0" y="28">d · Agent resolves</text><text class="s m d" x="0" y="46">MCP resolve_conflict</text>
+<rect class="pg" x="0" y="56" width="262" height="414" rx="6"/>
+<text class="s b" x="12" y="84">Agent</text>
+<circle class="ag" cx="15" cy="104" r="3"/><text class="s m tag" x="24" y="108">list_conflicts</text>
+<circle class="ag" cx="15" cy="124" r="3"/><text class="s m tag" x="24" y="128">get_conflict qlns</text>
+<circle class="ag" cx="15" cy="144" r="3"/><text class="s m tag" x="24" y="148">resolve_conflict qlns</text>
+<circle class="ag" cx="15" cy="164" r="3"/><text class="s m tag" x="24" y="168">reply t12</text>
+<line class="ru" x1="10" y1="186" x2="252" y2="186"/>
+<line class="ln2" x1="24" y1="219" x2="24" y2="231"/><line class="ln2" x1="24" y1="249" x2="24" y2="261"/><line class="ln2" x1="24" y1="279" x2="24" y2="291"/><line class="ln2" x1="24" y1="309" x2="24" y2="321"/>
+<text class="m b mid" x="24" y="214">@</text><text class="s m" x="42" y="214"><tspan class="b">vr</tspan>krmtqyz</text><rect class="pg" x="180" y="203" width="70" height="16" rx="8"/><text class="s m mid" x="215" y="215">default@</text>
+<text class="m mid" x="24" y="244">○</text><text class="s m" x="42" y="244"><tspan class="b">ql</tspan>nsoxwy</text><rect class="pag" x="150" y="233" width="100" height="16" rx="8"/><text class="s mid tag" x="200" y="245">agent resolved</text>
+<text class="m mid" x="24" y="274">○</text><text class="s m" x="42" y="274"><tspan class="b">zm</tspan>pyrnvk</text>
+<text class="m mid" x="24" y="304">○</text><text class="s m" x="42" y="304"><tspan class="b">kx</tspan>wqmnpo</text>
+<text class="m mid" x="24" y="334">◆</text><text class="s m" x="42" y="334"><tspan class="b">tt</tspan>xlpwsk</text>
+<rect class="pn" x="10" y="356" width="242" height="46" rx="6"/><rect class="ag" x="10" y="356" width="4" height="46"/>
+<text class="s" x="22" y="375">Agent resolved the conflict in</text><text class="s" x="22" y="393"><tspan class="m b">qlns</tspan> · src/pay/builder.py</text>
+<text class="s m d" x="12" y="432">POST /api/v1/conflicts/</text><text class="s m d" x="12" y="450">{commit}/{path}/resolve</text>
+</g>
+<rect class="pn" x="12" y="486" width="1096" height="34" rx="4"/>
+<text class="s" x="26" y="507">Affected workspaces are snapshotted first and their checkouts updated after: no stale workspaces, no lost edits. Undo reverts our operation only.</text>
+<g class="wf-callout" transform="translate(12 56)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(290 56)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(568 56)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(846 56)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(12 486)"><circle r="9"/><text y="4">5</text></g>
+</svg></div>
+<figcaption><h4>Editing a past change</h4>
+<p>An edit in a window anchored to an older change goes in at the right place in the stack. The preview shows what will be rebased and where conflicts are likely before anything is written, and conflicts that do appear can go to the agent.</p>
+<ol class="wf-legend">
+<li><b>Edit at a past change</b> — the window shows the file as of <code>kxwqmnpo</code>; Save as defaults to amend (a new branch when the commit is immutable). <span class="ws f">F3</span> <span class="ws">B8</span> <code>POST /api/v1/edits</code></li>
+<li><b>Preview</b> — a dry run rewrites inside a jj-lib transaction and drops it, so the rebased descendants, affected workspaces and conflicts are exact. <span class="ws f">F3</span> <span class="ws">B8</span> <code>POST /api/v1/edits</code> (dryRun)</li>
+<li><b>Applied</b> — the amended change keeps its id, conflicted descendants get ×, and a conflict window opens with both sides. <span class="ws f">F4</span> <span class="ws f">F3</span> <code>ws: edit.updated · conflicts.changed</code> <code>GET /api/v1/conflicts/{commit}/{path}</code></li>
+<li><b>Agent resolves</b> — Ask agent files a task thread on the conflict and sends it; the agent resolves it over MCP and the × clears. <span class="ws">B9</span> <span class="ws">B8</span> <code>POST /api/v1/threads</code> (kind task) <code>POST /api/v1/reviews:submit</code> <code>resolve_conflict</code></li>
+<li><b>Write rule</b> — affected workspaces are snapshotted before the write and updated after; undo reverts our operation only (the CLI recipes stay as the test oracle). <span class="ws">B1</span> <span class="ws">B8</span> <code>POST /api/v1/edits/{id}/undo</code></li>
+</ol></figcaption></figure>
+<figure class="wf" id="wf-agent"><div class="wf-scroll"><svg class="wf-svg" viewBox="0 0 1120 630" role="img" aria-labelledby="wf-agent-t"><title id="wf-agent-t">Sequence of the agent review loop across the human UI, the server, the agent over MCP and the jj repo</title>
+<defs>
+<marker id="wf8-an" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="d" d="M0 0L8 4L0 8z"/></marker>
+<marker id="wf8-aa" viewBox="0 0 8 8" refX="7.5" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto"><path class="ag" d="M0 0L8 4L0 8z"/></marker>
+</defs>
+<rect class="pn" x="65" y="14" width="170" height="36" rx="4"/><text class="b mid" x="150" y="30">Human (UI)</text><text class="s d mid" x="150" y="44">F3 · F4</text>
+<rect class="pn" x="345" y="14" width="170" height="36" rx="4"/><text class="b mid" x="430" y="30">Server</text><text class="s d mid" x="430" y="44">B7 · B8 · B9</text>
+<rect class="pag" x="625" y="14" width="170" height="36" rx="4"/><text class="b mid tag" x="710" y="30">Agent (MCP)</text><text class="s d mid" x="710" y="44">Claude Code client</text>
+<rect class="pn" x="885" y="14" width="170" height="36" rx="4"/><text class="b mid" x="970" y="30">jj repo</text><text class="s d mid" x="970" y="44">B1</text>
+<line class="pd" x1="150" y1="50" x2="150" y2="620"/><line class="pd" x1="430" y1="50" x2="430" y2="620"/><line class="sagd" x1="710" y1="50" x2="710" y2="620"/><line class="pd" x1="970" y1="50" x2="970" y2="620"/>
+<path class="ln2" d="M154 92H422" marker-end="url(#wf8-an)"/><text class="s mid" x="290" y="86">POST /threads · suggestion, assignee agent</text>
+<path class="ln2" d="M154 128H422" marker-end="url(#wf8-an)"/><text class="s mid" x="290" y="122">Send to agent · POST /reviews:submit</text>
+<rect class="pn" x="372" y="144" width="116" height="22" rx="4"/><text class="s mid" x="430" y="159">event log append</text>
+<path class="sag" d="M706 196H438" marker-end="url(#wf8-aa)"/><text class="s m mid tag" x="570" y="190">wait_for_events (long-poll)</text>
+<path class="sagd" d="M434 224H702" marker-end="url(#wf8-aa)"/><text class="s m mid tag" x="570" y="218">review.submitted · t12</text>
+<path class="sag" d="M706 262H438" marker-end="url(#wf8-aa)"/><text class="s m mid tag" x="570" y="256">get_thread t12</text>
+<path class="sagd" d="M434 290H702" marker-end="url(#wf8-aa)"/><text class="s mid tag" x="570" y="284">thread, anchored code, suggestion</text>
+<path class="sag" d="M706 328H438" marker-end="url(#wf8-aa)"/><text class="s m mid tag" x="570" y="322">read_window builder.py#build</text>
+<path class="sagd" d="M426 352H158" marker-end="url(#wf8-aa)"/><text class="s m mid tag" x="290" y="346">ws agent.attention</text>
+<path class="sag" d="M706 390H438" marker-end="url(#wf8-aa)"/><text class="s m mid tag" x="570" y="384">edit_code · amend qlns</text>
+<path class="ln2" d="M434 420H962" marker-end="url(#wf8-an)"/><rect class="g0" x="528" y="403" width="344" height="16"/><text class="s m mid" x="700" y="414">jj-lib transaction: amend qlns, rebase descendants</text>
+<path class="pd" d="M966 448H438" marker-end="url(#wf8-an)"/><rect class="g0" x="632" y="431" width="136" height="16"/><text class="s m mid" x="700" y="442">new operation 9c1d2e7a</text>
+<path class="ln2" d="M426 482H158" marker-end="url(#wf8-an)"/><text class="s mid" x="290" y="476">ws op.changed · edit.updated · thread Addressed</text>
+<rect class="pg" x="20" y="466" width="74" height="18" rx="9"/><text class="s mid" x="57" y="479">Addressed</text>
+<rect class="wn" x="20" y="490" width="122" height="18" rx="9"/><text class="s mid twn" x="81" y="503">changed since review</text>
+<path class="sag" d="M706 510H438" marker-end="url(#wf8-aa)"/><text class="s mid tag" x="570" y="504">reply t12 · capped at 5 with backoff</text>
+<path class="ln2" d="M154 548H422" marker-end="url(#wf8-an)"/><text class="s mid" x="290" y="542">Open interdiff · GET /interdiff</text>
+<path class="ln2" d="M434 572H962" marker-end="url(#wf8-an)"/><rect class="g0" x="567" y="555" width="266" height="16"/><text class="s m mid" x="700" y="566">jj interdiff --from &lt;reviewed&gt; --to qlns</text>
+<path class="ln2" d="M154 606H422" marker-end="url(#wf8-an)"/><text class="s mid" x="290" y="600">Resolve · PATCH /threads/{id}</text>
+<g class="wf-callout" transform="translate(164 110)"><circle r="9"/><text y="4">1</text></g>
+<g class="wf-callout" transform="translate(500 155)"><circle r="9"/><text y="4">2</text></g>
+<g class="wf-callout" transform="translate(724 276)"><circle r="9"/><text y="4">3</text></g>
+<g class="wf-callout" transform="translate(300 366)"><circle r="9"/><text y="4">4</text></g>
+<g class="wf-callout" transform="translate(984 404)"><circle r="9"/><text y="4">5</text></g>
+<g class="wf-callout" transform="translate(300 494)"><circle r="9"/><text y="4">6</text></g>
+<g class="wf-callout" transform="translate(164 578)"><circle r="9"/><text y="4">7</text></g>
+</svg></div>
+<figcaption><h4>Agent review loop</h4>
+<p>Review comments become the agent's work queue. The agent finds work through the event log, reads and edits by stable ids, and every write lands as one jj operation the human can interdiff and undo.</p>
+<ol class="wf-legend">
+<li><b>Review comment</b> — the human comments with a suggestion, assigns the agent and sends the batch. <span class="ws f">F3</span> <span class="ws">B8</span> <code>POST /api/v1/threads</code> <code>POST /api/v1/reviews:submit</code></li>
+<li><b>Event log</b> — the server appends <code>review.submitted</code>; the agent's long-poll returns it. <span class="ws">B7</span> <span class="ws">B9</span> <code>wait_for_events</code></li>
+<li><b>Agent reads</b> — the thread with its anchored code, then the window with its ports, all by stable ids. <span class="ws">B9</span> <code>get_thread</code> <code>read_window</code></li>
+<li><b>Presence</b> — each read moves the agent marker on the human's canvas. <span class="ws">B7</span> <span class="ws f">F1</span> <code>ws: agent.attention</code></li>
+<li><b>Edit through the mutation queue</b> — <code>edit_code</code> becomes one jj operation (an amend), with affected workspaces snapshotted first. <span class="ws">B9</span> <span class="ws">B8</span> <span class="ws">B1</span> <code>POST /api/v1/edits</code></li>
+<li><b>Realtime updates</b> — the new operation refreshes the tree; the thread turns Addressed and the change shows changed since review. <span class="ws">B7</span> <span class="ws f">F4</span> <code>ws: op.changed · edit.updated · thread.upserted</code></li>
+<li><b>Interdiff and resolve</b> — the human reviews only what changed since their review, then resolves the thread. <span class="ws f">F4</span> <span class="ws">B8</span> <code>GET /api/v1/interdiff?change&amp;from</code> <code>PATCH /api/v1/threads/{id}</code></li>
+</ol></figcaption></figure>

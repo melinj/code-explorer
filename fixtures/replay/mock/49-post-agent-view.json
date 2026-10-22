@@ -1,0 +1,34 @@
+{
+ "body": {
+  "spec": {
+   "mode": "snapshot",
+   "rev": "@"
+  }
+ },
+ "method": "POST",
+ "path": "/api/v1/agent/view",
+ "response": {
+  "id": "<id2>",
+  "layoutVersion": 2,
+  "resolved": {
+   "commits": [
+    "c0ffee"
+   ],
+   "head": "c0ffee",
+   "op": "<volatile>"
+  },
+  "spec": {
+   "mode": "snapshot",
+   "rev": "@"
+  },
+  "stats": {
+   "clusters": 162,
+   "files": 1478,
+   "windows": 2000
+  },
+  "status": "ready",
+  "warnings": []
+ },
+ "route": "POST /api/v1/agent/view",
+ "status": 200
+}

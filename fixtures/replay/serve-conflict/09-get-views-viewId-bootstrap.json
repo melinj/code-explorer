@@ -1,0 +1,173 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id1>/bootstrap",
+ "response": {
+  "bundles": [],
+  "churn": {
+   "bands": [
+    0.099998,
+    0.099998,
+    0.5,
+    0.5
+   ],
+   "halfLifeDays": 90.0,
+   "head": "a1056a0356d93a0916212ae8364516733aab5de5",
+   "oldest": "2026-01-01T00:00:00Z",
+   "scannedCommits": 6,
+   "settledMass": -0.0,
+   "stop": "history-exhausted"
+  },
+  "clusters": [
+   {
+    "conflicts": 0,
+    "conn": 0,
+    "heat": 4,
+    "id": "c0",
+    "label": "(root)",
+    "labelSource": "auto",
+    "lane": "code",
+    "openThreads": 0,
+    "pinned": false,
+    "rect": {
+     "h": 614.0,
+     "w": 790.0,
+     "x": 240.0,
+     "y": 2440.0
+    },
+    "windows": 2
+   }
+  ],
+  "columns": [
+   {
+    "clusters": 1,
+    "heat": 4,
+    "w": 1727.36,
+    "x": 0.0
+   },
+   {
+    "clusters": 0,
+    "heat": 3,
+    "w": 0.0,
+    "x": 3327.36
+   },
+   {
+    "clusters": 0,
+    "heat": 2,
+    "w": 0.0,
+    "x": 3327.36
+   },
+   {
+    "clusters": 0,
+    "heat": 1,
+    "w": 0.0,
+    "x": 3327.36
+   },
+   {
+    "clusters": 0,
+    "heat": 0,
+    "w": 0.0,
+    "x": 3327.36
+   }
+  ],
+  "heatLabels": [
+   "Frozen",
+   "Cool",
+   "Mild",
+   "Warm",
+   "Hot"
+  ],
+  "hubs": [],
+  "laneDefs": [
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "infra",
+    "label": "Infra",
+    "order": 0,
+    "texture": "hatch"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "config",
+    "label": "Config",
+    "order": 1,
+    "texture": "dots"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "code",
+    "label": "Code",
+    "order": 2,
+    "texture": "plain"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "test",
+    "label": "Tests",
+    "order": 3,
+    "texture": "lines"
+   },
+   {
+    "collapsed": false,
+    "hidden": false,
+    "id": "docs",
+    "label": "Docs",
+    "order": 4,
+    "texture": "cross"
+   }
+  ],
+  "lanes": [
+   {
+    "clusters": 1,
+    "files": 2,
+    "lane": "code",
+    "rect": {
+     "h": 1943.12,
+     "w": 1727.36,
+     "x": 0.0,
+     "y": 1800.0
+    },
+    "rows": [
+     {
+      "conn": 0,
+      "h": 1143.12,
+      "y": 2200.0
+     }
+    ]
+   }
+  ],
+  "view": {
+   "id": "<id1>",
+   "layoutVersion": 1,
+   "resolved": {
+    "commits": [
+     "a1056a0356d93a0916212ae8364516733aab5de5"
+    ],
+    "head": "a1056a0356d93a0916212ae8364516733aab5de5",
+    "op": "<volatile>"
+   },
+   "spec": {
+    "mode": "snapshot",
+    "rev": "@"
+   },
+   "stats": {
+    "clusters": 1,
+    "files": 2,
+    "windows": 2
+   },
+   "status": "ready",
+   "warnings": []
+  },
+  "world": {
+   "h": 3743.12,
+   "w": 1727.36,
+   "x": 0.0,
+   "y": 0.0
+  }
+ },
+ "route": "GET /api/v1/views/:viewId/bootstrap",
+ "status": 200
+}

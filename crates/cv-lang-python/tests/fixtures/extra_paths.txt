@@ -1,0 +1,8 @@
+src/__init__.py
+src/ledger/__init__.py
+src/ledger/journal.py
+src/storefront/errors.py
+src/telemetry/http_sink.py
+src/telemetry/tracing_bridge.py
+src/text/__init__.py
+src/text/folding.py

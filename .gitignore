@@ -1,0 +1,6 @@
+target/
+node_modules
+/web/dist
+/docs/blueprint/dist
+scripts/acceptance/results/
+web/shots-panels/

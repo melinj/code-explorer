@@ -1,0 +1,269 @@
+# Hand-checked against the 25 sampled sources (see sample.rs): code-viewer/… on 2026-10-18, sample-app/… on 2026-10-22. Lines starting with # are ignored.
+# Known, accepted: top-level `let` is kind constant; describe/it blocks are not test symbols; class fields are not symbols; an `export … from` is one `*` import whatever names it lists.
+== code-viewer/web/src/canvas/camera.test.ts lines=46 errors=0
+sym function cam 4-9
+imp 1 vitest : describe as "describe" -> -
+imp 1 vitest : expect as "expect" -> -
+imp 1 vitest : it as "it" -> -
+imp 2 ./camera : Camera as "Camera" -> code-viewer/web/src/canvas/camera.ts
+== code-viewer/web/src/canvas/commentRange.ts lines=64 errors=0
+sym interface LineRange 8-15
+sym class CommentRange 22-64
+sym method CommentRange.set 28-30
+sym method CommentRange.build 32-58
+sym method CommentRange.handleAt 61-63
+imp 1 pixi.js : Container as "Container" -> -
+imp 2 ../contracts/model : WindowHeader as "WindowHeader" -> code-viewer/web/src/contracts/model.ts
+imp 3 ../contracts/wire : HEADER_WU as "HEADER_WU" -> code-viewer/web/src/contracts/wire.ts
+imp 3 ../contracts/wire : LINE_WU as "LINE_WU" -> code-viewer/web/src/contracts/wire.ts
+imp 4 ./rects : RectBatch as "RectBatch" -> code-viewer/web/src/canvas/rects.ts
+imp 5 ./theme : Theme as "Theme" -> code-viewer/web/src/canvas/theme.ts
+== code-viewer/web/src/canvas/edgePages.ts lines=93 errors=0
+sym constant PAGE_EDGES 6-6
+sym constant FLUSH_AT 7-7
+sym constant FLUSH_QUIET_MS 8-8
+sym constant SMALL_PAGE 9-9
+sym interface Page 11-15
+sym class EdgePages 23-93
+sym method EdgePages.add 29-32
+sym method EdgePages.reset 35-39
+sym method EdgePages.invalidate 42-44
+sym method EdgePages.count 46-48
+sym method EdgePages.step 53-77
+sym method EdgePages.draw 81-84
+sym method EdgePages.newPage 86-92
+imp 1 pixi.js : Container as "Container" -> -
+imp 1 pixi.js : Graphics as "Graphics" -> -
+imp 2 ../data/client : Edge as "Edge" -> code-viewer/web/src/data/client.ts
+imp 3 ./edges : drawEdges as "drawEdges" -> code-viewer/web/src/canvas/edges.ts
+imp 3 ./edges : LinkGroup as "LinkGroup" -> code-viewer/web/src/canvas/edges.ts
+imp 4 ./theme : Theme as "Theme" -> code-viewer/web/src/canvas/theme.ts
+== code-viewer/web/src/canvas/presence.ts lines=68 errors=0
+sym interface Attention 7-14
+sym constant FADE_MS 16-16
+sym class Presence 23-68
+sym method Presence.add 27-29
+sym method Presence.active 32-34
+sym method Presence.build 37-67
+imp 1 pixi.js : Container as "Container" -> -
+imp 2 ../contracts/model : WindowHeader as "WindowHeader" -> code-viewer/web/src/contracts/model.ts
+imp 3 ./labels : LabelBatch as "LabelBatch" -> code-viewer/web/src/canvas/labels.ts
+imp 3 ./labels : sansFont as "sansFont" -> code-viewer/web/src/canvas/labels.ts
+imp 3 ./labels : textWidth as "textWidth" -> code-viewer/web/src/canvas/labels.ts
+imp 4 ./rects : RectBatch as "RectBatch" -> code-viewer/web/src/canvas/rects.ts
+imp 5 ./theme : Theme as "Theme" -> code-viewer/web/src/canvas/theme.ts
+== code-viewer/web/src/canvas/threadMarks.ts lines=98 errors=0
+sym interface ConflictHit 9-16
+sym interface ThreadHit 18-25
+sym class ThreadMarks 32-98
+sym method ThreadMarks.build 37-97
+imp 1 pixi.js : Container as "Container" -> -
+imp 2 ../contracts/model : ConflictDetail as "ConflictDetail" -> code-viewer/web/src/contracts/model.ts
+imp 2 ../contracts/model : Thread as "Thread" -> code-viewer/web/src/contracts/model.ts
+imp 2 ../contracts/model : WindowHeader as "WindowHeader" -> code-viewer/web/src/contracts/model.ts
+imp 3 ../contracts/wire : HEADER_WU as "HEADER_WU" -> code-viewer/web/src/contracts/wire.ts
+imp 3 ../contracts/wire : LINE_WU as "LINE_WU" -> code-viewer/web/src/contracts/wire.ts
+imp 4 ../data/review : ReviewClient as "ReviewClient" -> code-viewer/web/src/data/review.ts
+imp 5 ./labels : LabelBatch as "LabelBatch" -> code-viewer/web/src/canvas/labels.ts
+imp 5 ./labels : sansFont as "sansFont" -> code-viewer/web/src/canvas/labels.ts
+imp 6 ./rects : RectBatch as "RectBatch" -> code-viewer/web/src/canvas/rects.ts
+imp 7 ./theme : Theme as "Theme" -> code-viewer/web/src/canvas/theme.ts
+== code-viewer/web/src/canvas/tooltip.ts lines=35 errors=0
+sym class Tooltip 2-35
+sym method Tooltip.constructor 6-9
+sym method Tooltip.show 11-18
+sym method Tooltip.move 20-29
+sym method Tooltip.hide 31-34
+== code-viewer/web/src/contracts/ids.ts lines=68 errors=0
+sym type Brand 15-15
+sym type ChangeId 18-18
+sym type CommitId 20-20
+sym type OpId 22-22
+sym type BlobId 24-24
+sym type RepoPath 25-25
+sym type WorkspaceName 27-27
+sym type LaneId 29-29
+sym type Revset 31-31
+sym type Fileset 33-33
+sym type ViewId 36-36
+sym type WindowId 38-38
+sym type WindowKey 43-43
+sym type ClusterId 44-44
+sym type HubId 46-46
+sym type LinkId 47-47
+sym type ThreadId 48-48
+sym type CommentId 49-49
+sym type EditId 50-50
+sym type TourId 51-51
+sym type EventCursor 53-53
+sym type Actor 56-59
+sym type Unsubscribe 61-61
+sym interface ApiError 63-68
+== code-viewer/web/src/contracts/ws.ts lines=58 errors=0
+sym interface ServerFrame 10-13
+sym type ServerEvent 15-38
+sym type IndexJobKind 40-40
+sym type ClientMessage 42-46
+sym interface ViewState 49-58
+imp 6 ./ids : Actor as "Actor" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : ChangeId as "ChangeId" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : CommitId as "CommitId" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : EventCursor as "EventCursor" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : OpId as "OpId" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : RepoPath as "RepoPath" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : ThreadId as "ThreadId" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : ViewId as "ViewId" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : WindowId as "WindowId" -> code-viewer/web/src/contracts/ids.ts
+imp 6 ./ids : WorkspaceName as "WorkspaceName" -> code-viewer/web/src/contracts/ids.ts
+imp 7 ./model : ConflictRecord as "ConflictRecord" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : EditResult as "EditResult" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : Lens as "Lens" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : SiteRef as "SiteRef" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : Thread as "Thread" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : ViewSpec as "ViewSpec" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : Viewport as "Viewport" -> code-viewer/web/src/contracts/model.ts
+imp 7 ./model : WorkspaceSummary as "WorkspaceSummary" -> code-viewer/web/src/contracts/model.ts
+imp 8 ./http : AgentPermissions as "AgentPermissions" -> code-viewer/web/src/contracts/http.ts
+imp 8 ./http : Tour as "Tour" -> code-viewer/web/src/contracts/http.ts
+== code-viewer/web/src/data/auth.ts lines=38 errors=0
+sym constant KEY 5-5
+sym function token 7-21
+sym function installAuth 24-38
+== code-viewer/web/src/data/live.ts lines=72 errors=0
+sym type Handler 4-4
+sym class Live 10-72
+sym method Live.constructor 19-19
+sym method Live.on 21-24
+sym method Live.start 26-56
+sym method Live.send 59-61
+sym method Live.stop 63-66
+sym method Live.setStatus 68-71
+imp 1 ../contracts/ws : ClientMessage as "ClientMessage" -> code-viewer/web/src/contracts/ws.ts
+imp 1 ../contracts/ws : ServerEvent as "ServerEvent" -> code-viewer/web/src/contracts/ws.ts
+imp 1 ../contracts/ws : ServerFrame as "ServerFrame" -> code-viewer/web/src/contracts/ws.ts
+imp 2 ./auth : token as "token" -> code-viewer/web/src/data/auth.ts
+== code-viewer/web/src/main.tsx lines=8 errors=0
+imp 1 react-dom/client : createRoot as "createRoot" -> -
+imp 2 ./panels/App : App as "App" -> code-viewer/web/src/panels/App.tsx
+imp 3 ./data/auth : installAuth as "installAuth" -> code-viewer/web/src/data/auth.ts
+imp 4 ./panels/app.css as "" -> code-viewer/web/src/panels/app.css
+== code-viewer/web/src/panels/code.tsx lines=74 errors=0
+sym constant cache 8-8
+sym function blobText 10-21
+sym function useText 24-35
+sym function CodeLine 38-62
+sym function LocalLine 65-74
+imp 1 react : useEffect as "useEffect" -> -
+imp 1 react : useState as "useState" -> -
+imp 1 react : ReactNode as "ReactNode" -> -
+imp 2 ../contracts/http : BlobText as "BlobText" -> code-viewer/web/src/contracts/http.ts
+imp 3 ../contracts/model : WindowHeader as "WindowHeader" -> code-viewer/web/src/contracts/model.ts
+imp 4 ../canvas/engine : Engine as "Engine" -> code-viewer/web/src/canvas/engine.ts
+imp 5 ../canvas/theme : hex as "hex" -> code-viewer/web/src/canvas/theme.ts
+== code-viewer/web/src/panels/useEscape.ts lines=15 errors=0
+sym function useEscape 7-15
+imp 1 react : useEffect as "useEffect" -> -
+imp 1 react : useRef as "useRef" -> -
+== sample-app/src/http/client.ts lines=127 errors=0
+sym constant BASE_URL 8-8
+sym constant REQUEST_TIMEOUT_MS 10-10
+sym constant RETRY_LIMIT 11-11
+sym constant inFlight 14-14
+sym function pendingRequests 16-18
+sym interface FetchOptions 21-24
+sym class HttpError 30-45
+sym method HttpError.constructor 34-39
+sym method HttpError.retryable 42-44
+sym function deadline 54-71
+sym function backoff 74-82
+sym function sendWithRetries 88-111
+sym function request 114-127
+imp 3 ../auth/session : authorizedFetch as "authorizedFetch" -> sample-app/src/auth/session.ts
+imp 3 ../auth/session : restoreSession as "restoreSession" -> sample-app/src/auth/session.ts
+== sample-app/src/http/drafts.js lines=37 errors=0
+sym function submitDraftInvoice 16-22
+sym function toLineItem 25-32
+sym function dueDate 35-37
+imp 1 dayjs : default as "dayjs" -> -
+imp 2 ../lib/money.js as "money" -> sample-app/src/lib/money.js
+imp 3 ../lib/settings : DEFAULT_PAYMENT_TERMS_DAYS as "DEFAULT_PAYMENT_TERMS_DAYS" -> sample-app/src/lib/settings.js
+imp 4 ./invoices : createInvoice as "createInvoice" -> sample-app/src/http/invoices.ts
+== sample-app/src/http/index.ts lines=5 errors=0
+imp 2 ./invoices : * as "" -> sample-app/src/http/invoices.ts
+imp 3 ./client : * as "" -> sample-app/src/http/client.ts
+imp 4 ./client : * as "" -> sample-app/src/http/client.ts
+imp 5 ./drafts.js : * as "" -> sample-app/src/http/drafts.js
+== sample-app/src/http/invoices.ts lines=169 errors=0
+sym type Organization 9-9
+sym type Customer 10-10
+sym type InvoicePage 11-11
+sym type Payment 12-12
+sym type TaxRate 13-13
+sym type InvoiceStatus 14-14
+sym type ReminderTone 15-15
+sym interface InvoiceSummary 18-25
+sym interface LineItem 28-33
+sym interface InvoiceDetail 36-40
+sym constant SEARCH_LIMIT 43-43
+sym interface CustomerInvoicesQuery 49-52
+sym function fetchOrganization 55-59
+sym function listInvoices 62-69
+sym function listCustomerInvoices 71-83
+sym function searchCustomers 85-90
+sym function createInvoice 93-99
+sym function updateLines 101-106
+sym function deleteDraft 109-111
+sym function sendInvoice 113-121
+sym function remindOverdue 127-131
+sym function recordPayment 133-142
+sym function fetchTaxRates 144-148
+sym function findInvoice 154-169
+imp 1 ../types/billing-api.d : schemas as "schemas" -> sample-app/src/types/billing-api.d.ts
+imp 2 ./client : HttpError as "HttpError" -> sample-app/src/http/client.ts
+imp 2 ./client : request as "request" -> sample-app/src/http/client.ts
+imp 3 ./assertFields : assertFields as "assertFields" -> sample-app/src/http/assertFields.js
+imp 4 ../lib/ids : newIdempotencyKey as "newIdempotencyKey" -> sample-app/src/lib/ids.ts
+== sample-app/src/lib/audit.js lines=19 errors=0
+sym constant AUDIT_URL 4-4
+sym constant ECHO 5-5
+sym function record 7-12
+sym constant audit 14-19
+== sample-app/src/lib/charge.js lines=37 errors=0
+sym function ignore 2-4
+sym function chargeOnce 18-37
+== sample-app/src/lib/ids.ts lines=37 errors=0
+sym function hexBytes 9-19
+sym constant draftCounter 21-21
+sym function newIdempotencyKey 24-26
+sym function newDraftId 29-32
+sym function resetDraftIds 35-37
+== sample-app/src/lib/money.js lines=23 errors=0
+sym function toCents 6-11
+sym function formatCents 19-23
+== sample-app/src/lib/overdueWatch.js lines=24 errors=0
+sym function countOverdue 5-5
+sym function watchOverdue 13-24
+imp 3 ../state/billingStore : useBillingStore as "useBillingStore" -> sample-app/src/state/billingStore.js
+== sample-app/src/lib/printPages.js lines=27 errors=0
+sym function paginateLines 6-27
+== sample-app/src/lib/settings.js lines=20 errors=0
+sym constant INVOICE_LIST_REFRESH_MS 1-1
+sym constant SEARCH_DEBOUNCE_MS 2-2
+sym constant TOAST_DURATION_MS 3-3
+sym constant PAGE_SIZE 5-5
+sym constant MAX_LINE_ITEMS 6-6
+sym constant MAX_NOTES_LENGTH 7-7
+sym constant DEFAULT_PAYMENT_TERMS_DAYS 8-8
+sym constant OVERDUE_GRACE_DAYS 9-9
+sym constant SIDEBAR_WIDTH 11-11
+sym constant SIDEBAR_COLLAPSED_WIDTH 12-12
+sym constant EDITOR_MIN_WIDTH 13-13
+sym constant TABLE_ROW_HEIGHT 14-14
+sym constant TABLE_HEADER_HEIGHT 15-15
+sym constant PDF_PREVIEW_SCALE 16-16
+sym constant DEFAULT_CURRENCY 18-18
+sym constant DEFAULT_LOCALE 19-19
+sym constant SUPPORTED_CURRENCIES 20-20
+== sample-app/src/lib/totals.js lines=30 errors=0
+sym function invoiceTotals 8-17
+sym function outstandingByCustomer 23-30

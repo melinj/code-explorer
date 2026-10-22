@@ -1,0 +1,9 @@
+{
+ "method": "DELETE",
+ "path": "/api/v1/ranges/replay",
+ "response": {
+  "ok": true
+ },
+ "route": "DELETE /api/v1/ranges/:name",
+ "status": 200
+}

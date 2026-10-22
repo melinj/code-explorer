@@ -1,0 +1,32 @@
+{
+ "body": {
+  "mode": "snapshot",
+  "rev": "@"
+ },
+ "method": "POST",
+ "path": "/api/v1/views",
+ "response": {
+  "id": "<id1>",
+  "layoutVersion": 1,
+  "resolved": {
+   "commits": [
+    "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+   ],
+   "head": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f",
+   "op": "<volatile>"
+  },
+  "spec": {
+   "mode": "snapshot",
+   "rev": "@"
+  },
+  "stats": {
+   "clusters": 5,
+   "files": 9,
+   "windows": 13
+  },
+  "status": "ready",
+  "warnings": []
+ },
+ "route": "POST /api/v1/views",
+ "status": 200
+}

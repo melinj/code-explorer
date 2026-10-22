@@ -1,0 +1,125 @@
+{
+ "method": "GET",
+ "path": "/api/v1/workspaces",
+ "response": [
+  {
+   "files": [
+    "src/agent/item/node_264.py",
+    "src/edge/market/camera_361.py",
+    "src/server/cache/spawn_458.py",
+    "src/parse/build/edge_555.py",
+    "src/dialogue/agent/camera_652.py",
+    "src/job/loader/job_749.py"
+   ],
+   "lastOp": {
+    "description": "snapshot working copy",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "default",
+   "overlaps": [
+    {
+     "paths": [
+      "src/agent/item/node_264.py"
+     ],
+     "workspace": "gym"
+    }
+   ],
+   "root": "<ROOT>",
+   "serving": true,
+   "stack": {
+    "changes": 3,
+    "conflicts": 0,
+    "files": 6,
+    "revset": "trunk()..default@"
+   },
+   "unsnapshottedFiles": 2,
+   "wc": {
+    "change": "",
+    "commit": ""
+   }
+  },
+  {
+   "agent": {
+    "activity": "editing",
+    "client": "claude-code",
+    "lastSeen": "2026-01-01T00:00:00Z",
+    "name": "claude"
+   },
+   "files": [
+    "tests/server/test_prompt_1096.py",
+    "tests/schema/test_zone_1193.py",
+    "tests/index/test_entity_1290.py",
+    "tests/entity/test_tool_1387.py",
+    "deploy/plan_6.sh",
+    "config/turn/prompt_103.yaml"
+   ],
+   "lastOp": {
+    "description": "snapshot working copy",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "gym",
+   "overlaps": [
+    {
+     "paths": [
+      "tests/server/test_prompt_1096.py",
+      "tests/schema/test_zone_1193.py"
+     ],
+     "workspace": "default"
+    }
+   ],
+   "root": "<ROOT>-gym",
+   "serving": false,
+   "stack": {
+    "changes": 2,
+    "conflicts": 0,
+    "files": 6,
+    "revset": "trunk()..gym@"
+   },
+   "unsnapshottedFiles": 0,
+   "wc": {
+    "change": "",
+    "commit": ""
+   }
+  },
+  {
+   "agent": {
+    "activity": "reading",
+    "client": "opencode",
+    "lastSeen": "2026-01-01T00:00:00Z",
+    "name": "opencode"
+   },
+   "files": [
+    "tests/event/test_sync_1402.py",
+    "config/turn/signal_21.yaml",
+    "config/map/theme_118.yaml",
+    "config/memory/token_215.yaml",
+    "src/token/config/world_312.py",
+    "src/world/zone/scene_409.py"
+   ],
+   "lastOp": {
+    "description": "snapshot working copy",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "progression",
+   "overlaps": [],
+   "root": "<ROOT>-progression",
+   "serving": false,
+   "stack": {
+    "changes": 1,
+    "conflicts": 0,
+    "files": 6,
+    "revset": "trunk()..progression@"
+   },
+   "unsnapshottedFiles": 1,
+   "wc": {
+    "change": "",
+    "commit": ""
+   }
+  }
+ ],
+ "route": "GET /api/v1/workspaces",
+ "status": 200
+}

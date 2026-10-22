@@ -1,0 +1,958 @@
+<title>Code Viewer Blueprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: an engineering drawing set. Title block, then sheets (system map, evidence, UI, contracts,
+   work breakdown, decisions) with a sticky sheet index on wide screens. Drawings sit on blueprint
+   ground; prose sits on paper. */
+:root {
+  --bg: #f2f4f8;
+  --surface: #ffffff;
+  --surface-2: #e8edf4;
+  --ink: #132033;
+  --ink-2: #4a5a70;
+  --line: #d1d9e4;
+  --accent: #1f4fd1;
+  --bp-bg: #0e2b4e;
+  --bp-bg-2: #143866;
+  --bp-grid: #17406f;
+  --bp-line: #9cc3ee;
+  --bp-ink: #eaf3fd;
+  --bp-dim: #7499c4;
+  --heat-0: #5d7ea6;
+  --heat-1: #6fb7c9;
+  --heat-2: #e3c14e;
+  --heat-3: #f2933a;
+  --heat-4: #f25a3c;
+  --edge-call: #cfe2f7;
+  --edge-inherit: #c3a6f7;
+  --edge-event: #3fd0b0;
+  --edge-http: #f5b44a;
+  --edge-config: #93a9c3;
+  --agent: #ff6ec7;
+  --add: #45c08a;
+  --del: #f0625a;
+  --conflict: #ff4d5e;
+  --warn: #f3c13a;
+  --chip-a: oklch(0.78 0.06 144);
+  --chip-a-hi: oklch(0.88 0.17 144);
+  --chip-b: oklch(0.78 0.06 252);
+  --chip-b-hi: oklch(0.88 0.17 252);
+  --chip-c: oklch(0.78 0.06 324);
+  --chip-c-hi: oklch(0.88 0.17 324);
+  --ws-c: #5b4bc4;
+  --ws-b: #0f7a68;
+  --ws-l: #1f5fb0;
+  --ws-p: #7a6a12;
+  --ws-f: #a2471c;
+  --ws-i: #4a5a70;
+  --m-get: #0f7a68;
+  --m-post: #9a5b00;
+  --m-put: #5b4bc4;
+  --m-del: #b3261e;
+  --code-kw: #8a2c9e;
+  --code-str: #0f7a3c;
+  --code-com: #6b7a8f;
+  --code-type: #1f4fd1;
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-display: "IBM Plex Sans Condensed", "IBM Plex Sans", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b111a; --surface: #111a26; --surface-2: #172334; --ink: #dce6f2; --ink-2: #94a6bc; --line: #26354a; --accent: #86a6ff;
+    --ws-c: #a99cff; --ws-b: #4fd1b6; --ws-l: #7fb2ff; --ws-p: #d8c46a; --ws-f: #ff9e6b; --ws-i: #94a6bc;
+    --m-get: #4fd1b6; --m-post: #f5b44a; --m-put: #a99cff; --m-del: #ff7a72;
+    --code-kw: #e08cf2; --code-str: #7fd69b; --code-com: #7d8ea5; --code-type: #86a6ff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b111a; --surface: #111a26; --surface-2: #172334; --ink: #dce6f2; --ink-2: #94a6bc; --line: #26354a; --accent: #86a6ff;
+  --ws-c: #a99cff; --ws-b: #4fd1b6; --ws-l: #7fb2ff; --ws-p: #d8c46a; --ws-f: #ff9e6b; --ws-i: #94a6bc;
+  --m-get: #4fd1b6; --m-post: #f5b44a; --m-put: #a99cff; --m-del: #ff7a72;
+  --code-kw: #e08cf2; --code-str: #7fd69b; --code-com: #7d8ea5; --code-type: #86a6ff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 15px/1.6 var(--font-ui);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 64px;
+  -webkit-text-size-adjust: 100%;
+}
+a { color: var(--accent); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+code, pre, kbd { font-family: var(--font-mono); }
+code { font-size: 0.9em; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.15; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.45rem, 1.1rem + 1.2vw, 1.9rem); letter-spacing: 0.005em; }
+h3 { font-size: 1.15rem; }
+h4 { font-size: 1rem; margin: 0; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+.small { font-size: 13px; }
+.eyebrow { font: 600 11.5px/1 var(--font-ui); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-2); }
+
+.page { max-width: 1260px; margin: 0 auto; display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 44px; }
+nav.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 28px); align-self: start; padding-top: 28px; max-height: calc(100vh - 40px); overflow: auto; }
+nav.toc ol { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 2px; }
+nav.toc a { display: grid; grid-template-columns: 2.6em 1fr; gap: 6px; padding: 5px 8px; border-radius: 6px; color: var(--ink-2); text-decoration: none; font-size: 13.5px; }
+nav.toc a span:first-child { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
+nav.toc a:hover, nav.toc a.on { background: var(--surface-2); color: var(--ink); }
+main { min-width: 0; }
+@media (max-width: 960px) {
+  .page { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  nav.toc { position: static; max-height: none; padding-top: 20px; }
+  nav.toc ol { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
+
+/* Title block */
+header.title { padding-top: 36px; display: grid; gap: 22px; }
+header.title h1 { font-size: clamp(2.1rem, 1.4rem + 2.6vw, 3.3rem); letter-spacing: -0.01em; }
+header.title .lede { font-size: 1.08rem; max-width: 64ch; color: var(--ink-2); }
+.tblock { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); border: 1.5px solid var(--ink); background: var(--surface); }
+.tblock div { padding: 8px 12px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-width: 0; }
+.tblock dt { font: 600 10.5px/1.4 var(--font-ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); }
+.tblock dd { margin: 2px 0 0; font-size: 13.5px; overflow-wrap: anywhere; }
+
+section.sheet { padding-top: 56px; display: grid; gap: 20px; scroll-margin-top: 12px; }
+.sheet-head { display: grid; gap: 8px; padding-bottom: 14px; border-bottom: 1.5px solid var(--ink); }
+.sheet-head .eyebrow b { color: var(--ink); font-weight: 600; }
+.prose { max-width: 72ch; display: grid; gap: 12px; }
+.prose ul, .prose ol { margin: 0; padding-left: 1.25em; display: grid; gap: 6px; }
+
+.glance { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.glance div { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+.glance h3 { font-size: 1rem; }
+.glance p { font-size: 14px; color: var(--ink-2); }
+
+/* Evidence */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0; border: 1.5px solid var(--ink); background: var(--surface); }
+.stat { padding: 14px 16px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); display: grid; gap: 4px; align-content: start; min-width: 0; }
+.stat b { font: 600 2rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.stat span { font-size: 13.5px; color: var(--ink-2); }
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 16px; align-items: start; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+.panel h4 { font: 600 14px var(--font-ui); }
+.lanebar { display: flex; height: 34px; border: 1px solid var(--ink); border-radius: 4px; overflow: hidden; }
+.lanebar span { display: block; height: 100%; border-right: 1px solid var(--ink); }
+.lanebar span:last-child { border-right: 0; }
+.tx-infra { background: repeating-linear-gradient(45deg, var(--ink-2) 0 1.5px, var(--surface-2) 1.5px 6px); }
+.tx-config { background: radial-gradient(var(--ink-2) 1.2px, transparent 1.6px) 0 0 / 6px 6px, var(--surface-2); }
+.tx-code { background: var(--ink-2); }
+.tx-test { background: repeating-linear-gradient(0deg, var(--ink-2) 0 1.5px, var(--surface-2) 1.5px 5px); }
+.tx-docs { background: linear-gradient(90deg, transparent 2.5px, var(--ink-2) 2.5px 4px, transparent 4px) 0 0 / 9px 9px, linear-gradient(0deg, transparent 2.5px, var(--ink-2) 2.5px 4px, transparent 4px) 0 0 / 9px 9px, var(--surface-2); }
+.tx-other { background: var(--line); }
+.lanelegend { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px 14px; margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.lanelegend li { display: grid; grid-template-columns: 18px 1fr auto; gap: 8px; align-items: center; }
+.lanelegend i { display: block; width: 18px; height: 14px; border: 1px solid var(--ink); border-radius: 2px; }
+.lanelegend b { font-variant-numeric: tabular-nums; font-weight: 600; }
+.quad { display: grid; grid-template-columns: 28px 1fr 1fr; grid-template-rows: 1fr 1fr 26px; gap: 6px; min-height: 230px; }
+.quad .cell { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; display: grid; align-content: space-between; gap: 6px; background: var(--surface-2); }
+.quad .cell b { font: 600 1.6rem/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.quad .cell span { font-size: 13px; color: var(--ink-2); }
+.quad .cell.hot { border: 2px solid var(--accent); background: var(--surface); }
+.quad .ylab { writing-mode: vertical-rl; transform: rotate(180deg); display: grid; place-items: center; font: 600 11px var(--font-ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); grid-row: 1 / 3; }
+.quad .xlab { grid-column: 2 / 4; display: flex; justify-content: space-between; font: 600 11px var(--font-ui); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); align-items: center; }
+
+/* Blueprint figures (system map, phase lanes); wireframes bring their own .wf styles */
+figure { margin: 0; }
+.bpfig { background-color: var(--bp-bg); background-image: linear-gradient(var(--bp-grid) 1px, transparent 1px), linear-gradient(90deg, var(--bp-grid) 1px, transparent 1px); background-size: 24px 24px; border-radius: 6px; padding: 14px; }
+.bpfig .scroll { overflow-x: auto; }
+.bpfig svg { display: block; width: 100%; height: auto; min-width: 760px; }
+.bpcap { display: grid; gap: 6px; padding: 12px 2px 0; color: var(--ink-2); font-size: 14px; max-width: 80ch; }
+.sm-box { fill: var(--bp-bg-2); stroke: var(--bp-line); stroke-width: 1.2; }
+.sm-group { fill: none; stroke: var(--bp-line); stroke-width: 1.2; stroke-dasharray: 5 4; }
+.sm-ext { fill: var(--bp-bg); stroke: var(--bp-ink); stroke-width: 1.5; }
+.sm-t { fill: var(--bp-ink); font: 600 14px var(--font-ui); }
+.sm-s { fill: var(--bp-dim); font: 12px var(--font-ui); }
+.sm-m { fill: var(--bp-line); font: 11.5px var(--font-mono); }
+.sm-id { fill: var(--bp-ink); font: 600 12px var(--font-mono); }
+.sm-wire { stroke: var(--bp-line); stroke-width: 1.4; fill: none; }
+.sm-wire.ev { stroke: var(--edge-event); }
+.sm-wire.ag { stroke: var(--agent); }
+.sm-wire.dash { stroke-dasharray: 4 4; }
+.sm-arrow { fill: var(--bp-line); }
+.sm-num circle { fill: var(--bp-bg); stroke: var(--bp-ink); stroke-width: 1.3; }
+.sm-num text { fill: var(--bp-ink); font: 600 12px var(--font-mono); text-anchor: middle; dominant-baseline: central; }
+.sm-num a:hover circle, .sm-num a:focus circle { fill: var(--bp-bg-2); stroke: var(--warn); }
+.sm-lab { fill: var(--bp-ink); font: 12px var(--font-mono); }
+.ph-col { fill: var(--bp-bg-2); opacity: 0.55; }
+.ph-band { fill: none; stroke: var(--bp-dim); stroke-width: 1; stroke-dasharray: 3 5; }
+.ph-h { fill: var(--bp-ink); font: 600 13px var(--font-display); letter-spacing: 0.08em; }
+.ph-bl { fill: var(--bp-dim); font: 600 11px var(--font-display); letter-spacing: 0.1em; }
+.ph-node rect { fill: var(--bp-bg); stroke: var(--bp-line); stroke-width: 1.2; }
+.ph-node.c rect { stroke: var(--bp-ink); stroke-width: 1.6; }
+.ph-node.pk rect { stroke-dasharray: 4 3; }
+.ph-node text.id { fill: var(--bp-ink); font: 600 12.5px var(--font-mono); }
+.ph-node text.nm { fill: var(--bp-dim); font: 12px var(--font-ui); }
+.ph-dep { stroke: var(--bp-dim); stroke-width: 1.1; fill: none; }
+
+/* Tables */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+table.ct { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+table.ct th { text-align: left; font: 600 11px/1.3 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--surface-2); white-space: nowrap; }
+table.ct td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.ct td.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.ct tr:last-child td { border-bottom: 0; }
+table.ct td:first-child { white-space: nowrap; }
+table.ct tr.grp td { background: var(--surface-2); font: 600 12px var(--font-ui); color: var(--ink-2); letter-spacing: 0.04em; padding: 6px 12px; }
+table.ct tr.pick td { background: var(--surface-2); font-weight: 600; }
+.m { display: inline-block; min-width: 3.6em; font: 600 11px/1.6 var(--font-mono); color: var(--m-get); }
+.m.post { color: var(--m-post); } .m.put, .m.patch { color: var(--m-put); } .m.delete { color: var(--m-del); }
+td code, li code, p code, dd code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.ws { display: inline-block; font: 600 11px/1.5 var(--font-mono); padding: 0 6px; border-radius: 4px; border: 1px solid currentColor; color: var(--ws-b); white-space: nowrap; }
+.ws.c { color: var(--ws-c); } .ws.l { color: var(--ws-l); } .ws.p { color: var(--ws-p); } .ws.f { color: var(--ws-f); } .ws.i { color: var(--ws-i); }
+.tier { font: 600 11px var(--font-mono); color: var(--ink-2); }
+.new { font: 600 10px/1.5 var(--font-ui); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0 4px; margin-left: 4px; vertical-align: 1px; }
+.you { font: 600 10px/1.5 var(--font-ui); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 3px; padding: 0 5px; white-space: nowrap; }
+
+/* Contract blocks */
+.contract { display: grid; gap: 14px; padding-top: 8px; }
+.contract + .contract { margin-top: 26px; }
+.contract-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.contract-head h3 { display: flex; align-items: baseline; gap: 10px; }
+.bnum { font: 600 13px var(--font-mono); width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--ink); display: inline-grid; place-items: center; flex: none; }
+.flow { font-size: 13px; color: var(--ink-2); }
+.flow .ws { margin: 0 2px; }
+details.src { border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+details.src summary { cursor: pointer; padding: 9px 14px; font: 500 13px var(--font-mono); display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; list-style: none; }
+details.src summary::-webkit-details-marker { display: none; }
+details.src summary::before { content: "▸"; color: var(--ink-2); }
+details.src[open] summary::before { content: "▾"; }
+details.src summary .muted { font-family: var(--font-ui); }
+details.src .bar { display: flex; justify-content: flex-end; padding: 0 10px 6px; }
+details.src pre { margin: 0; padding: 14px 16px 18px; overflow-x: auto; font-size: 12.5px; line-height: 1.55; border-top: 1px solid var(--line); background: var(--bg); border-radius: 0 0 8px 8px; tab-size: 2; }
+.tok-kw { color: var(--code-kw); } .tok-str { color: var(--code-str); } .tok-com { color: var(--code-com); font-style: italic; } .tok-type { color: var(--code-type); }
+button.copy { font: 500 12px var(--font-ui); color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+button.copy:hover { border-color: var(--ink-2); }
+.srcs { display: grid; gap: 8px; }
+
+.bytes { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0; border: 1.5px solid var(--ink); border-radius: 6px; overflow: hidden; background: var(--surface); }
+.bytes > div { padding: 10px 12px; border-right: 1px solid var(--line); display: grid; gap: 4px; align-content: start; min-width: 0; }
+.bytes > div:last-child { border-right: 0; }
+.bytes b { font: 600 12px var(--font-mono); }
+.bits { display: flex; gap: 3px; flex-wrap: wrap; }
+.bits span { font: 11px var(--font-mono); border: 1px solid var(--line); border-radius: 3px; padding: 1px 5px; background: var(--surface-2); }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.rules div { border-left: 3px solid var(--ink); background: var(--surface); padding: 10px 14px; display: grid; gap: 4px; align-content: start; }
+.rules h4 { font: 600 14px var(--font-ui); }
+.rules p { font-size: 13.5px; color: var(--ink-2); }
+
+/* Workstream cards */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 13px; color: var(--ink-2); align-items: center; }
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 10px; align-content: start; }
+.card-head { display: flex; align-items: center; gap: 10px; justify-content: space-between; flex-wrap: wrap; }
+.card-head h4 { display: flex; align-items: center; gap: 8px; font: 600 15px var(--font-ui); }
+.card dl { margin: 0; display: grid; grid-template-columns: 6.5em minmax(0, 1fr); gap: 4px 10px; font-size: 13.5px; }
+.card dt { color: var(--ink-2); font-size: 12px; padding-top: 2px; }
+.card dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.card ul { margin: 0; padding-left: 1.1em; display: grid; gap: 3px; font-size: 13.5px; }
+.phase { font: 600 11px var(--font-mono); color: var(--ink-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; }
+pre.brief { margin: 8px 0 0; white-space: pre-wrap; font-size: 12px; line-height: 1.5; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; max-height: 280px; overflow: auto; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 8px 14px; border-radius: 6px; font-size: 13px; }
+
+.qs { display: grid; gap: 10px; max-width: 80ch; padding-left: 1.3em; margin: 0; }
+footer { margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--ink-2); font-size: 13px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="page">
+  <nav class="toc" aria-label="Sheets">
+    <div class="eyebrow">Sheets</div>
+    <ol>
+      <li><a href="#map"><span>S1</span><span>System map</span></a></li>
+      <li><a href="#axes"><span>S2</span><span>Two axes &amp; lanes</span></a></li>
+      <li><a href="#ui"><span>S3</span><span>UI shape</span></a></li>
+      <li><a href="#model"><span>S4</span><span>Shared model</span></a></li>
+      <li><a href="#contracts"><span>S5</span><span>Contracts ①–⑧</span></a></li>
+      <li><a href="#rules"><span>S6</span><span>Cross-cutting rules</span></a></li>
+      <li><a href="#work"><span>S7</span><span>Work breakdown</span></a></li>
+      <li><a href="#decisions"><span>S8</span><span>Decisions</span></a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <header class="title">
+      <div class="eyebrow">Design set · draft</div>
+      <h1>Code Viewer Blueprint</h1>
+      <p class="lede">The UI shape, the contracts between every piece, and a breakdown into workstreams for implementer agents. Version 0.3 adds file-chip colours, config-field usage links, and range reviews on the full view's map.</p>
+      <dl class="tblock">
+        <div><dt>Project</dt><dd>code-viewer</dd></div>
+        <div><dt>Revision</dt><dd>v0.3 · 2026-10-18</dd></div>
+        <div><dt>Source of truth</dt><dd><code>docs/contracts/</code> (TS wire spec, Rust traits)</dd></div>
+        <div><dt>Rationale</dt><dd><code>docs/DESIGN.md</code></dd></div>
+        <div><dt>Verified against</dt><dd>jj 0.45.1 · jj-lib 0.45.1 · rustc 1.98 · SQLite 3.53 · tsc 5.9 strict</dd></div>
+      </dl>
+      <div class="glance">
+        <div><h3>Two axes, one grid</h3><p>Columns show how often code changes. Rows show how much depends on it. Hot code that many things depend on sits top-left, where review starts.</p></div>
+        <div><h3>Lanes by role</h3><p>Infra, config, code, tests and docs each get a band. A lane is marked by its texture, never by colour, because colour is reserved for heat.</p></div>
+        <div><h3>One Rust binary</h3><p>jj-lib at your jj's exact version, tree-sitter packs per language, rusqlite and rmcp. The human and the agent see and change the same state.</p></div>
+        <div><h3>Hand-off ready</h3><p>25 workstreams. Each card copies a brief for an implementer agent, naming its crate, its contracts and the tests that mean it is done.</p></div>
+      </div>
+    </header>
+
+    <section class="sheet" id="map">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S1</b> · System map</div>
+        <h2>Pieces and the boundaries between them</h2>
+      </div>
+      <figure>
+        <div class="bpfig"><div class="scroll">
+<svg viewBox="0 0 1000 700" role="img" aria-labelledby="sm-title">
+  <title id="sm-title">System map: browser, coding agents, the cv Rust binary and the jj repo, with eight numbered contract boundaries</title>
+  <defs>
+    <marker id="sm-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" class="sm-arrow"/></marker>
+  </defs>
+  <rect x="20" y="20" width="420" height="232" rx="8" class="sm-ext"/>
+  <text x="38" y="46" class="sm-t">Browser</text><text x="104" y="46" class="sm-s">TypeScript · React · PixiJS · DOM · CodeMirror</text>
+  <rect x="38" y="62" width="384" height="38" rx="5" class="sm-box"/><text x="52" y="86" class="sm-id">F4</text><text x="82" y="86" class="sm-t">Panels &amp; dialogs</text><text x="226" y="86" class="sm-s">workspaces · hotspots · range</text>
+  <rect x="38" y="108" width="384" height="38" rx="5" class="sm-box"/><text x="52" y="132" class="sm-id">F3</text><text x="82" y="132" class="sm-t">Code windows &amp; editor</text><text x="268" y="132" class="sm-s">text · threads · save</text>
+  <rect x="38" y="154" width="384" height="38" rx="5" class="sm-box"/><text x="52" y="178" class="sm-id">F1</text><text x="82" y="178" class="sm-t">Canvas engine</text><text x="210" y="178" class="sm-s">lanes · grid · lenses · edges</text>
+  <rect x="38" y="200" width="384" height="38" rx="5" class="sm-box"/><text x="52" y="224" class="sm-id">F2</text><text x="82" y="224" class="sm-t">Data client</text><text x="190" y="224" class="sm-s">tiles · priorities · caches · WS</text>
+  <rect x="560" y="20" width="420" height="96" rx="8" class="sm-ext"/>
+  <text x="578" y="48" class="sm-t">Coding agents</text><text x="578" y="70" class="sm-s">Claude Code · opencode · any MCP client</text>
+  <text x="578" y="96" class="sm-m">bound to a workspace · reader · reviewer · editor</text>
+  <rect x="560" y="140" width="300" height="112" rx="8" class="sm-group"/>
+  <text x="578" y="166" class="sm-id">C0</text><text x="608" y="166" class="sm-t">Contracts &amp; mocks</text>
+  <text x="578" y="190" class="sm-m">TS wire spec → cv-contracts</text>
+  <text x="578" y="208" class="sm-m">Rust traits · ts-rs · schemars</text>
+  <text x="578" y="232" class="sm-s">golden jj repos · cv-mock · 20k view</text>
+  <rect x="20" y="300" width="960" height="300" rx="8" class="sm-ext"/>
+  <text x="38" y="326" class="sm-t">cv</text><text x="62" y="326" class="sm-s">one Rust binary · tokio + axum · 127.0.0.1 · token auth</text>
+  <rect x="38" y="342" width="300" height="62" rx="5" class="sm-box"/><text x="52" y="366" class="sm-id">B7</text><text x="82" y="366" class="sm-t">Server</text><text x="52" y="390" class="sm-s">routes · WS · event log · scheduler</text>
+  <rect x="354" y="342" width="290" height="62" rx="5" class="sm-box"/><text x="368" y="366" class="sm-id">B8</text><text x="398" y="366" class="sm-t">Review &amp; edits</text><text x="368" y="390" class="sm-s">threads · exact preview · amend</text>
+  <rect x="660" y="342" width="302" height="62" rx="5" class="sm-box"/><text x="674" y="366" class="sm-id">B9</text><text x="704" y="366" class="sm-t">MCP</text><text x="674" y="390" class="sm-s">rmcp · workspaces · attention</text>
+  <rect x="38" y="440" width="210" height="52" rx="5" class="sm-box"/><text x="52" y="462" class="sm-id">B3</text><text x="82" y="462" class="sm-t">Languages</text><text x="52" y="482" class="sm-s">core + packs L1–L5</text>
+  <rect x="280" y="440" width="210" height="52" rx="5" class="sm-box"/><text x="294" y="462" class="sm-id">B4</text><text x="324" y="462" class="sm-t">Channels &amp; links</text><text x="294" y="482" class="sm-s">packs P1–P4 · connectedness</text>
+  <rect x="522" y="440" width="200" height="52" rx="5" class="sm-box"/><text x="536" y="462" class="sm-id">B5</text><text x="566" y="462" class="sm-t">Churn</text><text x="536" y="482" class="sm-s">quantile heat · stop rule</text>
+  <rect x="754" y="440" width="208" height="52" rx="5" class="sm-box"/><text x="768" y="462" class="sm-id">B6</text><text x="798" y="462" class="sm-t">Layout</text><text x="768" y="482" class="sm-s">district grid · fragments</text>
+  <path d="M248 466 H278" class="sm-wire" marker-end="url(#sm-ah)"/>
+  <path d="M722 466 H752" class="sm-wire" marker-end="url(#sm-ah)"/>
+  <rect x="38" y="508" width="924" height="34" rx="5" class="sm-box"/><text x="52" y="530" class="sm-id">B2</text><text x="82" y="530" class="sm-t">Store</text><text x="140" y="530" class="sm-s">index.db (derived) + review.db (threads, edits, pins, sessions, events) · rusqlite bundled · R*Tree · FTS5</text>
+  <rect x="38" y="552" width="924" height="34" rx="5" class="sm-box"/><text x="52" y="574" class="sm-id">B1</text><text x="82" y="574" class="sm-t">jj adapter</text><text x="166" y="574" class="sm-s">jj-lib 0.45.1 (= your jj) · reads pinned to an op · exact previews · one write queue</text>
+  <rect x="20" y="632" width="960" height="52" rx="8" class="sm-ext"/>
+  <text x="38" y="663" class="sm-t">jj repo</text><text x="104" y="663" class="sm-m">workspaces: default@ · tax@ · refunds@ …</text><text x="560" y="663" class="sm-s">the human, agents and editors all write here</text>
+  <path d="M130 238 V342" class="sm-wire" marker-end="url(#sm-ah)" marker-start="url(#sm-ah)"/>
+  <path d="M290 238 V342" class="sm-wire ev" marker-end="url(#sm-ah)" marker-start="url(#sm-ah)"/>
+  <path d="M920 116 V342" class="sm-wire ag" marker-end="url(#sm-ah)" marker-start="url(#sm-ah)"/>
+  <path d="M500 586 V632" class="sm-wire" marker-end="url(#sm-ah)" marker-start="url(#sm-ah)"/>
+  <path d="M338 373 H352" class="sm-wire" marker-end="url(#sm-ah)"/>
+  <path d="M658 373 H646" class="sm-wire" marker-end="url(#sm-ah)"/>
+  <path d="M143 404 V438" class="sm-wire dash" marker-end="url(#sm-ah)"/>
+  <g class="sm-num">
+    <a href="#c-http" aria-label="Boundary 1: HTTP"><circle cx="130" cy="276" r="13"/><text x="130" y="276">1</text></a>
+    <text x="150" y="280" class="sm-lab">HTTP /api/v1</text>
+    <a href="#c-ws" aria-label="Boundary 2: WebSocket"><circle cx="290" cy="276" r="13"/><text x="290" y="276">2</text></a>
+    <text x="310" y="280" class="sm-lab">WebSocket</text>
+    <a href="#c-mcp" aria-label="Boundary 3: MCP"><circle cx="920" cy="276" r="13"/><text x="920" y="276">3</text></a>
+    <text x="824" y="280" class="sm-lab">MCP /mcp</text>
+    <a href="#c-vcs" aria-label="Boundary 4: Vcs trait"><circle cx="500" cy="616" r="13"/><text x="500" y="616">4</text></a>
+    <text x="520" y="620" class="sm-lab">Vcs (jj-lib)</text>
+    <a href="#c-packs" aria-label="Boundary 5: language and channel packs"><circle cx="143" cy="421" r="13"/><text x="143" y="421">5</text></a>
+    <text x="163" y="425" class="sm-lab">LanguagePack · ChannelPack</text>
+    <a href="#c-store" aria-label="Boundary 6: Store"><circle cx="935" cy="508" r="13"/><text x="935" y="508">6</text></a>
+    <a href="#c-pipe" aria-label="Boundary 7: index pipeline services"><circle cx="506" cy="466" r="13"/><text x="506" y="466">7</text></a>
+    <a href="#c-review" aria-label="Boundary 8: review, edits and events"><circle cx="499" cy="342" r="13"/><text x="499" y="342">8</text></a>
+  </g>
+</svg>
+        </div></div>
+        <figcaption class="bpcap">
+          <p>Numbers mark contract boundaries and link to their sheet in S5. ① ② ③ are wire contracts, written as TypeScript and generated from Rust. ④–⑧ are Rust traits between crates. Only B1 touches the repository, and only the packs behind ⑤ know about any language or protocol.</p>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="sheet" id="axes">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S2</b> · Two axes &amp; lanes</div>
+        <h2>Change frequency and connectedness, measured on a reference repo</h2>
+      </div>
+      <div class="prose">
+        <p>Before choosing how to show the two axes, I measured them on the reference repo, a private Python/TypeScript project of about 5.6k files whose code is not part of this repository: 399 commits of history, its Python and TypeScript import graph (3,490 files, 18,313 edges), and a role for every one of its 5,670 files. Both jj and the import parsing were read-only, and the op log was unchanged afterwards.</p>
+      </div>
+      <div class="stats" role="list">
+        <div class="stat" role="listitem"><b>ρ 0.30</b><span>Rank correlation of heat and connectedness across 1,481 code files: weak, so the axes carry different information</span></div>
+        <div class="stat" role="listitem"><b>63%</b><span>of hot code files (126 of 199) have few dependents; sorting by connectedness would bury them</span></div>
+        <div class="stat" role="listitem"><b>71%</b><span>of central code files (180 of 253) are cold; sorting by heat would bury them</span></div>
+        <div class="stat" role="listitem"><b>73</b><span>files are both hot and central: the "review first" set, 5% of code</span></div>
+      </div>
+      <div class="duo">
+        <div class="panel">
+          <h4>Code files by quadrant</h4>
+          <div class="quad" role="table" aria-label="Code files by heat and connectedness quadrant">
+            <div class="ylab">Heat ↑</div>
+            <div class="cell" role="cell"><b>126</b><span>Active leaves: hot, few dependents</span></div>
+            <div class="cell hot" role="cell"><b>73</b><span>Review first: hot and central</span></div>
+            <div class="cell" role="cell"><b>1,102</b><span>Quiet periphery</span></div>
+            <div class="cell" role="cell"><b>180</b><span>Foundations: central but stable</span></div>
+            <div class="xlab"><span>few dependents</span><span>Connectedness →</span><span>many dependents</span></div>
+          </div>
+          <p class="muted small">Hot = Hot or Warm heat grade; central = Core or High connectedness grade. Both are quantile grades.</p>
+        </div>
+        <div class="panel">
+          <h4>Share of all change, by lane</h4>
+          <div class="lanebar" role="img" aria-label="Change mass by lane: code 42.3%, tests 30.3%, config 18.7%, docs 7.6%, other 1.2%, infra 0%">
+            <span class="tx-code" style="width:42.3%"></span><span class="tx-test" style="width:30.3%"></span><span class="tx-config" style="width:18.7%"></span><span class="tx-docs" style="width:7.6%"></span><span class="tx-other" style="width:1.2%"></span>
+          </div>
+          <ul class="lanelegend">
+            <li><i class="tx-code"></i><span>Code · 1,488 files</span><b>42.3%</b></li>
+            <li><i class="tx-test"></i><span>Tests · 2,061</span><b>30.3%</b></li>
+            <li><i class="tx-config"></i><span>Config · 955</span><b>18.7%</b></li>
+            <li><i class="tx-docs"></i><span>Docs · 1,093</span><b>7.6%</b></li>
+            <li><i class="tx-other"></i><span>Other · 62</span><b>1.2%</b></li>
+            <li><i class="tx-infra"></i><span>Infra · 11</span><b>0.0%</b></li>
+          </ul>
+          <p class="muted small">Config is the third-busiest role. Its hottest files are prompt and node YAML, e.g. one <code>prompt.yaml</code> with 17 touches. In the code lane it would sit between code changes and hide them.</p>
+        </div>
+      </div>
+      <div class="prose"><p><b>Which connectedness measure?</b> Transitive reach looked natural, but it saturates. One import cycle of 270 files (in one core package) lets 26% of code files reach half the code lane, and tests inflate it further. The metric is therefore <b>dependents within two hops, code lane only</b>. It doesn't saturate, still separates the axes, and puts the files you'd expect at the top: the settings module <code>src/config.py</code>, then the event payload and event type modules. Tests are shown as "covered by N tests" instead.</p></div>
+      <div class="tbl"><table class="ct">
+        <thead><tr><th>Connectedness measure</th><th>Max</th><th>Median</th><th>Distinct values</th><th>Saturated (≥ ½ of code)</th><th>ρ with heat</th><th>Top-5% shared with top heat</th></tr></thead>
+        <tbody>
+          <tr><td>Transitive reach, incl. tests</td><td class="num">2,400</td><td class="num">16</td><td class="num">192</td><td class="num">26%</td><td class="num">0.33</td><td class="num">1 / 74</td></tr>
+          <tr><td>Transitive reach, code only</td><td class="num">790</td><td class="num">4</td><td class="num">71</td><td class="num">26%</td><td class="num">0.27</td><td class="num">2 / 74</td></tr>
+          <tr class="pick"><td>Dependents within 2 hops, code only (chosen)</td><td class="num">562</td><td class="num">2</td><td class="num">154</td><td class="num">0%</td><td class="num">0.30</td><td class="num">11 / 74</td></tr>
+          <tr><td>Fan-in (direct importers)</td><td class="num">735</td><td class="num">3</td><td class="num">94</td><td class="num">0%</td><td class="num">0.42</td><td class="num">13 / 74</td></tr>
+        </tbody>
+      </table></div>
+      <div class="prose"><p><b>How it shows.</b> Each kind of information gets exactly one visual channel, so they never compete:</p></div>
+      <div class="tbl"><table class="ct">
+        <thead><tr><th>Information</th><th>Channel</th><th>Where you see it</th></tr></thead>
+        <tbody>
+          <tr><td>Change frequency</td><td>Hue (heat ramp)</td><td>header strip, silhouette saturation, heat column</td></tr>
+          <tr><td>Connectedness</td><td>Elevation (shadow and frame weight)</td><td>raised windows, ↧ dependents badge, connectedness row</td></tr>
+          <tr><td>File role</td><td>Lane texture and label rail</td><td>hatch infra, dots config, plain code, lines tests, crosses docs</td></tr>
+          <tr><td>File identity</td><td>Chip with a pastel stripe</td><td>every fragment of a split file; clicking selects all of them</td></tr>
+          <tr><td>Both axes</td><td>Position in the district grid</td><td>columns Hot→Frozen shared by all lanes; rows Core→Isolated per lane</td></tr>
+        </tbody>
+      </table></div>
+<!--WIREFRAMES-EMPHASIS-->
+      <div class="prose" id="config-fields">
+        <p><b>Where config fields are used.</b> Config files keep their own lane. A heuristic links each key to the code that reads it, scored on four things:</p>
+        <ul>
+          <li>how specific the read is: <code>get("key")</code> or <code>["key"]</code> beats a bare string, which beats an attribute;</li>
+          <li>how rare the key is;</li>
+          <li>how close the files are;</li>
+          <li>whether the code mentions that config file at all.</li>
+        </ul>
+        <p>A prototype on the reference repo (<code>docs/analysis/config_fields.py</code>) linked 44% of its 51,709 key paths. In a random sample of 14 links, 12 pointed at plausible readers; the two misses were generic keys read in unrelated code. Look-alike files come in families, the two largest of 237 and 91 files. So links go through one hub per family and key, and a generic loader shows up once instead of 237 times. Grouping by family cuts 143,012 direct links to 27,168 edges through 3,475 hubs. For example, one key of the 91-file family is 91 files feeding 5 read sites.</p>
+      </div>
+<!--FRAGMENT:wireframes-config.html-->
+    </section>
+
+    <section class="sheet" id="ui">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S3</b> · UI shape</div>
+        <h2>Screens, zoom tiers and the flows that cross them</h2>
+      </div>
+      <div class="prose"><p>Wireframes, not visual design. Numbered callouts name the owning workstream and the contract that feeds each region, so a frontend agent can find its slice of the screen.</p></div>
+<!--WIREFRAMES-->
+<!--FRAGMENT:wireframes-review.html-->
+    </section>
+
+    <section class="sheet" id="model">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S4</b> · Shared model</div>
+        <h2>Types every piece speaks</h2>
+      </div>
+      <div class="prose">
+        <p>The wire model lives in <code>model.ts</code> and the ids in <code>ids.ts</code>, both owned by C0. The Rust crate <code>cv-contracts</code> implements them with serde and generates TypeScript with ts-rs. A golden test keeps the two structurally equal, and within <code>/api/v1</code> the types only grow.</p>
+      </div>
+      <div class="tbl"><table class="ct">
+        <thead><tr><th>Convention</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr><td>Lines</td><td>1-based, inclusive ranges</td></tr>
+          <tr><td>Columns</td><td>0-based UTF-16 code units; language packs convert from tree-sitter byte columns</td></tr>
+          <tr><td>World units</td><td>1 line = 18 wu, 1 column = 9 wu, window header = 36 wu; zoom = screen px per wu</td></tr>
+          <tr><td>Ids</td><td><code>ChangeId</code> is stable across rewrites, <code>CommitId</code> is not; <code>WindowKey</code> is revision-independent; <code>LaneId</code> comes from the lane rules</td></tr>
+          <tr><td>Grades</td><td>quantiles, never fixed limits: heat by change mass, connectedness by rank</td></tr>
+          <tr><td>Errors</td><td><code>{ error: ApiError }</code> with a stable <code>code</code> (<code>immutable</code>, <code>stale-base</code>, <code>revset-invalid</code>, …)</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tbl"><table class="ct">
+        <thead><tr><th>Type</th><th>What it is</th><th>Produced by</th><th>Used by</th></tr></thead>
+        <tbody>
+          <tr><td><code>Revision</code>, <code>GraphRow</code></td><td>a jj commit with flags, bookmarks and workspaces; a history row with lanes and review overlay</td><td><span class="ws">B1</span> <span class="ws">B7</span></td><td><span class="ws f">F4</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>WorkspaceSummary</code> <span class="new">new</span></td><td>a workspace's <code>@</code>, stack, unsnapshotted files, bound agent, last op, overlaps with other stacks</td><td><span class="ws">B1</span> <span class="ws">B7</span></td><td><span class="ws f">F4</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>ViewSpec</code> → <code>ViewRef</code></td><td>snapshot <code>{rev, workspace?, layout?}</code> or range <code>{revset}</code>, plus fileset and options</td><td><span class="ws">B6</span> <span class="ws">B7</span></td><td><span class="ws f">F2</span> <span class="ws f">F4</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>LaneDef</code>, <code>LaneBand</code>, <code>GridColumn</code> <span class="new">new</span></td><td>lane rules (texture, order, collapsed), band geometry with per-lane rows, shared heat columns</td><td><span class="ws">B3</span> <span class="ws">B6</span></td><td><span class="ws f">F1</span> <span class="ws f">F4</span></td></tr>
+          <tr><td><code>Cluster</code>, <code>EdgeBundle</code></td><td>placed groups with lane and district cell (<code>heat</code>, <code>conn</code>); links aggregated between clusters</td><td><span class="ws">B6</span></td><td><span class="ws f">F1</span></td></tr>
+          <tr><td><code>WindowHeader</code></td><td>a frame: lane, path, symbol, lines, rect, heat, connectedness, risk, review-first flag, file fragment</td><td><span class="ws">B6</span></td><td><span class="ws f">F1</span> <span class="ws f">F3</span></td></tr>
+          <tr><td><code>Connectedness</code> <span class="new">new</span></td><td>grade, dependents within 2 hops, fan-in/out, test dependents, transitive reach, cycle size</td><td><span class="ws">B4</span></td><td><span class="ws f">F1</span> <span class="ws f">F3</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>FileFragment</code></td><td>index/of, chip slot (10 colours, stable per path), sibling windows; selection brightens every fragment and marks them on the minimap</td><td><span class="ws">B3</span> <span class="ws">B6</span></td><td><span class="ws f">F1</span> <span class="ws f">F3</span></td></tr>
+          <tr><td><code>RangeOptions</code>, <code>ViewRef.sharedPlacement</code> <span class="new">v0.3</span></td><td>range views reuse the full view's placement; <code>contextDisplay</code> starts unchanged connected functions minimized</td><td><span class="ws">B6</span></td><td><span class="ws f">F1</span> <span class="ws f">F3</span> <span class="ws f">F4</span></td></tr>
+          <tr><td><code>Port</code>, <code>Link</code>, <code>Hub</code></td><td>line-anchored edge ends; a typed edge whose target is a site, a hub, or <code>dynamic</code> (an open stub); a topic, endpoint or key node (config hubs carry their file <code>family</code>)</td><td><span class="ws">B4</span> <span class="ws p">P1–P5</span></td><td><span class="ws f">F1</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>MetricPoint</code>, <code>CoChangePair</code> <span class="new">new</span></td><td>one Hotspots dot (both percentiles, risk); files that change together without a link</td><td><span class="ws">B6</span> <span class="ws">B5</span></td><td><span class="ws f">F4</span> <span class="ws f">F1</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>Thread</code>, <code>Anchor</code>, <code>Comment</code></td><td>review threads anchored to a change id</td><td><span class="ws">B8</span></td><td><span class="ws f">F3</span> <span class="ws f">F4</span> <span class="ws">B9</span></td></tr>
+          <tr><td><code>EditRequest</code> → <code>EditResult</code></td><td>target, files, mode (amend by default), dry run; exact outcome with ops, rebased changes, workspaces, conflicts</td><td><span class="ws">B8</span></td><td><span class="ws f">F3</span> <span class="ws">B9</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="srcs">
+        <details class="src"><summary>ids.ts <span class="muted">ids, conventions, Actor, ApiError</span></summary><pre><code class="ts"><!--SRC:ids.ts--></code></pre></details>
+        <details class="src"><summary>model.ts <span class="muted">revisions, workspaces, views, lanes, both axes, windows, links, threads, edits</span></summary><pre><code class="ts"><!--SRC:model.ts--></code></pre></details>
+      </div>
+    </section>
+
+    <section class="sheet" id="contracts">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S5</b> · Contracts</div>
+        <h2>Eight boundaries, one sheet each</h2>
+      </div>
+
+      <div class="contract" id="c-http">
+        <div class="contract-head"><h3><span class="bnum">1</span>Browser ↔ server: HTTP</h3><span class="flow"><span class="ws">B7</span> provides · <span class="ws f">F2</span> <span class="ws f">F3</span> <span class="ws f">F4</span> consume · base <code>/api/v1</code></span></div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Route</th><th>Request → response</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td colspan="3">Repo, workspaces, lanes, views</td></tr>
+            <tr><td><span class="m">GET</span> /repo</td><td>→ <code>RepoInfo</code></td><td>status bar, index state</td></tr>
+            <tr><td><span class="m">GET</span> /workspaces <span class="new">new</span></td><td>→ <code>WorkspaceSummary[]</code></td><td>Workspaces tab; live via <code>workspace.updated</code></td></tr>
+            <tr><td><span class="m">GET</span> /lanes <span class="new">new</span></td><td>→ <code>LaneDef[]</code></td><td>defaults plus <code>.cv/lanes.toml</code>; lane filters</td></tr>
+            <tr><td><span class="m post">POST</span> /views</td><td><code>ViewSpec</code> → <code>ViewRef</code></td><td>open a snapshot (any workspace's <code>@</code>) or range; idempotent per op</td></tr>
+            <tr><td><span class="m">GET</span> /views/{id}/bootstrap</td><td>→ <code>ViewBootstrap</code></td><td><span class="tier">T0</span> lanes, columns, clusters, hubs, bundles, churn summary</td></tr>
+            <tr><td><span class="m">GET</span> /views/{id}/tiles/{z}/{x}/{y}</td><td>→ <code>TileResponse</code></td><td><span class="tier">T1</span> window headers; tile = 4096·2^z wu</td></tr>
+            <tr><td><span class="m post">POST</span> /views/{id}/windows:batch</td><td><code>{ids, parts}</code> → outlines, diffs, links</td><td><span class="tier">T2</span> ≤ 200 windows per call</td></tr>
+            <tr><td><span class="m post">POST</span> /views/{id}/windows/{wid}/expand</td><td><code>ExpandRequest</code> → <code>WindowHeader</code></td><td>fade-band "load more"; neighbours move</td></tr>
+            <tr><td><span class="m patch">PATCH</span> /views/{id}/layout</td><td><code>LayoutPatch</code> → <code>{layoutVersion}</code></td><td>drags and pins by layout key</td></tr>
+            <tr><td><span class="m">GET</span> /views/{id}/metrics <span class="new">new</span></td><td><code>level, lane</code> → <code>{points, cochange}</code></td><td>Hotspots panel, co-change lens</td></tr>
+            <tr><td><span class="m">GET</span> /views/{id}/fragments?path <span class="new">v0.3</span></td><td>→ <code>FragmentsResponse</code></td><td>file chip clicked: every fragment, incl. off-screen, for highlight and minimap</td></tr>
+            <tr><td><span class="m">GET</span> /blobs/{blob}/text?from&amp;to</td><td>→ <code>BlobText</code></td><td><span class="tier">T3</span> immutable lines plus token triples</td></tr>
+            <tr class="grp"><td colspan="3">History, ranges, navigation</td></tr>
+            <tr><td><span class="m">GET</span> /revisions?revset&amp;limit</td><td>→ <code>{rows: GraphRow[]}</code></td><td>history panel with lanes</td></tr>
+            <tr><td><span class="m post">POST</span> /revsets:validate</td><td><code>{revset, fileset}</code> → <code>RevsetValidation</code></td><td>range dialog live check, gaps, "did you mean"</td></tr>
+            <tr><td><span class="m">GET</span> <span class="m put">PUT</span> <span class="m delete">DELETE</span> /ranges[/{name}]</td><td><code>SavedRange</code></td><td>saved ranges</td></tr>
+            <tr><td><span class="m">GET</span> /interdiff?change&amp;from</td><td>→ <code>{files, description}</code></td><td>"changed since review"</td></tr>
+            <tr><td><span class="m">GET</span> /search · /links · /hubs/{hub}</td><td>→ hits · <code>{links, hubs}</code> · <code>Hub</code></td><td>⌘K palette, follow-the-call, all ends of a channel</td></tr>
+            <tr class="grp"><td colspan="3">Review, edits, conflicts, events</td></tr>
+            <tr><td><span class="m">GET</span> <span class="m post">POST</span> /threads · <span class="m patch">PATCH</span> /threads/{id}</td><td><code>NewThread</code> → <code>Thread</code></td><td>list, create, resolve, assign to agent</td></tr>
+            <tr><td><span class="m post">POST</span> /threads/{id}/comments · /reviews:submit</td><td>reply · <code>{threads, note}</code> → <code>{cursor}</code></td><td>reply; "Send to agent"</td></tr>
+            <tr><td><span class="m post">POST</span> /edits · /edits/{id}/apply · /undo</td><td><code>EditRequest</code> → <code>EditResult</code></td><td>exact dry run; amend by default; undo reverts our op only</td></tr>
+            <tr><td><span class="m">GET</span> /conflicts · <span class="m post">POST</span> …/{commit}/{path}/resolve</td><td>→ <code>ConflictRecord[]</code> · <code>EditResult</code></td><td>conflict panel and windows</td></tr>
+            <tr><td><span class="m">GET</span> /events?cursor&amp;kinds&amp;timeoutS</td><td>→ <code>{cursor, events}</code></td><td>long-poll twin of the WebSocket; MCP uses it</td></tr>
+          </tbody>
+        </table></div>
+        <details class="src"><summary>http.ts <span class="muted">typed route table and payloads</span></summary><pre><code class="ts"><!--SRC:http.ts--></code></pre></details>
+      </div>
+
+      <div class="contract" id="c-ws">
+        <div class="contract-head"><h3><span class="bnum">2</span>Browser ↔ server: WebSocket</h3><span class="flow"><span class="ws">B7</span> provides · <span class="ws f">F2</span> consumes · <code>/api/v1/ws?cursor=</code></span></div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Event</th><th>Payload</th><th>When</th></tr></thead>
+          <tbody>
+            <tr><td><code>op.changed</code></td><td><code>op, changes[], actor</code></td><td>any new jj operation: ours, the user's, an agent's</td></tr>
+            <tr><td><code>workspace.updated</code> <span class="new">new</span></td><td><code>WorkspaceSummary</code></td><td><code>@</code> moved, files dirtied, agent bound, overlap changed</td></tr>
+            <tr><td><code>index.progress</code> · <code>view.invalidated</code></td><td>job counts · windows or tiles to refetch</td><td>indexing; refetch only what changed</td></tr>
+            <tr><td><code>thread.upserted</code> · <code>review.submitted</code></td><td><code>Thread</code> · thread ids</td><td>review activity; "Send to agent"</td></tr>
+            <tr><td><code>edit.updated</code> · <code>conflicts.changed</code></td><td><code>EditResult</code> · added/resolved</td><td>edits and their conflict effects</td></tr>
+            <tr><td><code>agent.attention</code></td><td><code>agent, workspace, tool, windows[]</code></td><td>every agent read; drives <code>claude@tax</code> markers</td></tr>
+            <tr><td><code>focus.request</code> · <code>workspace.recovered</code></td><td>target · divergent commit</td><td>agent asks to show something; rescued edits</td></tr>
+            <tr class="grp"><td colspan="3">Client → server</td></tr>
+            <tr><td><code>view.state</code></td><td><code>ViewState</code> at 4 Hz (incl. <code>lens</code>, <code>selectedFile</code>)</td><td>what <code>get_view_state</code> returns to the agent</td></tr>
+          </tbody>
+        </table></div>
+        <details class="src"><summary>ws.ts <span class="muted">frames, events, client messages, ViewState</span></summary><pre><code class="ts"><!--SRC:ws.ts--></code></pre></details>
+      </div>
+
+      <div class="contract" id="c-mcp">
+        <div class="contract-head"><h3><span class="bnum">3</span>Agent ↔ server: MCP</h3><span class="flow"><span class="ws">B9</span> provides (rmcp 3.x) · coding agents consume · <code>/mcp</code> or <code>cv mcp</code> stdio</span></div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Tool</th><th>In → out</th><th>Profiles</th></tr></thead>
+          <tbody>
+            <tr><td><code>bind_workspace</code> · <code>list_workspaces</code> <span class="new">new</span></td><td>workspace → bound stack · summaries</td><td>R V E</td></tr>
+            <tr><td><code>get_view_state</code> · <code>focus</code> · <code>create_tour</code></td><td>the human's view · move or suggest · ordered steps</td><td>R V E · V</td></tr>
+            <tr><td><code>get_hotspots</code> <span class="new">new</span></td><td>lane, limit → ranked <code>MetricPoint[]</code> (review first)</td><td>R V E</td></tr>
+            <tr><td><code>get_metrics</code> <span class="new">new</span></td><td>target → heat, connectedness, timeline, co-changed files</td><td>R V E</td></tr>
+            <tr><td><code>search</code> · <code>read_window</code> · <code>read_code</code></td><td>→ hits · <code>AnnotatedCode</code> (ports, threads, dynamic stubs inline)</td><td>R V E</td></tr>
+            <tr><td><code>get_links</code> · <code>get_hub</code></td><td>target, dir, kinds, depth → links + hubs</td><td>R V E</td></tr>
+            <tr><td><code>list_threads</code> · <code>get_thread</code> · <code>reply</code> · <code>set_thread_status</code></td><td>review queue</td><td>V E</td></tr>
+            <tr><td><code>create_thread</code></td><td>anchor, body, kind = finding → <code>Thread</code></td><td>V</td></tr>
+            <tr><td><code>apply_suggestion</code> · <code>edit_code</code> · <code>undo_edit</code></td><td>amend by default → <code>EditResult</code></td><td>E</td></tr>
+            <tr><td><code>list_conflicts</code> · <code>get_conflict</code> · <code>resolve_conflict</code></td><td>revset · rev+path → <code>ConflictDetail</code> · content → <code>EditResult</code></td><td>E</td></tr>
+            <tr><td><code>list_revisions</code> · <code>get_diff</code> · <code>get_interdiff</code></td><td>→ rows · <code>FileDiff[]</code></td><td>R V E</td></tr>
+            <tr><td><code>declare_link</code> · <code>rate_link</code> · <code>label_cluster</code></td><td>teach the graph what static analysis missed</td><td>V E</td></tr>
+            <tr><td><code>wait_for_events</code></td><td>cursor, kinds, timeoutS ≤ 60 → events</td><td>R V E</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted small">Profiles: R = reader, V = reviewer, E = editor (<code>cv mcp --profile reviewer --workspace tax</code>). Resources: <code>cv://view/state</code>, <code>cv://threads?status=open</code>, <code>cv://conflicts</code>. Prompts: <code>address_review</code>, <code>review_range</code>, <code>resolve_conflicts</code>.</p>
+        <details class="src"><summary>mcp.ts <span class="muted">tool I/O, AnnotatedCode, profiles, resources, prompts</span></summary><pre><code class="ts"><!--SRC:mcp.ts--></code></pre></details>
+      </div>
+
+      <div class="contract" id="c-vcs">
+        <div class="contract-head"><h3><span class="bnum">4</span>Crates ↔ jj: the <code>Vcs</code> trait</h3><span class="flow"><span class="ws">B1</span> provides (jj-lib 0.45.1) · <span class="ws">B3</span>–<span class="ws">B8</span> consume</span></div>
+        <div class="prose">
+          <p>Reads are pinned to one operation and never snapshot anyone's checkout. Writes go through one queue.</p>
+          <p><code>preview</code> rewrites and rebases inside a jj-lib transaction, then drops it. Conflict predictions are therefore exact, not heuristic.</p>
+          <p>The CLI recipes verified in the design session remain the test oracle: every mutation must produce the same trees both ways.</p>
+        </div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Mutation</th><th>CLI oracle (jj 0.45.1)</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>amend C (default)</td><td><code>jj diffedit --from 'root()' --to C --tool cv-write -- &lt;paths&gt;</code></td><td>jj-lib: rewrite C's tree, rebase descendants</td></tr>
+            <tr><td>insert after C</td><td><code>jj new --insert-after C --no-edit</code>, then amend X</td><td><code>@</code> stays put</td></tr>
+            <tr><td>branch from C</td><td><code>jj new C --no-edit</code>, then amend X</td><td>the only mode for immutable C</td></tr>
+            <tr><td>new file at a non-@ commit</td><td>temporary sparse workspace + <code>jj squash --from T --into C</code></td><td>jj-lib writes the tree directly</td></tr>
+            <tr><td>absorb · resolve · undo</td><td><code>jj absorb --from E --into R</code> · <code>jj resolve -r K --tool cv-resolve</code> · <code>jj op revert</code></td><td>never bare <code>jj undo</code></td></tr>
+          </tbody>
+        </table></div>
+        <details class="src"><summary>rust/src/vcs.rs <span class="muted">Vcs, MutationPlan, MutationOutcome, HistoryCommit</span></summary><pre><code class="rs"><!--SRC:rust/src/vcs.rs--></code></pre></details>
+      </div>
+
+      <div class="contract" id="c-packs">
+        <div class="contract-head"><h3><span class="bnum">5</span>Core ↔ packs: languages and channels</h3><span class="flow"><span class="ws l">L1–L5</span> and <span class="ws p">P1–P4</span> provide · <span class="ws">B3</span> <span class="ws">B4</span> consume</span></div>
+        <div class="prose">
+          <p>The core never names a language or a protocol.</p>
+          <ul>
+            <li>A <b>LanguagePack</b> owns its grammar and queries. It hands back language-neutral facts and runs queries for channel rules. It folds key expressions (literals, f-strings, template literals, <code>format!</code>, constants) into a <code>KeyExpr</code>.</li>
+            <li>A <b>ChannelPack</b> owns rule files per language (<code>packs/channels/&lt;protocol&gt;/&lt;lang&gt;-&lt;framework&gt;.toml</code>), plus key normalization and matching.</li>
+            <li>A key with nothing static left becomes a <code>dynamic</code> stub, never a guessed edge.</li>
+          </ul>
+        </div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Pack</th><th>Covers</th></tr></thead>
+          <tbody>
+            <tr><td><span class="ws l">L1</span> Python · <span class="ws l">L2</span> TypeScript</td><td>first: f-strings and template literals, relative and <code>tsconfig</code> imports, decorators</td></tr>
+            <tr><td><span class="ws l">L3</span> Config</td><td>YAML, TOML, JSON, Dockerfile stages, HCL resources, shell, for the infra and config lanes</td></tr>
+            <tr><td><span class="ws l">L4</span> Rust · <span class="ws l">L5</span> C++</td><td>later: the <code>mod</code> tree and Cargo workspaces; <code>#include</code> by heuristics only (no <code>compile_commands.json</code>)</td></tr>
+            <tr><td><span class="ws p">P1</span> Bus · <span class="ws p">P2</span> HTTP</td><td>MQTT wildcards, <code>scoped_topic</code>, YAML <code>topic:</code>; routes and clients across languages with prefixes</td></tr>
+            <tr><td><span class="ws p">P3</span> Env · <span class="ws p">P4</span> Deploy</td><td>dotenv, Dockerfile, compose, k8s and <b>pydantic-settings</b> fields; Dockerfile <code>CMD</code>, compose <code>command</code>, CI <code>run:</code></td></tr>
+            <tr><td><span class="ws p">P5</span> Config fields <span class="new">v0.3</span></td><td>YAML, TOML and JSON keys → <code>family#key</code> hubs → read sites; scored heuristic through <code>affinity()</code> and <code>LinkContext</code></td></tr>
+          </tbody>
+        </table></div>
+        <div class="bytes" aria-label="OutlineEncoding: three bytes per line">
+          <div><b>byte 0</b><span>indent in columns</span><span class="muted small">clamped 0–255</span></div>
+          <div><b>byte 1</b><span>visible length after indent</span><span class="muted small">clamped 0–255</span></div>
+          <div><b>byte 2</b><div class="bits"><span>0–3 token class</span><span>4–5 diff</span><span>6 port</span><span>7 thread</span></div></div>
+        </div>
+        <div class="srcs">
+          <details class="src"><summary>rust/src/lang.rs <span class="muted">LanguagePack, BlobFacts, ImportResolver, LaneClassifier</span></summary><pre><code class="rs"><!--SRC:rust/src/lang.rs--></code></pre></details>
+          <details class="src"><summary>rust/src/channel.rs <span class="muted">ChannelPack, KeyExpr, ChannelKey (incl. Dynamic), rules</span></summary><pre><code class="rs"><!--SRC:rust/src/channel.rs--></code></pre></details>
+          <details class="src"><summary>wire.ts <span class="muted">token classes, outline and token encodings, tiles, file-chip slots</span></summary><pre><code class="ts"><!--SRC:wire.ts--></code></pre></details>
+        </div>
+      </div>
+
+      <div class="contract" id="c-store">
+        <div class="contract-head"><h3><span class="bnum">6</span>Services ↔ store</h3><span class="flow"><span class="ws">B2</span> provides · every backend crate consumes</span></div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Database</th><th>Tables (owner)</th><th>Lifetime</th></tr></thead>
+          <tbody>
+            <tr><td><code>index.db</code></td><td><code>vcs_*</code> incl. lanes and workspace state <span class="ws">B1</span> · <code>blob</code>, <code>fact_*</code> <span class="ws">B3</span> · <code>link_*</code> incl. <code>link_metric</code> and dynamic targets <span class="ws">B4</span> · <code>churn_*</code> <span class="ws">B5</span> · <code>canvas_*</code> incl. district grid and fragments <span class="ws">B6</span> · <code>search_fts</code> <span class="ws">B2</span></td><td>derived; delete to rebuild</td></tr>
+            <tr><td><code>review.db</code></td><td><code>thread</code>, <code>comment</code>, <code>anchor_history</code>, <code>review_mark</code>, <code>edit</code>, <code>conflict_seen</code>, <code>link_feedback</code>, <code>declared_link</code>, <code>cluster_label</code>, <code>tour*</code> <span class="ws">B8</span> · <code>agent_session</code> <span class="ws">B9</span> · <code>layout_pin</code>, <code>saved_range</code>, <code>event_log</code> <span class="ws">B6</span> <span class="ws">B7</span></td><td>never deleted by re-indexing</td></tr>
+          </tbody>
+        </table></div>
+        <p class="muted small">Schema files: <code>docs/schema/index.sql</code> and <code>docs/schema/review.sql</code>. Both apply cleanly in sqlite 3.53 and Bun's 3.51. A smoke test confirmed that the viewport query returns lane and fragment, and that a link with two targets is rejected.</p>
+      </div>
+
+      <div class="contract" id="c-pipe">
+        <div class="contract-head"><h3><span class="bnum">7</span>Index pipeline services</h3><span class="flow"><span class="ws">B4</span> <span class="ws">B5</span> <span class="ws">B6</span> provide · <span class="ws">B7</span> scheduler orchestrates</span></div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Trait</th><th>Method</th><th>Contract</th></tr></thead>
+          <tbody>
+            <tr><td><code>Linker</code> <span class="ws">B4</span></td><td><code>link(snapshot)</code> · <code>connectedness(snapshot, links)</code></td><td>links, hubs and dynamic stubs; dependents within 2 hops, quantile grades</td></tr>
+            <tr><td><code>ChurnService</code> <span class="ws">B5</span></td><td><code>grade(head, history, options)</code></td><td>change-mass quantile heat, stops when grades settle, co-change pairs</td></tr>
+            <tr><td><code>LayoutService</code> <span class="ws">B6</span></td><td><code>build_view</code> · <code>place(view, Districts | Dependency, previous, pins)</code> · <code>metrics</code></td><td>district grid; clusters move only on settled grades; Hotspots points</td></tr>
+            <tr><td><code>IndexScheduler</code> <span class="ws">B7</span></td><td><code>enqueue(job)</code> · <code>prioritize(view, visible)</code></td><td>visible windows parse first</td></tr>
+          </tbody>
+        </table></div>
+        <details class="src"><summary>rust/src/index.rs <span class="muted">Store, Linker, ChurnService, LayoutService, IndexScheduler</span></summary><pre><code class="rs"><!--SRC:rust/src/index.rs--></code></pre></details>
+      </div>
+
+      <div class="contract" id="c-review">
+        <div class="contract-head"><h3><span class="bnum">8</span>Review, edits and events</h3><span class="flow"><span class="ws">B8</span> provides · <span class="ws">B7</span> <span class="ws">B9</span> consume</span></div>
+        <div class="tbl"><table class="ct">
+          <thead><tr><th>Step</th><th>Mutation protocol (every edit, human or agent)</th></tr></thead>
+          <tbody>
+            <tr><td>Validate</td><td>Mutable target means amend; an immutable one means branch. A stale base is rejected. Find the workspaces sitting on top of the target and warn if an agent is bound to one.</td></tr>
+            <tr><td>Preview</td><td>Rewrite and rebase in a jj-lib transaction, collect conflicts, drop the transaction. Exact, and nothing is written.</td></tr>
+            <tr><td>Apply</td><td>Queue → snapshot the affected workspaces → commit the transaction → update their checkouts → rescue divergence if any.</td></tr>
+            <tr><td>Report</td><td>New conflicts go to <code>conflict_seen</code>, <code>edit.updated</code> and <code>conflicts.changed</code>. Undo reverts our op only.</td></tr>
+            <tr><td>Re-anchor</td><td>Threads follow their change id; changed lines mark a thread <code>outdated</code> with its last good commit.</td></tr>
+          </tbody>
+        </table></div>
+        <details class="src"><summary>rust/src/review.rs <span class="muted">ReviewService, EditService, EventLog</span></summary><pre><code class="rs"><!--SRC:rust/src/review.rs--></code></pre></details>
+      </div>
+    </section>
+
+    <section class="sheet" id="rules">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S6</b> · Cross-cutting rules</div>
+        <h2>What every implementer must not get wrong</h2>
+      </div>
+      <div class="rules">
+        <div><h4>Reads never snapshot</h4><p>Reads are pinned to an operation. Showing someone's live edits means overlaying files from disk, never snapshotting on their behalf.</p></div>
+        <div><h4>Snapshot before you rewrite under someone</h4><p>Rewriting an ancestor of another workspace's <code>@</code> without snapshotting it first makes its unsaved files vanish from disk. Verified on jj 0.45.1.</p></div>
+        <div><h4>Amend when possible</h4><p>Edits amend the change they belong to. An immutable target gets a new branch, and range edits are absorbed into the commits that own the lines.</p></div>
+        <div><h4>Previews are exact, undo is targeted</h4><p>The preview is the real rewrite in a dropped transaction. Undo reverts our operation, never "the last one".</p></div>
+        <div><h4>Colour means heat</h4><p>Hue is change frequency, elevation is connectedness, texture is lane. File chips use pastel identity stripes clear of the heat ramp.</p></div>
+        <div><h4>Grades are quantiles</h4><p>Heat by change mass and connectedness by rank, with configurable cut points. Clusters move only when a grade settles.</p></div>
+        <div><h4>The core names no language</h4><p>Only <code>cv-lang-*</code> and <code>cv-channel-*</code> may depend on a grammar or match on a language or protocol. CI enforces it.</p></div>
+        <div><h4>Dynamic means dynamic</h4><p>When a key only exists at runtime, draw an open "?" stub with what is known. Never guess an edge, and never trace at runtime.</p></div>
+        <div><h4>Range reviews keep the map</h4><p>A range view reuses the full view's placement. Diffs sit where their code always sits, and unchanged connected functions start minimized.</p></div>
+        <div><h4>Heuristic links show their confidence</h4><p>Config-field links are scored. Strong ones are drawn solid and thin ones faded with "?", and <code>rate_link</code> overrides either.</p></div>
+        <div><h4>Threads follow changes</h4><p>Anchor to the change id, re-anchor after every op, and mark a thread outdated instead of guessing.</p></div>
+        <div><h4>Agents are visible and bound</h4><p>An MCP session binds to its workspace. Every read emits attention, and every write records actor, workspace and op ids.</p></div>
+      </div>
+    </section>
+
+    <section class="sheet" id="work">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S7</b> · Work breakdown</div>
+        <h2>25 workstreams in five phases</h2>
+      </div>
+      <figure>
+        <div class="bpfig"><div class="scroll">
+<svg viewBox="0 0 1000 500" role="img" aria-labelledby="ph-title">
+  <title id="ph-title">Phases and bands: C0 first; phase 1 backend core, Python and TypeScript packs and the frontend; phase 2 channels, churn, layout, review, config pack and code windows; phase 3 MCP and integration; phase 4 Rust and C++ packs</title>
+  <defs><marker id="ph-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="sm-arrow"/></marker></defs>
+  <rect x="10" y="10" width="110" height="480" rx="6" class="ph-col"/><text x="22" y="34" class="ph-h">PHASE 0</text>
+  <rect x="130" y="10" width="240" height="480" rx="6" class="ph-col"/><text x="142" y="34" class="ph-h">PHASE 1</text>
+  <rect x="380" y="10" width="345" height="480" rx="6" class="ph-col"/><text x="392" y="34" class="ph-h">PHASE 2</text>
+  <rect x="735" y="10" width="125" height="480" rx="6" class="ph-col"/><text x="747" y="34" class="ph-h">PHASE 3</text>
+  <rect x="870" y="10" width="120" height="480" rx="6" class="ph-col"/><text x="882" y="34" class="ph-h">PHASE 4</text>
+  <line x1="130" y1="152" x2="990" y2="152" class="ph-band"/><line x1="130" y1="326" x2="990" y2="326" class="ph-band"/>
+  <text x="142" y="56" class="ph-bl">BACKEND CORE</text><text x="142" y="174" class="ph-bl">PACKS</text><text x="142" y="348" class="ph-bl">FRONTEND</text>
+  <g class="ph-node c"><rect x="20" y="220" width="90" height="54" rx="5"/><text x="30" y="243" class="id">C0</text><text x="30" y="262" class="nm">contracts</text></g>
+  <text x="20" y="296" style="fill:var(--bp-dim);font:11px var(--font-ui)">mocks, golden</text>
+  <text x="20" y="311" style="fill:var(--bp-dim);font:11px var(--font-ui)">repos, CI</text>
+  <path d="M110 247 H128" class="ph-dep" marker-end="url(#ph-ah)"/>
+  <g class="ph-node"><rect x="140" y="64" width="108" height="36" rx="5"/><text x="150" y="80" class="id">B1</text><text x="150" y="94" class="nm">jj adapter</text></g>
+  <g class="ph-node"><rect x="254" y="64" width="108" height="36" rx="5"/><text x="264" y="80" class="id">B2</text><text x="264" y="94" class="nm">store</text></g>
+  <g class="ph-node"><rect x="140" y="106" width="108" height="36" rx="5"/><text x="150" y="122" class="id">B3</text><text x="150" y="136" class="nm">language core</text></g>
+  <g class="ph-node"><rect x="254" y="106" width="108" height="36" rx="5"/><text x="264" y="122" class="id">B7</text><text x="264" y="136" class="nm">server</text></g>
+  <g class="ph-node pk"><rect x="140" y="182" width="108" height="36" rx="5"/><text x="150" y="198" class="id">L1</text><text x="150" y="212" class="nm">Python</text></g>
+  <g class="ph-node pk"><rect x="254" y="182" width="108" height="36" rx="5"/><text x="264" y="198" class="id">L2</text><text x="264" y="212" class="nm">TypeScript</text></g>
+  <g class="ph-node"><rect x="140" y="356" width="108" height="36" rx="5"/><text x="150" y="372" class="id">F1</text><text x="150" y="386" class="nm">canvas engine</text></g>
+  <g class="ph-node"><rect x="254" y="356" width="108" height="36" rx="5"/><text x="264" y="372" class="id">F2</text><text x="264" y="386" class="nm">data client</text></g>
+  <g class="ph-node"><rect x="140" y="398" width="108" height="36" rx="5"/><text x="150" y="414" class="id">F4</text><text x="150" y="428" class="nm">panels</text></g>
+  <g class="ph-node"><rect x="390" y="64" width="108" height="36" rx="5"/><text x="400" y="80" class="id">B4</text><text x="400" y="94" class="nm">channels, links</text></g>
+  <g class="ph-node"><rect x="504" y="64" width="108" height="36" rx="5"/><text x="514" y="80" class="id">B5</text><text x="514" y="94" class="nm">churn</text></g>
+  <g class="ph-node"><rect x="390" y="106" width="108" height="36" rx="5"/><text x="400" y="122" class="id">B6</text><text x="400" y="136" class="nm">layout</text></g>
+  <g class="ph-node"><rect x="504" y="106" width="108" height="36" rx="5"/><text x="514" y="122" class="id">B8</text><text x="514" y="136" class="nm">review &amp; edits</text></g>
+  <g class="ph-node pk"><rect x="390" y="182" width="108" height="36" rx="5"/><text x="400" y="198" class="id">L3</text><text x="400" y="212" class="nm">config langs</text></g>
+  <g class="ph-node pk"><rect x="504" y="182" width="108" height="36" rx="5"/><text x="514" y="198" class="id">P1</text><text x="514" y="212" class="nm">bus</text></g>
+  <g class="ph-node pk"><rect x="618" y="182" width="100" height="36" rx="5"/><text x="628" y="198" class="id">P2</text><text x="628" y="212" class="nm">HTTP</text></g>
+  <g class="ph-node pk"><rect x="504" y="224" width="108" height="36" rx="5"/><text x="514" y="240" class="id">P3</text><text x="514" y="254" class="nm">env keys</text></g>
+  <g class="ph-node pk"><rect x="618" y="224" width="100" height="36" rx="5"/><text x="628" y="240" class="id">P4</text><text x="628" y="254" class="nm">deploy</text></g>
+  <g class="ph-node pk"><rect x="504" y="266" width="108" height="36" rx="5"/><text x="514" y="282" class="id">P5</text><text x="514" y="296" class="nm">config fields</text></g>
+  <g class="ph-node"><rect x="390" y="356" width="108" height="36" rx="5"/><text x="400" y="372" class="id">F3</text><text x="400" y="386" class="nm">code windows</text></g>
+  <g class="ph-node"><rect x="745" y="85" width="105" height="36" rx="5"/><text x="755" y="101" class="id">B9</text><text x="755" y="115" class="nm">MCP</text></g>
+  <g class="ph-node c"><rect x="745" y="250" width="105" height="54" rx="5"/><text x="755" y="273" class="id">I1</text><text x="755" y="292" class="nm">reference repo</text></g>
+  <g class="ph-node pk"><rect x="880" y="182" width="100" height="36" rx="5"/><text x="890" y="198" class="id">L4</text><text x="890" y="212" class="nm">Rust</text></g>
+  <g class="ph-node pk"><rect x="880" y="224" width="100" height="36" rx="5"/><text x="890" y="240" class="id">L5</text><text x="890" y="254" class="nm">C++</text></g>
+  <text x="392" y="408" style="fill:var(--bp-dim);font:12px var(--font-ui)">Dashed frames are packs: small crates behind a trait, safe to give to separate agents.</text>
+  <text x="392" y="424" style="fill:var(--bp-dim);font:12px var(--font-ui)">"Needs" on each card says which neighbours must exist for real; everything else runs on C0 mocks.</text>
+</svg>
+        </div></div>
+      </figure>
+      <div class="legend"><span><span class="ws c">C</span> contracts</span><span><span class="ws">B</span> backend core</span><span><span class="ws l">L</span> language packs</span><span><span class="ws p">P</span> channel packs</span><span><span class="ws f">F</span> frontend</span><span><span class="ws i">I</span> integration</span><span>"Copy brief" puts a ready prompt for an implementer agent on your clipboard.</span></div>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="sheet" id="decisions">
+      <div class="sheet-head">
+        <div class="eyebrow"><b>S8</b> · Decisions</div>
+        <h2>What is settled, and what is still open</h2>
+      </div>
+      <div class="tbl"><table class="ct">
+        <thead><tr><th>#</th><th>Decision</th><th>Choice</th><th>By</th></tr></thead>
+        <tbody>
+          <tr><td>D1</td><td>Backend language</td><td>Rust from day one; jj-lib, tree-sitter, rusqlite and rmcp verified by a spike</td><td><span class="you">you</span></td></tr>
+          <tr><td>D2</td><td>Frontend</td><td>TypeScript, React, PixiJS, DOM text, CodeMirror 6</td><td>design</td></tr>
+          <tr><td>D3</td><td>Contracts</td><td>TS wire spec as golden; Rust <code>cv-contracts</code> generates TS and JSON Schema; Rust traits between crates</td><td>design</td></tr>
+          <tr><td>D4</td><td>jj access</td><td>jj-lib pinned to the CLI's exact version; CLI recipes as the test oracle</td><td>design</td></tr>
+          <tr><td>D5</td><td>Where threads live</td><td>database only for now; repo export later</td><td><span class="you">you</span></td></tr>
+          <tr><td>D6</td><td>Grades</td><td>quantiles on both axes, no fixed limits</td><td><span class="you">you</span></td></tr>
+          <tr><td>D7</td><td>Connectedness</td><td>dependents within 2 hops, code only; tests shown separately</td><td>measured</td></tr>
+          <tr><td>D8</td><td>Default layout</td><td>district grid: lanes × heat columns × connectedness rows</td><td>measured</td></tr>
+          <tr><td>D9</td><td>Big files</td><td>fragments attract each other; file chip highlights all of them</td><td><span class="you">you</span></td></tr>
+          <tr><td>D10</td><td>Edits</td><td>amend when possible; branch for immutable; absorb in ranges</td><td><span class="you">you</span></td></tr>
+          <tr><td>D11</td><td>Dynamic links</td><td>no runtime tracing; open "?" stubs for keys built at runtime</td><td><span class="you">you</span></td></tr>
+          <tr><td>D12</td><td>Workspaces</td><td>first-class: tab, live overlays, agent binding, overlap warnings</td><td><span class="you">you</span></td></tr>
+          <tr><td>D13</td><td>Languages and IPC</td><td>packs behind traits: Python and TypeScript first, then Rust and C++; channel packs for IPC</td><td><span class="you">you</span></td></tr>
+          <tr><td>D14</td><td>File chips</td><td>a colour per split file, muted at rest; selection brightens every fragment and marks them on the minimap</td><td><span class="you">you</span></td></tr>
+          <tr><td>D15</td><td>Config files</td><td>their own lane; field usage by a scored heuristic through family hubs</td><td><span class="you">you</span></td></tr>
+          <tr><td>D16</td><td>Range review</td><td>the full view's map and connectedness; diff-focused windows; unchanged connected functions minimized</td><td><span class="you">you</span></td></tr>
+          <tr><td>D17</td><td>C++ includes</td><td>heuristics only, no <code>compile_commands.json</code></td><td><span class="you">you</span></td></tr>
+        </tbody>
+      </table></div>
+      <div class="prose"><p>No questions are open. These defaults were chosen along the way and can be changed:</p></div>
+      <ul class="qs">
+        <li>Range views draw unchanged clusters as faint outlines at L0/L1 only.</li>
+        <li>Context windows reach 1 hop.</li>
+        <li>Config-field links appear at score ≥ 0.65 and are solid from 0.80; generic keys score half.</li>
+        <li>The reference repo keeps its prompt YAML in the config lane; a <code>prompts</code> lane is one rule in <code>.cv/lanes.toml</code>.</li>
+      </ul>
+    </section>
+
+    <footer>Source files live in the repo under <code>docs/</code>: <code>contracts/*.ts</code>, <code>contracts/rust/</code>, <code>schema/*.sql</code>, <code>spikes/rust-stack/</code>, <code>DESIGN.md</code>, <code>WORKSTREAMS.md</code>. This page renders them; if they disagree, the repo copies win.</footer>
+  </main>
+</div>
+
+<script>
+(() => {
+  // ── Workstream cards and briefs ─────────────────────────────────────────
+  const WS = [
+    { id: "C0", fam: "c", name: "Contracts & mocks", phase: 0, owns: "cv-contracts, cv-mock, fixtures/, workspace skeletons, CI", provides: "Rust wire types + ts-rs TS + schemars schemas, boundary traits in their crates, golden jj repos, 20k view", needs: "—", start: "—", design: "§2 (D3), §3, appendix A",
+      accept: ["generated TS structurally equals docs/contracts/*.ts", "every fixture validates; cv-mock answers every route", "golden repos cover: conflicting insert, two workspaces with unsnapshotted edits, non-convex selection, agent-bound workspace, a 5-fragment file", "CI rejects a core crate that depends on a grammar or channel pack"] },
+    { id: "B1", fam: "b", name: "jj adapter (cv-vcs)", phase: 1, owns: "crates/cv-vcs", provides: "Vcs trait on jj-lib 0.45.1", needs: "—", start: "golden repos", design: "§4.1, §6, §7, appendix A",
+      accept: ["reads never create a jj operation", "preview() leaves the op log unchanged", "every MutationPlan yields the same trees as the CLI oracle, incl. a new file at a non-@ commit", "an unsnapshotted edit in a second workspace survives an ancestor amend (or is in recovered_into)", "revert restores trees"] },
+    { id: "B2", fam: "b", name: "Store (cv-store)", phase: 1, owns: "crates/cv-store", provides: "Store over index.db + review.db (rusqlite bundled)", needs: "—", start: "docs/schema/*.sql", design: "§2 (D5), §3",
+      accept: ["migrations equal docs/schema/*.sql", "windows_in_rect p95 < 10 ms on the 20k view", "exact symbol match ranks first in FTS", "deleting index.db never touches review.db"] },
+    { id: "B3", fam: "b", name: "Language core (cv-lang)", phase: 1, owns: "crates/cv-lang", provides: "LanguagePack registry, parse driver, chunking, fragments, lane classifier", needs: "—", start: "a stub pack", design: "§4.2–§4.4",
+      accept: ["windows ≤ 500 lines; files ≤ 120 lines get one window", "fragments numbered with a stable chip slot per path", "the reference repo's lanes classify as in DESIGN §4.3", "no language names in the core"] },
+    { id: "L1", fam: "l", name: "Python pack", phase: 1, owns: "crates/cv-lang-python", provides: "LanguagePack: grammar, queries, resolver, key folding", needs: "B3 trait", start: "reference repo files", design: "§4.2",
+      accept: ["symbols, refs and imports right on ≥ 20 hand-checked reference repo files", "folds f-strings, .format, % and module constants", "relative imports and pyproject roots resolve", "median < 5 ms per 1k lines"] },
+    { id: "L2", fam: "l", name: "TypeScript pack", phase: 1, owns: "crates/cv-lang-typescript", provides: "LanguagePack for TS, TSX and JS", needs: "B3 trait", start: "the reference repo's web app", design: "§4.2",
+      accept: ["folds template literals", "tsconfig paths and export-from resolve", "JSX components appear as symbols", "median < 5 ms per 1k lines"] },
+    { id: "B7", fam: "b", name: "Server (cv-server)", phase: 1, owns: "crates/cv-server", provides: "http.ts routes, ws.ts protocol, EventLog, scheduler, token auth, cv CLI", needs: "B2", start: "fake services", design: "§3, §5",
+      accept: ["contract tests replay C0 fixtures through the real server", "WS reconnect with a cursor replays missed events", "a new jj op gives op.changed then view.invalidated within 2 s", "workspace.updated fires when a workspace's files change"] },
+    { id: "F1", fam: "f", name: "Canvas engine", phase: 1, owns: "web/src/canvas", provides: "camera, tiers, lane textures and rails, grid guides, heat hue, elevation, lenses, file chips, dynamic stubs, edges, hubs", needs: "—", start: "cv-mock + 20k view", design: "§4.9, §5",
+      accept: ["60 fps on the 20k view", "lens switches never relayout", "each split file's chip has its own colour; selection brightens chips and outlines, draws fragment links and marks fragments on the minimap", "both themes"] },
+    { id: "F2", fam: "f", name: "Data client", phase: 1, owns: "web/src/data", provides: "tiles and batches, priorities, cancellation, LRU budgets, worker decode, WS client, view.state with lens", needs: "—", start: "cv-mock", design: "§5",
+      accept: ["no requests outside viewport + margin", "cancelled requests abort", "invalidation refetches only what changed"] },
+    { id: "F4", fam: "f", name: "Panels & dialogs", phase: 1, owns: "web/src/panels, app shell", provides: "History, Review, Workspaces, Hotspots and Agent tabs; lens switcher; lane filters; range dialog; search", needs: "—", start: "cv-mock", design: "§4.9, §7",
+      accept: ["workspace cards update from workspace.updated", "the Hotspots brush filters the canvas", "range dialog states: valid, error with hint, gap warning", "usable at 400 px"] },
+    { id: "L3", fam: "l", name: "Config languages pack", phase: 2, owns: "crates/cv-lang-config", provides: "YAML, TOML, JSON, Dockerfile, HCL, shell packs", needs: "B3", start: "reference repo YAML, Dockerfile", design: "§4.2, §4.3",
+      accept: ["compose services, CI jobs, Dockerfile stages and HCL resources become windows", "every key path emitted with its line (ConfigKeyFact), skipping | and > block text", "k8s YAML sniffed into the infra lane"] },
+    { id: "B4", fam: "b", name: "Channels core + links", phase: 2, owns: "crates/cv-channel, crates/cv-link", provides: "ChannelPack registry, key algebra, hubs, reference resolution, dynamic stubs, connectedness", needs: "B3 L1 L2", start: "BlobFacts fixtures", design: "§4.5, §4.6, §4.8",
+      accept: ["appendix C numbers reproduce on the reference repo (docs/analysis/axes.py is the reference implementation)", "a fully dynamic key yields a dynamic stub, never a guessed link", "precision ≥ 0.9 on 50 labelled links in the reference repo"] },
+    { id: "P1", fam: "p", name: "Bus channel pack", phase: 2, owns: "crates/cv-channel-bus", provides: "MQTT matching, scoped_topic transform, YAML topic rules", needs: "B4", start: "reference repo topics", design: "§4.6, appendix B",
+      accept: ["exact and wildcard topic hubs link producers to consumers", "order.# subscribes to order.sweep", "{instance} holes match as one segment"] },
+    { id: "P2", fam: "p", name: "HTTP channel pack", phase: 2, owns: "crates/cv-channel-http", provides: "routes and clients across languages, prefixes", needs: "B4", start: "FastAPI + the web app", design: "§4.6",
+      accept: ["/api + /item/${id} matches /api/item/{item_id}", "router prefixes compose", "methods must match"] },
+    { id: "P3", fam: "p", name: "Env channel pack", phase: 2, owns: "crates/cv-channel-env", provides: "env and config keys incl. pydantic-settings fields", needs: "B4 L3", start: "reference repo settings", design: "§4.6",
+      accept: ["the reference repo's Settings(BaseSettings) fields link to .env.example", "beats the 4 regex-only matches by a wide margin", "env_prefix is honoured"] },
+    { id: "P4", fam: "p", name: "Deploy channel pack", phase: 2, owns: "crates/cv-channel-deploy", provides: "Dockerfile CMD/ENTRYPOINT, compose command, CI run:, scripts → code", needs: "B4 L3", start: "Dockerfile, CI, scripts", design: "§4.6",
+      accept: ["the reference repo's Dockerfile links to main.py", "CI and pre-commit.sh link to tests", "unresolvable commands become dynamic stubs"] },
+    { id: "P5", fam: "p", name: "Config-fields channel pack", phase: 2, owns: "crates/cv-channel-config", provides: "config keys → family#key hubs → read sites, scored through affinity()", needs: "B4 L3", start: "reference repo YAML + docs/analysis/config_fields.py", design: "§4.6 (config field usage), appendix D",
+      accept: ["reproduces docs/analysis/config_fields.py on the reference repo within rounding", "≥ 80% plausible on 50 hand-checked links", "one hub per file family and key", "generic keys never draw solid without proximity or loader evidence"] },
+    { id: "B5", fam: "b", name: "Churn (cv-churn)", phase: 2, owns: "crates/cv-churn", provides: "ChurnService: change-mass quantile heat, stopping rule, co-change", needs: "B1", start: "recorded history", design: "§4.7",
+      accept: ["stable history stops as settled before 500 commits; drifting history does not stop early", "mass refactors down-weighted", "renames carry history", "the reference repo grades in < 10 s"] },
+    { id: "B6", fam: "b", name: "Layout (cv-layout)", phase: 2, owns: "crates/cv-layout", provides: "LayoutService: clustering with file cohesion, district grid, Sugiyama inside clusters, metrics", needs: "B3 B4 B5", start: "fixture facts, links, heat", design: "§4.9, §4.10",
+      accept: ["deterministic", "a cluster moves only when a grade settles", "one changed file moves < 5% of windows", "the 5-fragment fixture file lands in ≤ 2 clusters", "the camera starts at code × Hot × Core", "range views reuse the tip's snapshot placement; context windows start minimized"] },
+    { id: "B8", fam: "b", name: "Review & edits (cv-review)", phase: 2, owns: "crates/cv-review", provides: "ReviewService, EditService (exact preview, amend by default), queue, conflicts, re-anchoring", needs: "B1 B2", start: "golden repos", design: "§6",
+      accept: ["re-anchoring: moved, outdated with last good commit, abandoned", "a suggestion amends exactly its lines", "preview equals the applied result on the conflicting-insert scenario", "immutable targets only offer branch"] },
+    { id: "F3", fam: "f", name: "Code windows & editor", phase: 2, owns: "web/src/windows", provides: "L3 windows with file chip, district glyph, ↧/↥ badges; fades; threads; CodeMirror; save bar; conflict windows", needs: "F1 F2", start: "cv-mock", design: "§4.4, §5, §6",
+      accept: ["text crossfades over the silhouette", "save: exact preview → apply → edit.updated", "amend is preselected; immutable shows branch only", "range context windows are minimized pills that expand in place"] },
+    { id: "B9", fam: "b", name: "MCP (cv-mcp)", phase: 3, owns: "crates/cv-mcp", provides: "every tool in mcp.ts on rmcp 3.x incl. bind_workspace, get_hotspots, get_metrics; stdio shim", needs: "B7 B8", start: "—", design: "§8",
+      accept: ["e2e with a real MCP client: bind_workspace → wait_for_events → get_thread → apply_suggestion (amend) → reply", "the UI receives thread.upserted and workspace.updated", "AnnotatedCode snapshot-tested"] },
+    { id: "I1", fam: "i", name: "Integration & performance", phase: 3, owns: "—", provides: "issues filed back to owners", needs: "all", start: "the reference repo", design: "§9",
+      accept: ["the reference repo indexes; lanes and districts browse at 60 fps", "an agent bound to its workspace addresses a thread and resolves a conflict", "DESIGN §9 budgets hold"] },
+    { id: "L4", fam: "l", name: "Rust pack", phase: 4, owns: "crates/cv-lang-rust", provides: "LanguagePack for Rust", needs: "B3 B4", start: "this repo's crates", design: "§4.2",
+      accept: ["mod tree, use paths and Cargo workspace members resolve", "folds format! and concat!", "impl blocks split into member windows"] },
+    { id: "L5", fam: "l", name: "C++ pack", phase: 4, owns: "crates/cv-lang-cpp", provides: "LanguagePack for C++", needs: "B3 B4", start: "a sample C++ project, no build needed", design: "§4.2 (D17)",
+      accept: ["#include resolves by heuristics only: relative, conventional include dirs, include_directories() from CMakeLists.txt", "namespaces and classes are containers", "no change to any core crate was needed"] },
+  ];
+
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const checks = (w) => (w.fam === "f" ? "the web typecheck and tests pass" : w.fam === "i" ? "the budgets are measured and issues filed" : "cargo fmt --check, cargo clippy -D warnings and cargo test pass");
+  const brief = (w) => [
+    `You are the implementer for workstream ${w.id} (${w.name}) of Code Viewer, in the code-viewer repo.`,
+    ``,
+    `Read first: docs/WORKSTREAMS.md (section ${w.id}), docs/DESIGN.md ${w.design}, and the contracts you provide or consume in docs/contracts/ (TypeScript wire spec) and docs/contracts/rust/ (crate traits).`,
+    `You own: ${w.owns}. You provide: ${w.provides}.`,
+    `Needs for real: ${w.needs}. Until then, build against: ${w.start}.`,
+    ``,
+    `Rules: wire types change only through C0, additively within /api/v1; the core never names a language or protocol; jj-lib stays pinned to the installed jj CLI version; work in your own jj workspace (jj workspace add ../cv-${w.id.toLowerCase()} --name ${w.id.toLowerCase()}) and describe your change as soon as you start.`,
+    ``,
+    `Done when ${checks(w)}, and:`,
+    ...w.accept.map((a) => `- ${a}`),
+  ].join("\n");
+
+  const cards = document.getElementById("cards");
+  cards.innerHTML = WS.map((w) => `
+    <article class="card" id="ws-${w.id.toLowerCase()}">
+      <div class="card-head">
+        <h4><span class="ws ${w.fam === "b" ? "" : w.fam}">${w.id}</span>${esc(w.name)}</h4>
+        <span class="phase">phase ${w.phase}</span>
+      </div>
+      <dl>
+        <dt>Owns</dt><dd><code>${esc(w.owns)}</code></dd>
+        <dt>Provides</dt><dd>${esc(w.provides)}</dd>
+        <dt>Needs</dt><dd>${esc(w.needs)}</dd>
+        <dt>Starts on</dt><dd>${esc(w.start)}</dd>
+        <dt>Design</dt><dd>DESIGN.md ${esc(w.design)}</dd>
+      </dl>
+      <div><div class="eyebrow" style="margin-bottom:6px">Done when</div><ul>${w.accept.map((a) => `<li>${esc(a)}</li>`).join("")}</ul></div>
+      <div><button class="copy" type="button" data-ws="${w.id}">Copy brief</button></div>
+    </article>`).join("");
+
+  // ── Copy helpers ────────────────────────────────────────────────────────
+  let toastTimer;
+  function toast(msg) {
+    let t = document.querySelector(".toast");
+    if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2200);
+  }
+  function selectText(el) {
+    const r = document.createRange(); r.selectNodeContents(el);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+  }
+  async function copy(text, fallbackEl, label) {
+    try { await navigator.clipboard.writeText(text); toast(`Copied ${label}`); }
+    catch {
+      if (fallbackEl) {
+        fallbackEl.hidden = false;
+        fallbackEl.closest("details")?.setAttribute("open", "");
+        selectText(fallbackEl);
+        toast("Copying is blocked here. The text is selected: press Ctrl+C.");
+      }
+    }
+  }
+  cards.addEventListener("click", (e) => {
+    const b = e.target.closest("button[data-ws]"); if (!b) return;
+    const w = WS.find((x) => x.id === b.dataset.ws);
+    let pre = b.parentElement.querySelector("pre.brief");
+    if (!pre) { pre = document.createElement("pre"); pre.className = "brief"; pre.hidden = true; pre.textContent = brief(w); b.parentElement.appendChild(pre); }
+    copy(brief(w), pre, `${w.id} brief`);
+  });
+
+  // ── Source blocks: highlighting (TypeScript and Rust) and copy buttons ──
+  const KW = /^(export|import|from|type|interface|extends|readonly|declare|const|enum|unique|symbol|as|satisfies|keyof|typeof|in|true|false|null|undefined|never|string|number|boolean|unknown|void|fn|pub|struct|impl|trait|use|mod|crate|self|Self|dyn|mut|ref|where|let|match|if|else|for|return|macro_rules|Some|None|Ok|Err|u8|u32|u64|i64|f32|f64|bool|usize|str)$/;
+  const RX = /(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"|`(?:[^`\\]|\\.)*`)|([A-Za-z_$][\w$]*)/g;
+  function highlight(code) {
+    const src = code.textContent; let out = ""; let last = 0; let m;
+    RX.lastIndex = 0;
+    while ((m = RX.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      if (m[1]) out += `<span class="tok-com">${esc(m[1])}</span>`;
+      else if (m[2]) out += `<span class="tok-str">${esc(m[2])}</span>`;
+      else if (KW.test(m[3])) out += `<span class="tok-kw">${m[3]}</span>`;
+      else if (/^[A-Z]/.test(m[3])) out += `<span class="tok-type">${m[3]}</span>`;
+      else out += m[3];
+      last = RX.lastIndex;
+    }
+    code.innerHTML = out + esc(src.slice(last));
+  }
+  document.querySelectorAll("details.src").forEach((d) => {
+    const code = d.querySelector("code");
+    const lines = code.textContent.split("\n").length;
+    const sum = d.querySelector("summary");
+    const n = document.createElement("span"); n.className = "muted"; n.textContent = `· ${lines} lines`; sum.appendChild(n);
+    const bar = document.createElement("div"); bar.className = "bar"; d.insertBefore(bar, d.querySelector("pre"));
+    const btn = document.createElement("button"); btn.type = "button"; btn.className = "copy"; btn.textContent = "Copy file";
+    btn.addEventListener("click", () => copy(code.textContent, code, sum.firstChild.textContent.trim()));
+    bar.appendChild(btn);
+    d.addEventListener("toggle", () => { if (d.open && !code.dataset.hl) { highlight(code); code.dataset.hl = "1"; } });
+  });
+
+  // ── Sheet index highlighting ────────────────────────────────────────────
+  const links = [...document.querySelectorAll("nav.toc a")];
+  const byId = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => { if (en.isIntersecting) { links.forEach((a) => a.classList.remove("on")); byId.get(en.target.id)?.classList.add("on"); } });
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    document.querySelectorAll("section.sheet").forEach((s) => io.observe(s));
+  }
+})();
+</script>

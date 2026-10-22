@@ -1,0 +1,27 @@
+{
+ "method": "GET",
+ "path": "/api/v1/search",
+ "query": {
+  "limit": 5,
+  "q": "bye",
+  "viewId": "<id4>"
+ },
+ "response": [
+  {
+   "detail": "app.py:5",
+   "kind": "symbol",
+   "label": "bye",
+   "score": 1.0,
+   "target": {
+    "site": {
+     "line": 5,
+     "path": "app.py",
+     "window": "w9f2213a4350b"
+    },
+    "window": "w9f2213a4350b"
+   }
+  }
+ ],
+ "route": "GET /api/v1/search",
+ "status": 200
+}

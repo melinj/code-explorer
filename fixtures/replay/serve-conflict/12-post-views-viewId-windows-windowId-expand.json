@@ -1,0 +1,64 @@
+{
+ "body": {
+  "after": 3,
+  "before": 3
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id1>/windows/w9693b98bf584/expand",
+ "response": {
+  "blob": "conflict-a1056a0356d93a0916212ae8364516733aab5de5-d3f5e6f41bae271c",
+  "change": "wkzpyywqukmxooynuoxmylmmkktlumwq",
+  "cluster": "c0",
+  "conn": {
+   "dependents2": 0,
+   "fanIn": 0,
+   "fanOut": 0,
+   "grade": 0,
+   "reach": 0,
+   "tests": 0
+  },
+  "counts": {
+   "conflicts": 0,
+   "openThreads": 0,
+   "ports": 0
+  },
+  "flags": {
+   "minimized": false,
+   "pinned": false,
+   "truncated": false,
+   "unsnapshotted": true
+  },
+  "heat": {
+   "ci": [
+    0.375532,
+    0.963778
+   ],
+   "grade": 4,
+   "rate": 0.800004,
+   "settled": false,
+   "touches": 4
+  },
+  "id": "w9693b98bf584",
+  "key": "engine.py#file",
+  "kind": "chunk",
+  "lane": "code",
+  "lang": "python",
+  "lines": {
+   "end": 13,
+   "fileLines": 13,
+   "start": 1
+  },
+  "path": "engine.py",
+  "rect": {
+   "h": 270.0,
+   "w": 630.0,
+   "x": 320.0,
+   "y": 2560.0
+  },
+  "rev": "a1056a0356d93a0916212ae8364516733aab5de5",
+  "reviewFirst": true,
+  "risk": 0.707107
+ },
+ "route": "POST /api/v1/views/:viewId/windows/:windowId/expand",
+ "status": 200
+}

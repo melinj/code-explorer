@@ -1,0 +1,117 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/tiles/1/0/0",
+ "response": {
+  "edges": [],
+  "layoutVersion": 1,
+  "windows": [
+   {
+    "blob": "livebb2a01d6f238be8d",
+    "change": "opvrmxwvxuwuzrvsqptonyopknkuulyt",
+    "cluster": "c0",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 0
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false,
+     "unsnapshotted": true
+    },
+    "heat": {
+     "ci": [
+      0.0945273,
+      0.90547
+     ],
+     "grade": 3,
+     "rate": 0.499996,
+     "settled": false,
+     "touches": 1
+    },
+    "id": "w85a48e7c7471",
+    "key": "settings.yaml#file",
+    "kind": "chunk",
+    "lane": "config",
+    "lang": "yaml",
+    "lines": {
+     "end": 1,
+     "fileLines": 1,
+     "start": 1
+    },
+    "path": "settings.yaml",
+    "rect": {
+     "h": 54.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 2560.0
+    },
+    "rev": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+    "reviewFirst": false,
+    "risk": 0.0
+   },
+   {
+    "blob": "c41d2ff5346d08c7035b726bfd3fc39e8476fc01",
+    "change": "opvrmxwvxuwuzrvsqptonyopknkuulyt",
+    "cluster": "c1",
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 0,
+     "reach": 0,
+     "tests": 0
+    },
+    "counts": {
+     "conflicts": 0,
+     "openThreads": 0,
+     "ports": 0
+    },
+    "flags": {
+     "pinned": false,
+     "truncated": false
+    },
+    "heat": {
+     "ci": [
+      0.342372,
+      1.0
+     ],
+     "grade": 4,
+     "rate": 1.0,
+     "settled": false,
+     "touches": 2
+    },
+    "id": "w2ebf8af76b2f",
+    "key": "app.py#file",
+    "kind": "chunk",
+    "lane": "code",
+    "lang": "python",
+    "lines": {
+     "end": 6,
+     "fileLines": 6,
+     "start": 1
+    },
+    "path": "app.py",
+    "rect": {
+     "h": 144.0,
+     "w": 540.0,
+     "x": 320.0,
+     "y": 5514.32
+    },
+    "rev": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+    "reviewFirst": true,
+    "risk": 0.707107
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/tiles/:z/:x/:y",
+ "status": 200
+}

@@ -1,0 +1,22 @@
+{
+ "body": {
+  "createdBy": {
+   "kind": "human",
+   "name": "you"
+  },
+  "name": "replay",
+  "revset": "trunk()..@"
+ },
+ "method": "PUT",
+ "path": "/api/v1/ranges/replay",
+ "response": {
+  "createdBy": {
+   "kind": "human",
+   "name": "you"
+  },
+  "name": "replay",
+  "revset": "trunk()..@"
+ },
+ "route": "PUT /api/v1/ranges/:name",
+ "status": 200
+}

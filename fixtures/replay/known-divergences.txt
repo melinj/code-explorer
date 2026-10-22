@@ -1,0 +1,8 @@
+# Known contract drift found by scripts/contract-replay.sh.
+# Format: <target>/<recording slug or *>  <substring of the failure message>  # reason / owner
+# Remove a line when the server or mock is fixed; check.mjs reports entries that no longer match as stale.
+#
+# Empty since 2026-10-18 (conform): all 48 earlier entries were closed. ISO-8601 times, POST
+# /agent/bind 404 for an unknown workspace and agent.client omission were fixed by earlier server
+# changes; /agent/bind now answers the bound WorkspaceSummary; cv-mock omits optional fields
+# instead of sending null, sends ISO times and no longer adds MetricPoint.n / ConflictRecord.start.

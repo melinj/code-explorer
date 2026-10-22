@@ -1,0 +1,28 @@
+# Env readers in Python (pack P3): os.getenv / os.environ, and pydantic-settings BaseSettings
+# fields (each field reads the env var of its name, after the class's env_prefix).
+
+[[endpoints]]
+id = "python.os.getenv"
+lang = "python"
+role = "read"
+hints = ["getenv", "environ"]
+query = '''
+(call function: (attribute object: (identifier) @_o attribute: (identifier) @_f) arguments: (argument_list . (_) @key)
+  (#eq? @_o "os") (#eq? @_f "getenv"))
+(call function: (identifier) @_f arguments: (argument_list . (_) @key)
+  (#eq? @_f "getenv"))
+(call function: (attribute object: (attribute object: (identifier) @_o attribute: (identifier) @_e) attribute: (identifier) @_g)
+  arguments: (argument_list . (_) @key)
+  (#eq? @_o "os") (#eq? @_e "environ") (#match? @_g "^(get|pop|setdefault)$"))
+(call function: (attribute object: (identifier) @_e attribute: (identifier) @_g) arguments: (argument_list . (_) @key)
+  (#eq? @_e "environ") (#match? @_g "^(get|pop|setdefault)$"))
+(subscript value: (attribute object: (identifier) @_o attribute: (identifier) @_e) subscript: (_) @key
+  (#eq? @_o "os") (#eq? @_e "environ"))
+(subscript value: (identifier) @_e subscript: (_) @key
+  (#eq? @_e "environ"))
+'''
+
+[[settings]]
+id = "python.pydantic-settings"
+lang = "python"
+base_class = "BaseSettings"

@@ -1,0 +1,20 @@
+{
+ "method": "GET",
+ "path": "/api/v1/ws?cursor=1",
+ "query": {
+  "cursor": 0
+ },
+ "response": {
+  "event": {
+   "cursor": "<volatile>",
+   "op": "<volatile>",
+   "resync": true,
+   "serverVersion": "cv 0.1.0",
+   "session": "<volatile>",
+   "type": "hello"
+  },
+  "seq": "<volatile>"
+ },
+ "route": "WS /api/v1/ws",
+ "status": 101
+}

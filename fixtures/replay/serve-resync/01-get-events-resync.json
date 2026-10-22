@@ -1,0 +1,250 @@
+{
+ "method": "GET",
+ "path": "/api/v1/events",
+ "query": {
+  "cursor": 0,
+  "timeoutS": 0
+ },
+ "response": {
+  "cursor": "<volatile>",
+  "events": [
+   {
+    "type": "workspace.updated",
+    "workspace": {
+     "agent": {
+      "activity": "reading",
+      "client": "contract-replay",
+      "lastSeen": "2026-01-01T00:00:00Z",
+      "name": "replay"
+     },
+     "files": [
+      ".env.example",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "README.md",
+      "config/app.yaml",
+      "docs/design.md"
+     ],
+     "lastOp": {
+      "description": "cv: undo edit e1a1532a366f003 (revert 03079016dd83) (you)",
+      "op": "<volatile>",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "name": "default",
+     "overlaps": [],
+     "root": "<FIXTURES>/linear",
+     "serving": true,
+     "stack": {
+      "changes": 6,
+      "conflicts": 0,
+      "files": 10,
+      "revset": "trunk()..default@"
+     },
+     "unsnapshottedFiles": 0,
+     "wc": {
+      "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+      "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+     }
+    }
+   },
+   {
+    "type": "workspace.updated",
+    "workspace": {
+     "agent": {
+      "activity": "reading",
+      "client": "contract-replay",
+      "lastSeen": "2026-01-01T00:00:00Z",
+      "name": "replay"
+     },
+     "files": [
+      ".env.example",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "README.md",
+      "config/app.yaml",
+      "docs/design.md"
+     ],
+     "lastOp": {
+      "description": "cv: undo edit e1a1532a366f003 (revert 03079016dd83) (you)",
+      "op": "<volatile>",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "name": "default",
+     "overlaps": [],
+     "root": "<FIXTURES>/linear",
+     "serving": true,
+     "stack": {
+      "changes": 6,
+      "conflicts": 0,
+      "files": 10,
+      "revset": "trunk()..default@"
+     },
+     "unsnapshottedFiles": 0,
+     "wc": {
+      "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+      "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+     }
+    }
+   },
+   {
+    "type": "workspace.updated",
+    "workspace": {
+     "agent": {
+      "activity": "reading",
+      "client": "contract-replay",
+      "lastSeen": "2026-01-01T00:00:00Z",
+      "name": "replay"
+     },
+     "files": [
+      ".env.example",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "README.md",
+      "config/app.yaml",
+      "docs/design.md"
+     ],
+     "lastOp": {
+      "description": "cv: undo edit e1a1532a366f003 (revert 03079016dd83) (you)",
+      "op": "<volatile>",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "name": "default",
+     "overlaps": [],
+     "root": "<FIXTURES>/linear",
+     "serving": true,
+     "stack": {
+      "changes": 6,
+      "conflicts": 0,
+      "files": 10,
+      "revset": "trunk()..default@"
+     },
+     "unsnapshottedFiles": 0,
+     "wc": {
+      "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+      "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+     }
+    }
+   },
+   {
+    "type": "workspace.updated",
+    "workspace": {
+     "agent": {
+      "activity": "reading",
+      "client": "contract-replay",
+      "lastSeen": "2026-01-01T00:00:00Z",
+      "name": "replay"
+     },
+     "files": [
+      ".env.example",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "README.md",
+      "config/app.yaml",
+      "docs/design.md"
+     ],
+     "lastOp": {
+      "description": "cv: undo edit e1a1532a366f003 (revert 03079016dd83) (you)",
+      "op": "<volatile>",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "name": "default",
+     "overlaps": [],
+     "root": "<FIXTURES>/linear",
+     "serving": true,
+     "stack": {
+      "changes": 6,
+      "conflicts": 0,
+      "files": 10,
+      "revset": "trunk()..default@"
+     },
+     "unsnapshottedFiles": 0,
+     "wc": {
+      "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+      "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+     }
+    }
+   },
+   {
+    "type": "workspace.updated",
+    "workspace": {
+     "agent": {
+      "activity": "reading",
+      "client": "contract-replay",
+      "lastSeen": "2026-01-01T00:00:00Z",
+      "name": "replay"
+     },
+     "files": [
+      ".env.example",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "README.md",
+      "config/app.yaml",
+      "docs/design.md"
+     ],
+     "lastOp": {
+      "description": "cv: undo edit e1a1532a366f003 (revert 03079016dd83) (you)",
+      "op": "<volatile>",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "name": "default",
+     "overlaps": [],
+     "root": "<FIXTURES>/linear",
+     "serving": true,
+     "stack": {
+      "changes": 6,
+      "conflicts": 0,
+      "files": 10,
+      "revset": "trunk()..default@"
+     },
+     "unsnapshottedFiles": 0,
+     "wc": {
+      "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+      "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+     }
+    }
+   },
+   {
+    "type": "workspace.updated",
+    "workspace": {
+     "agent": {
+      "activity": "reading",
+      "client": "contract-replay",
+      "lastSeen": "2026-01-01T00:00:00Z",
+      "name": "replay"
+     },
+     "files": [
+      ".env.example",
+      ".github/workflows/ci.yml",
+      "Dockerfile",
+      "README.md",
+      "config/app.yaml",
+      "docs/design.md"
+     ],
+     "lastOp": {
+      "description": "cv: undo edit e1a1532a366f003 (revert 03079016dd83) (you)",
+      "op": "<volatile>",
+      "time": "2026-01-01T00:00:00Z"
+     },
+     "name": "default",
+     "overlaps": [],
+     "root": "<FIXTURES>/linear",
+     "serving": true,
+     "stack": {
+      "changes": 6,
+      "conflicts": 0,
+      "files": 10,
+      "revset": "trunk()..default@"
+     },
+     "unsnapshottedFiles": 0,
+     "wc": {
+      "change": "muoulswlvsusqsxtvvzmupplskxxxpvr",
+      "commit": "b30bde39a128e1373e9a6933c3fcbfca5c4f577f"
+     }
+    }
+   }
+  ],
+  "resync": true
+ },
+ "route": "GET /api/v1/events",
+ "status": 200
+}

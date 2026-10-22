@@ -1,0 +1,10 @@
+[package]
+name = "cv-lang"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+globset.workspace = true
+toml_edit.workspace = true

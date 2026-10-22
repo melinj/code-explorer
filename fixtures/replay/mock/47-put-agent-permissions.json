@@ -1,0 +1,13 @@
+{
+ "body": {
+  "moveCamera": true
+ },
+ "method": "PUT",
+ "path": "/api/v1/agent/permissions",
+ "response": {
+  "edit": true,
+  "moveCamera": true
+ },
+ "route": "PUT /api/v1/agent/permissions",
+ "status": 200
+}

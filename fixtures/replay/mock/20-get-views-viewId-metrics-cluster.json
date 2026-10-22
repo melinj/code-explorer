@@ -1,0 +1,207 @@
+{
+ "method": "GET",
+ "path": "/api/v1/views/<id2>/metrics",
+ "query": {
+  "level": "cluster"
+ },
+ "response": {
+  "cochange": [
+   {
+    "a": "deploy/signal_5.sh",
+    "b": "config/turn/schema_37.yaml",
+    "jaccard": 0.373755,
+    "support": 9
+   },
+   {
+    "a": "deploy/plan_6.sh",
+    "b": "src/world/graph/signal_279.py",
+    "jaccard": 0.789721,
+    "support": 7
+   },
+   {
+    "a": "deploy/market_8.sh",
+    "b": "src/trade/player/index_447.py",
+    "jaccard": 0.74251,
+    "support": 10
+   },
+   {
+    "a": "deploy/tick_10.sh",
+    "b": "src/config/camera/district_673.py",
+    "jaccard": 0.735156,
+    "support": 5
+   },
+   {
+    "a": "deploy/tick_11.sh",
+    "b": "tests/turn/test_event_964.py",
+    "jaccard": 0.703949,
+    "support": 4
+   },
+   {
+    "a": "deploy/queue_12.sh",
+    "b": "tests/trade/test_zone_1282.py",
+    "jaccard": 0.375871,
+    "support": 12
+   }
+  ],
+  "points": [
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 1,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.342466,
+    "heat": {
+     "ci": [
+      0,
+      0
+     ],
+     "grade": 1,
+     "rate": 0,
+     "settled": true,
+     "touches": 0
+    },
+    "heatPct": 0.365766,
+    "key": "c0",
+    "label": "entity · market",
+    "lane": "infra",
+    "risk": 0.353924
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 3,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.652956,
+    "heat": {
+     "ci": [
+      0,
+      0
+     ],
+     "grade": 4,
+     "rate": 0,
+     "settled": true,
+     "touches": 0
+    },
+    "heatPct": 0.972879,
+    "key": "c1",
+    "label": "loader · player",
+    "lane": "infra",
+    "risk": 0.797024
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 2,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.481195,
+    "heat": {
+     "ci": [
+      0,
+      0
+     ],
+     "grade": 2,
+     "rate": 0,
+     "settled": true,
+     "touches": 0
+    },
+    "heatPct": 0.550494,
+    "key": "c2",
+    "label": "zone · entity",
+    "lane": "infra",
+    "risk": 0.51468
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 3,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.738797,
+    "heat": {
+     "ci": [
+      0,
+      0
+     ],
+     "grade": 4,
+     "rate": 0,
+     "settled": true,
+     "touches": 0
+    },
+    "heatPct": 0.9349,
+    "key": "c3",
+    "label": "trade · schema",
+    "lane": "infra",
+    "risk": 0.831085
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 1,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.389244,
+    "heat": {
+     "ci": [
+      0,
+      0
+     ],
+     "grade": 0,
+     "rate": 0,
+     "settled": true,
+     "touches": 0
+    },
+    "heatPct": 0.10295,
+    "key": "c4",
+    "label": "signal · edge",
+    "lane": "config",
+    "risk": 0.200181
+   },
+   {
+    "conn": {
+     "dependents2": 0,
+     "fanIn": 0,
+     "fanOut": 0,
+     "grade": 3,
+     "reach": 0,
+     "tests": 0
+    },
+    "connPct": 0.771833,
+    "heat": {
+     "ci": [
+      0,
+      0
+     ],
+     "grade": 1,
+     "rate": 0,
+     "settled": true,
+     "touches": 0
+    },
+    "heatPct": 0.311279,
+    "key": "c5",
+    "label": "turn · market",
+    "lane": "config",
+    "risk": 0.490159
+   }
+  ]
+ },
+ "route": "GET /api/v1/views/:viewId/metrics",
+ "status": 200
+}

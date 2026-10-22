@@ -1,0 +1,17 @@
+{
+ "body": {
+  "a": "agent",
+  "b": "nope"
+ },
+ "expectStatus": 404,
+ "method": "POST",
+ "path": "/api/v1/workspaces:compare",
+ "response": {
+  "error": {
+   "code": "not-found",
+   "message": "no workspace \"nope\"; GET /workspaces lists them"
+  }
+ },
+ "route": "POST /api/v1/workspaces:compare",
+ "status": 404
+}

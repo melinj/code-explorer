@@ -1,0 +1,228 @@
+{
+ "method": "GET",
+ "path": "/api/v1/threads",
+ "response": [
+  {
+   "anchor": {
+    "change": "kxwqmnpo",
+    "commit": "c0ffee",
+    "end": 27,
+    "fingerprint": {
+     "after": "",
+     "before": "",
+     "text": ""
+    },
+    "path": "deploy/tool_13.sh",
+    "side": "new",
+    "start": 27
+   },
+   "comments": [
+    {
+     "author": {
+      "kind": "human",
+      "name": "you"
+     },
+     "body": "Missing test for the empty-input case.",
+     "createdAt": "2026-01-01T00:00:00Z",
+     "id": "cm3"
+    }
+   ],
+   "createdAt": "2026-01-01T00:00:00Z",
+   "createdBy": {
+    "kind": "human",
+    "name": "you"
+   },
+   "id": "t2",
+   "kind": "comment",
+   "producedEdits": [],
+   "status": "open",
+   "updatedAt": "2026-01-01T00:00:00Z"
+  },
+  {
+   "anchor": {
+    "change": "kxwqmnpo",
+    "commit": "c0ffee",
+    "end": 15,
+    "fingerprint": {
+     "after": "",
+     "before": "",
+     "text": ""
+    },
+    "path": "deploy/tool_13.sh",
+    "side": "new",
+    "start": 15
+   },
+   "comments": [
+    {
+     "author": {
+      "client": "claude-code",
+      "kind": "agent",
+      "name": "claude"
+     },
+     "body": "Can this branch be reached? The caller already checks for None.",
+     "createdAt": "2026-01-01T00:00:00Z",
+     "id": "cm5"
+    }
+   ],
+   "createdAt": "2026-01-01T00:00:00Z",
+   "createdBy": {
+    "client": "claude-code",
+    "kind": "agent",
+    "name": "claude"
+   },
+   "id": "t4",
+   "kind": "finding",
+   "producedEdits": [],
+   "status": "open",
+   "updatedAt": "2026-01-01T00:00:00Z"
+  },
+  {
+   "anchor": {
+    "change": "kxwqmnpo",
+    "commit": "c0ffee",
+    "end": 13,
+    "fingerprint": {
+     "after": "",
+     "before": "",
+     "text": ""
+    },
+    "path": "config/turn/signal_20.yaml",
+    "side": "new",
+    "start": 13
+   },
+   "comments": [
+    {
+     "author": {
+      "kind": "human",
+      "name": "you"
+     },
+     "body": "Unbounded retries here hide a stuck builder; cap them and back off.",
+     "createdAt": "2026-01-01T00:00:00Z",
+     "id": "cm7"
+    }
+   ],
+   "createdAt": "2026-01-01T00:00:00Z",
+   "createdBy": {
+    "kind": "human",
+    "name": "you"
+   },
+   "id": "t6",
+   "kind": "comment",
+   "producedEdits": [],
+   "status": "open",
+   "updatedAt": "2026-01-01T00:00:00Z"
+  },
+  {
+   "anchor": {
+    "change": "kxwqmnpo",
+    "commit": "c0ffee",
+    "end": 5,
+    "fingerprint": {
+     "after": "",
+     "before": "",
+     "text": ""
+    },
+    "path": "config/turn/signal_20.yaml",
+    "side": "new",
+    "start": 5
+   },
+   "comments": [
+    {
+     "author": {
+      "client": "claude-code",
+      "kind": "agent",
+      "name": "claude"
+     },
+     "body": "Can this branch be reached? The caller already checks for None.",
+     "createdAt": "2026-01-01T00:00:00Z",
+     "id": "cm9"
+    }
+   ],
+   "createdAt": "2026-01-01T00:00:00Z",
+   "createdBy": {
+    "client": "claude-code",
+    "kind": "agent",
+    "name": "claude"
+   },
+   "id": "t8",
+   "kind": "finding",
+   "producedEdits": [],
+   "status": "open",
+   "updatedAt": "2026-01-01T00:00:00Z"
+  },
+  {
+   "anchor": {
+    "change": "kxwqmnpo",
+    "commit": "c0ffee",
+    "end": 4,
+    "fingerprint": {
+     "after": "",
+     "before": "",
+     "text": ""
+    },
+    "path": "config/turn/signal_20.yaml",
+    "side": "new",
+    "start": 4
+   },
+   "comments": [
+    {
+     "author": {
+      "kind": "human",
+      "name": "you"
+     },
+     "body": "Unbounded retries here hide a stuck builder; cap them and back off.",
+     "createdAt": "2026-01-01T00:00:00Z",
+     "id": "cm11"
+    }
+   ],
+   "createdAt": "2026-01-01T00:00:00Z",
+   "createdBy": {
+    "kind": "human",
+    "name": "you"
+   },
+   "id": "t10",
+   "kind": "comment",
+   "producedEdits": [],
+   "status": "open",
+   "updatedAt": "2026-01-01T00:00:00Z"
+  },
+  {
+   "anchor": {
+    "change": "kxwqmnpo",
+    "commit": "c0ffee",
+    "end": 7,
+    "fingerprint": {
+     "after": "",
+     "before": "",
+     "text": ""
+    },
+    "path": "config/turn/loader_24.yaml",
+    "side": "new",
+    "start": 7
+   },
+   "comments": [
+    {
+     "author": {
+      "kind": "human",
+      "name": "you"
+     },
+     "body": "Missing test for the empty-input case.",
+     "createdAt": "2026-01-01T00:00:00Z",
+     "id": "cm13"
+    }
+   ],
+   "createdAt": "2026-01-01T00:00:00Z",
+   "createdBy": {
+    "kind": "human",
+    "name": "you"
+   },
+   "id": "t12",
+   "kind": "comment",
+   "producedEdits": [],
+   "status": "open",
+   "updatedAt": "2026-01-01T00:00:00Z"
+  }
+ ],
+ "route": "GET /api/v1/threads",
+ "status": 200
+}

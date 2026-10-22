@@ -1,0 +1,30 @@
+{
+ "body": {
+  "from": "w9693b98bf584",
+  "kind": "reference",
+  "label": "replay",
+  "to": "we168852ff31f",
+  "viewId": "<id1>"
+ },
+ "method": "POST",
+ "path": "/api/v1/links",
+ "response": {
+  "confidence": 1.0,
+  "from": {
+   "line": 1,
+   "path": "engine.py",
+   "window": "w9693b98bf584"
+  },
+  "id": "<id2>",
+  "kind": "reference",
+  "label": "replay",
+  "provenance": "human",
+  "to": {
+   "line": 1,
+   "path": "notes.py",
+   "window": "we168852ff31f"
+  }
+ },
+ "route": "POST /api/v1/links",
+ "status": 200
+}

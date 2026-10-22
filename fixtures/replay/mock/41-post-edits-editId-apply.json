@@ -1,0 +1,28 @@
+{
+ "method": "POST",
+ "path": "/api/v1/edits/e153/apply",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "id": "e153",
+  "opAfter": "<volatile>",
+  "opBefore": "<volatile>",
+  "predicted": false,
+  "rewritten": [
+   "pprklvvmkwulvnstlwqqwmqqvopxprou"
+  ],
+  "status": "applied",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": true,
+    "updated": true
+   }
+  ]
+ },
+ "route": "POST /api/v1/edits/:editId/apply",
+ "status": 200
+}

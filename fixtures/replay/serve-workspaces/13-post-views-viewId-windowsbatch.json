@@ -1,0 +1,53 @@
+{
+ "body": {
+  "ids": [
+   "w85a48e7c7471",
+   "w2ebf8af76b2f"
+  ],
+  "layoutVersion": 1,
+  "parts": [
+   "outline",
+   "diff"
+  ]
+ },
+ "method": "POST",
+ "path": "/api/v1/views/<id2>/windows:batch",
+ "response": {
+  "diffs": [],
+  "links": [],
+  "missing": [],
+  "outlines": [
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "mode: prod",
+      "line": 1
+     }
+    ],
+    "id": "w85a48e7c7471",
+    "ports": [],
+    "silhouette": "AAoM"
+   },
+   {
+    "headings": [
+     {
+      "depth": 0,
+      "label": "def greet(who):",
+      "line": 1
+     },
+     {
+      "depth": 0,
+      "label": "def bye(who):",
+      "line": 5
+     }
+    ],
+    "id": "w2ebf8af76b2f",
+    "ports": [],
+    "silhouette": "AA8FBBUCAAAPAAAPAA0BBBMC"
+   }
+  ]
+ },
+ "route": "POST /api/v1/views/:viewId/windows:batch",
+ "status": 200
+}

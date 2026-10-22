@@ -1,0 +1,15 @@
+{
+ "body": {
+  "moveCamera": true
+ },
+ "method": "PUT",
+ "path": "/api/v1/agent/permissions",
+ "response": {
+  "agent": "*",
+  "edit": true,
+  "moveCamera": true,
+  "session": "<volatile>"
+ },
+ "route": "PUT /api/v1/agent/permissions",
+ "status": 200
+}

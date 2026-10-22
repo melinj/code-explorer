@@ -1,0 +1,30 @@
+{
+ "body": {
+  "from": "w10",
+  "kind": "reference",
+  "label": "replay",
+  "to": "w11",
+  "viewId": "<id2>"
+ },
+ "method": "POST",
+ "path": "/api/v1/links",
+ "response": {
+  "confidence": 1.0,
+  "from": {
+   "line": 4,
+   "path": "deploy/signal_5.sh",
+   "window": "w10"
+  },
+  "id": "decl1",
+  "kind": "reference",
+  "label": "replay",
+  "provenance": "human",
+  "to": {
+   "line": 6,
+   "path": "deploy/plan_6.sh",
+   "window": "w11"
+  }
+ },
+ "route": "POST /api/v1/links",
+ "status": 200
+}

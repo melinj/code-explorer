@@ -1,0 +1,31 @@
+{
+ "method": "GET",
+ "path": "/api/v1/conflicts/c0ffee/config/edge/session_51.yaml",
+ "response": {
+  "change": "kxwqmnpo",
+  "commit": "c0ffee",
+  "firstSeenOp": "4eb0965a",
+  "materialized": "graph:\n  - items\n  district: 3977\n  value: 1405\n  node:\n    entity:\n      target: 7545\n      # config\n      - payload\n      - payload\n    store: cache.queue\n   ",
+  "path": "config/edge/session_51.yaml",
+  "regions": [
+   {
+    "base": "    path:\n      cache:\n        # result",
+    "end": 17,
+    "sides": [
+     {
+      "label": "kxwqmnpo (amend)",
+      "text": "    path:  # kxwq: retry\n      cache:  # kxwq: retry\n        # result  # kxwq: retry"
+     },
+     {
+      "label": "rqtmtvrn (rebased)",
+      "text": "    path:  # reviewed\n      cache:  # reviewed\n        # NOTE: result"
+     }
+    ],
+    "start": 15
+   }
+  ],
+  "sides": 2
+ },
+ "route": "GET /api/v1/conflicts/:commit/*path",
+ "status": 200
+}

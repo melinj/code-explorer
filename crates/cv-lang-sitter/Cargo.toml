@@ -1,0 +1,10 @@
+[package]
+name = "cv-lang-sitter"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+cv-lang.workspace = true
+tree-sitter.workspace = true

@@ -1,0 +1,54 @@
+{
+ "body": {
+  "agent": "replay",
+  "client": "contract-replay",
+  "workspace": "default"
+ },
+ "method": "POST",
+ "path": "/api/v1/agent/bind",
+ "response": {
+  "agent": {
+   "activity": "reading",
+   "client": "contract-replay",
+   "lastSeen": "2026-01-01T00:00:00Z",
+   "name": "replay"
+  },
+  "files": [
+   "src/agent/item/node_264.py",
+   "src/edge/market/camera_361.py",
+   "src/server/cache/spawn_458.py",
+   "src/parse/build/edge_555.py",
+   "src/dialogue/agent/camera_652.py",
+   "src/job/loader/job_749.py"
+  ],
+  "lastOp": {
+   "description": "snapshot working copy",
+   "op": "<volatile>",
+   "time": "2026-01-01T00:00:00Z"
+  },
+  "name": "default",
+  "overlaps": [
+   {
+    "paths": [
+     "src/agent/item/node_264.py"
+    ],
+    "workspace": "gym"
+   }
+  ],
+  "root": "<ROOT>",
+  "serving": true,
+  "stack": {
+   "changes": 3,
+   "conflicts": 0,
+   "files": 6,
+   "revset": "trunk()..default@"
+  },
+  "unsnapshottedFiles": 2,
+  "wc": {
+   "change": "",
+   "commit": ""
+  }
+ },
+ "route": "POST /api/v1/agent/bind",
+ "status": 200
+}

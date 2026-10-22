@@ -1,0 +1,32 @@
+{
+ "method": "GET",
+ "path": "/api/v1/conflicts",
+ "query": {
+  "revset": "all()"
+ },
+ "response": [
+  {
+   "change": "wkzpyywqukmxooynuoxmylmmkktlumwq",
+   "commit": "a1056a0356d93a0916212ae8364516733aab5de5",
+   "firstSeenOp": "0c6fa5ded86608c5a82194a522686d660e80f3da48a1a89ee8da61d0994004782f9f878f5c6dd460a8b6e20468b392fb16c7a925e3484f2b44ddfc2de9782f56",
+   "path": "engine.py",
+   "sides": 2
+  },
+  {
+   "change": "ykpmortnorxusnmuvyswypzrpstyzzzo",
+   "commit": "d8fa57a4a7bd20d70a3492822e178396c4674260",
+   "firstSeenOp": "0c6fa5ded86608c5a82194a522686d660e80f3da48a1a89ee8da61d0994004782f9f878f5c6dd460a8b6e20468b392fb16c7a925e3484f2b44ddfc2de9782f56",
+   "path": "engine.py",
+   "sides": 2
+  },
+  {
+   "change": "qlznmkvqlnwqsoumuoszqoosylrtlvok",
+   "commit": "067a248d1ab0ef99aa6006aa2632a581feb5d462",
+   "firstSeenOp": "0c6fa5ded86608c5a82194a522686d660e80f3da48a1a89ee8da61d0994004782f9f878f5c6dd460a8b6e20468b392fb16c7a925e3484f2b44ddfc2de9782f56",
+   "path": "engine.py",
+   "sides": 2
+  }
+ ],
+ "route": "GET /api/v1/conflicts",
+ "status": 200
+}

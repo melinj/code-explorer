@@ -1,0 +1,131 @@
+{
+ "method": "GET",
+ "path": "/api/v1/workspaces",
+ "response": [
+  {
+   "files": [
+    "app.py",
+    "settings.yaml"
+   ],
+   "lastOp": {
+    "description": "create initial working-copy commit in workspace agent",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "agent",
+   "overlaps": [
+    {
+     "paths": [
+      "app.py",
+      "settings.yaml"
+     ],
+     "workspace": "default"
+    },
+    {
+     "paths": [
+      "app.py",
+      "settings.yaml"
+     ],
+     "workspace": "ws2"
+    }
+   ],
+   "root": "<FIXTURES>/workspaces/agent",
+   "serving": false,
+   "stack": {
+    "changes": 3,
+    "conflicts": 0,
+    "files": 2,
+    "revset": "trunk()..agent@"
+   },
+   "unsnapshottedFiles": 0,
+   "wc": {
+    "change": "nuwkyouxrorslpnuuswmwplsnkmropst",
+    "commit": "c2fdb934040274a56ac547c840fb2bdcd03bad02"
+   }
+  },
+  {
+   "files": [
+    "app.py",
+    "settings.yaml"
+   ],
+   "lastOp": {
+    "description": "new empty commit",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "default",
+   "overlaps": [
+    {
+     "paths": [
+      "app.py",
+      "settings.yaml"
+     ],
+     "workspace": "agent"
+    },
+    {
+     "paths": [
+      "app.py",
+      "settings.yaml"
+     ],
+     "workspace": "ws2"
+    }
+   ],
+   "root": "<ROOT>",
+   "serving": true,
+   "stack": {
+    "changes": 3,
+    "conflicts": 0,
+    "files": 2,
+    "revset": "trunk()..default@"
+   },
+   "unsnapshottedFiles": 1,
+   "wc": {
+    "change": "opvrmxwvxuwuzrvsqptonyopknkuulyt",
+    "commit": "1e80f0594b740f14f66daad989834d9bff3feb6c"
+   }
+  },
+  {
+   "files": [
+    "app.py",
+    "settings.yaml"
+   ],
+   "lastOp": {
+    "description": "create initial working-copy commit in workspace ws2",
+    "op": "<volatile>",
+    "time": "2026-01-01T00:00:00Z"
+   },
+   "name": "ws2",
+   "overlaps": [
+    {
+     "paths": [
+      "app.py",
+      "settings.yaml"
+     ],
+     "workspace": "agent"
+    },
+    {
+     "paths": [
+      "app.py",
+      "settings.yaml"
+     ],
+     "workspace": "default"
+    }
+   ],
+   "root": "<FIXTURES>/workspaces/ws2",
+   "serving": false,
+   "stack": {
+    "changes": 3,
+    "conflicts": 0,
+    "files": 2,
+    "revset": "trunk()..ws2@"
+   },
+   "unsnapshottedFiles": 1,
+   "wc": {
+    "change": "nryzrrzmwvvwztsksvzmqxyxspmtruoy",
+    "commit": "de3b9164c85332d3573fdeb4996de7ddaed79e3a"
+   }
+  }
+ ],
+ "route": "GET /api/v1/workspaces",
+ "status": 200
+}

@@ -1,0 +1,142 @@
+[workspace]
+resolver = "3"
+members = [
+    "crates/cv-contracts",
+    "crates/cv-mock",
+    "crates/cv-vcs",
+    "crates/cv-lang",
+    "crates/cv-lang-sitter",
+    "crates/cv-lang-python",
+    "crates/cv-lang-typescript",
+    "crates/cv-lang-config",
+    "crates/cv-lang-rust",
+    "crates/cv-lang-cpp",
+    "crates/cv-churn",
+    "crates/cv-link",
+    "crates/cv-layout",
+    "crates/cv-server",
+    "crates/cv-store",
+    "crates/cv-review",
+    "crates/cv-mcp",
+    "crates/cv-channel",
+    "crates/cv-channel-bus",
+    "crates/cv-channel-http",
+    "crates/cv-channel-env",
+    "crates/cv-channel-deploy",
+    "crates/cv-channel-config",
+]
+
+[workspace.package]
+edition = "2024"
+version = "0.1.0"
+license = "Apache-2.0"
+publish = false
+
+[workspace.dependencies]
+cv-contracts = { path = "crates/cv-contracts" }
+cv-vcs = { path = "crates/cv-vcs" }
+cv-lang = { path = "crates/cv-lang" }
+cv-lang-sitter = { path = "crates/cv-lang-sitter" }
+cv-lang-python = { path = "crates/cv-lang-python" }
+cv-lang-typescript = { path = "crates/cv-lang-typescript" }
+cv-lang-config = { path = "crates/cv-lang-config" }
+cv-lang-rust = { path = "crates/cv-lang-rust" }
+cv-lang-cpp = { path = "crates/cv-lang-cpp" }
+cv-churn = { path = "crates/cv-churn" }
+cv-link = { path = "crates/cv-link" }
+cv-layout = { path = "crates/cv-layout" }
+cv-store = { path = "crates/cv-store" }
+cv-review = { path = "crates/cv-review" }
+cv-mcp = { path = "crates/cv-mcp" }
+cv-channel = { path = "crates/cv-channel" }
+cv-channel-bus = { path = "crates/cv-channel-bus" }
+cv-channel-http = { path = "crates/cv-channel-http" }
+cv-channel-env = { path = "crates/cv-channel-env" }
+cv-channel-deploy = { path = "crates/cv-channel-deploy" }
+cv-channel-config = { path = "crates/cv-channel-config" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net"] }
+tower-http = { version = "0.6", features = ["cors", "compression-gzip"] }
+jj-lib = "=0.45.1"
+pollster = "0.4"
+futures = "0.3"
+rayon = "1"
+tree-sitter = "0.27"
+tree-sitter-python = "0.25"
+tree-sitter-typescript = "0.23"
+tree-sitter-rust = "0.24"
+tree-sitter-cpp = "0.23"
+tree-sitter-yaml = "0.7"
+tree-sitter-toml-ng = "0.7"
+tree-sitter-bash = "0.25"
+tree-sitter-hcl = "1.1"
+tree-sitter-dockerfile-updated = "0.2"
+tree-sitter-json = "0.24"
+base64 = "0.22"
+globset = "0.4"
+tempfile = "3"
+rusqlite = { version = "0.40", features = ["bundled"] }
+toml_edit = "0.25"
+regex = "1"
+aho-corasick = "1"
+ts-rs = { version = "12.0.1", features = ["serde-json-impl", "no-serde-warnings"] }
+
+[profile.dev.package]
+# Dependencies are optimised (tests run jj-lib and tree-sitter on real repos) and keep file:line for
+# backtraces but no variable/type debuginfo: a debug test build's target/ shrinks by about a
+# third (26.8 GB → 17.5 GB) and links faster.
+"*" = { opt-level = 2, debug = "line-tables-only" }
+# …except what only runs at build time (proc-macros, build scripts and their dependencies): `"*"`
+# takes precedence over `[profile.dev.build-override]`, so they are named. Generated from
+#   comm -23 <(cargo tree --workspace -e all --prefix none --format '{p}' | awk '{print $1}' | sort -u) \
+#            <(cargo tree --workspace -e normal,dev,no-proc-macro --target all --prefix none --format '{p}' | awk '{print $1}' | sort -u)
+# A crate missing here only builds slower; one listed that becomes a runtime dependency runs at opt-level 0.
+anyhow = { opt-level = 0 }
+"async-trait" = { opt-level = 0 }
+autocfg = { opt-level = 0 }
+beef = { opt-level = 0 }
+cc = { opt-level = 0 }
+darling = { opt-level = 0 }
+darling_core = { opt-level = 0 }
+darling_macro = { opt-level = 0 }
+displaydoc = { opt-level = 0 }
+"find-msvc-tools" = { opt-level = 0 }
+"futures-macro" = { opt-level = 0 }
+"gix-macros" = { opt-level = 0 }
+ident_case = { opt-level = 0 }
+"jj-core-proc-macros" = { opt-level = 0 }
+lazy_static = { opt-level = 0 }
+"logos-codegen" = { opt-level = 0 }
+"logos-derive" = { opt-level = 0 }
+multiversion_no_op = { opt-level = 0 }
+pastey = { opt-level = 0 }
+pest_derive = { opt-level = 0 }
+pest_generator = { opt-level = 0 }
+pest_meta = { opt-level = 0 }
+"pkg-config" = { opt-level = 0 }
+"proc-macro2" = { opt-level = 0 }
+"prost-derive" = { opt-level = 0 }
+quote = { opt-level = 0 }
+"ref-cast-impl" = { opt-level = 0 }
+"rmcp-macros" = { opt-level = 0 }
+rustc_version = { opt-level = 0 }
+rustversion = { opt-level = 0 }
+schemars_derive = { opt-level = 0 }
+semver = { opt-level = 0 }
+serde_derive = { opt-level = 0 }
+serde_derive_internals = { opt-level = 0 }
+shlex = { opt-level = 0 }
+syn = { opt-level = 0 }
+synstructure = { opt-level = 0 }
+termcolor = { opt-level = 0 }
+"thiserror-impl" = { opt-level = 0 }
+"tokio-macros" = { opt-level = 0 }
+"tracing-attributes" = { opt-level = 0 }
+"ts-rs-macros" = { opt-level = 0 }
+vcpkg = { opt-level = 0 }
+version_check = { opt-level = 0 }
+"yoke-derive" = { opt-level = 0 }
+"zerofrom-derive" = { opt-level = 0 }
+"zerovec-derive" = { opt-level = 0 }

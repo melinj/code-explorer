@@ -1,0 +1,63 @@
+{
+ "method": "GET",
+ "path": "/api/v1/repo",
+ "response": {
+  "capabilities": {
+   "jjLib": true,
+   "runtimeLinks": false,
+   "scip": false
+  },
+  "index": {
+   "blobsParsed": 2,
+   "churn": {
+    "bands": [
+     0.249998,
+     0.249998,
+     0.249998,
+     0.749998
+    ],
+    "halfLifeDays": 90.0,
+    "head": "1e80f0594b740f14f66daad989834d9bff3feb6c",
+    "oldest": "2026-01-01T00:00:00Z",
+    "scannedCommits": 3,
+    "settledMass": -0.0,
+    "stop": "history-exhausted"
+   },
+   "files": 2,
+   "lastOp": "<volatile>",
+   "state": "idle"
+  },
+  "jjVersion": "0.45.1",
+  "name": "default",
+  "op": "<volatile>",
+  "root": "<ROOT>",
+  "workspaces": [
+   {
+    "name": "agent",
+    "root": "<FIXTURES>/workspaces/agent",
+    "wc": {
+     "change": "nuwkyouxrorslpnuuswmwplsnkmropst",
+     "commit": "c2fdb934040274a56ac547c840fb2bdcd03bad02"
+    }
+   },
+   {
+    "name": "default",
+    "root": "<ROOT>",
+    "wc": {
+     "change": "opvrmxwvxuwuzrvsqptonyopknkuulyt",
+     "commit": "1e80f0594b740f14f66daad989834d9bff3feb6c"
+    }
+   },
+   {
+    "name": "ws2",
+    "root": "<FIXTURES>/workspaces/ws2",
+    "wc": {
+     "change": "nryzrrzmwvvwztsksvzmqxyxspmtruoy",
+     "commit": "de3b9164c85332d3573fdeb4996de7ddaed79e3a"
+    }
+   }
+  ]
+ },
+ "route": "GET /api/v1/repo",
+ "status": 200
+}

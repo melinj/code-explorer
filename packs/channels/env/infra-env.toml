@@ -1,0 +1,85 @@
+# Env definers in config and infra files (pack P3): dotenv, Dockerfile ENV/ARG, compose
+# `environment` (map and list forms), k8s `env: - name:`, CI `env:` / `variables:`, shell `export`
+# and `NAME=value command` prefixes.
+
+[[config]]
+id = "dotenv"
+glob = "**/.env*"
+path = "*"
+role = "define"
+key_from = "leaf"
+
+# `#NAME=value`: documented but disabled by default.
+[[config]]
+id = "dotenv.commented"
+glob = "**/.env*"
+path = "#.*"
+role = "define"
+key_from = "leaf"
+confidence = 0.85
+
+[[config]]
+id = "dockerfile.env"
+glob = "**/{Dockerfile,Dockerfile.*,*.dockerfile,*.Dockerfile}"
+path = "ENV.*"
+role = "define"
+key_from = "leaf"
+
+[[config]]
+id = "dockerfile.arg"
+glob = "**/{Dockerfile,Dockerfile.*,*.dockerfile,*.Dockerfile}"
+path = "ARG.*"
+role = "define"
+key_from = "leaf"
+
+[[config]]
+id = "compose.environment"
+glob = "**/*compose*.{yml,yaml}"
+path = "services.*.environment.*"
+role = "define"
+key_from = "leaf"
+
+[[config]]
+id = "compose.environment.list"
+glob = "**/*compose*.{yml,yaml}"
+path = "services.*.environment"
+role = "define"
+key_from = "item_name"
+items = true
+
+[[config]]
+id = "k8s.env"
+glob = "**/*.{yml,yaml}"
+path = "$..env.name"
+role = "define"
+key_from = "value"
+value_pattern = '^[A-Z_][A-Z0-9_]*$'
+
+[[config]]
+id = "ci.env"
+glob = "{.github/workflows/*.{yml,yaml},**/.gitlab-ci.yml,.gitlab-ci.yml}"
+path = "$..env.*"
+role = "define"
+key_from = "leaf"
+
+[[config]]
+id = "ci.variables"
+glob = "{**/.gitlab-ci.yml,.gitlab-ci.yml}"
+path = "$..variables.*"
+role = "define"
+key_from = "leaf"
+
+[[config]]
+id = "shell.export"
+glob = "**/*.{sh,bash}"
+path = "export.*"
+role = "define"
+key_from = "leaf"
+
+# `NAME=value command …` in a script: the variable is set for that command.
+[[config]]
+id = "shell.command-env"
+glob = "**/*.{sh,bash}"
+path = "env.*"
+role = "define"
+key_from = "leaf"

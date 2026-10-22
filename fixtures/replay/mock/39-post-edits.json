@@ -1,0 +1,37 @@
+{
+ "body": {
+  "dryRun": true,
+  "files": [
+   {
+    "content": "x = 1\n",
+    "path": "deploy/signal_5.sh"
+   }
+  ],
+  "mode": "amend",
+  "target": "pprklvvmkwulvnstlwqqwmqqvopxprou"
+ },
+ "method": "POST",
+ "path": "/api/v1/edits",
+ "response": {
+  "actor": {
+   "kind": "human",
+   "name": "you"
+  },
+  "conflicts": [],
+  "id": "e153",
+  "predicted": true,
+  "rewritten": [
+   "pprklvvmkwulvnstlwqqwmqqvopxprou"
+  ],
+  "status": "previewed",
+  "workspaces": [
+   {
+    "name": "default",
+    "snapshotted": true,
+    "updated": true
+   }
+  ]
+ },
+ "route": "POST /api/v1/edits",
+ "status": 200
+}
