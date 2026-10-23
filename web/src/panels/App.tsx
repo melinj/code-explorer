@@ -113,9 +113,16 @@ export function App() {
   useEffect(() => localStorage.setItem("cv.graph.w", String(graphW)), [graphW]);
   // Expanded: the graph fills the window over the map (G); not remembered, the map is the default view.
   const [graphMax, setGraphMax] = useState(false);
+  // Changes the History tab asked the Graph panel to show (n: a new request each time).
+  const [graphFocus, setGraphFocus] = useState<{ changes: string[]; n: number }>();
+  // The right side panel (Inspector, History, …) can be hidden for a wider map; remembered.
+  const [sideHidden, setSideHidden] = useState(() => localStorage.getItem("cv.side.hidden") === "1");
+  useEffect(() => localStorage.setItem("cv.side.hidden", sideHidden ? "1" : "0"), [sideHidden]);
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
       if ((e.key !== "g" && e.key !== "G") || e.metaKey || e.ctrlKey || e.altKey || (e.target as HTMLElement).closest?.("input,textarea,select,[contenteditable],.cm-editor")) return;
+      // In the co-change lens `g` gathers the partners (the canvas's key); the Graph button stays.
+      if (e.key === "g" && lens === "cochange") return;
       if (e.key === "G") {
         setGraphOpen(true);
         setGraphMax((m) => !m);
@@ -126,7 +133,7 @@ export function App() {
     };
     window.addEventListener("keydown", k);
     return () => window.removeEventListener("keydown", k);
-  }, []);
+  }, [lens]);
   const [tour, setTour] = useState<Tour>();
   // Short-lived notices (a refused move or pin).
   const [toast, setToast] = useState<string>();
@@ -423,6 +430,9 @@ export function App() {
         <button className={`ghost graph-btn ${graphOpen ? "on" : ""}`} aria-pressed={graphOpen} onClick={() => setGraphOpen((o) => !o)} title="The jj graph: bookmarks, workspaces, landing (g)">
           Graph
         </button>
+        <button className={`ghost side-btn ${sideHidden ? "" : "on"}`} aria-pressed={!sideHidden} onClick={() => setSideHidden((h) => !h)} title={sideHidden ? "Show the side panel (Inspector, History, Review, …)" : "Hide the side panel for a wider map"}>
+          Side panel
+        </button>
         {agent && Date.now() - agent.at < 60_000 && (
           <button className="chip agent-chip" onClick={() => setTab("agent")} title="Agent activity">
             <i /> {agent.name} · {agent.tool}
@@ -484,7 +494,7 @@ export function App() {
           );
         })()}
       </div>
-      <main className={graphOpen ? `with-graph ${graphMax ? "graph-max" : ""}` : ""} style={{ ["--graph-w" as string]: `${graphW}px` }}>
+      <main className={`${graphOpen ? `with-graph ${graphMax ? "graph-max" : ""}` : ""} ${sideHidden ? "no-side" : ""}`} style={{ ["--graph-w" as string]: `${graphW}px` }}>
         {graphOpen && engine.current && (
           <GraphPanel
             live={live}
@@ -493,6 +503,7 @@ export function App() {
             onClose={() => (setGraphOpen(false), setGraphMax(false))}
             expanded={graphMax}
             onExpand={setGraphMax}
+            focus={graphFocus}
             onShow={showSelection}
             shownRange={shownRange}
             // Opening something on the map docks the expanded graph so the map shows.
@@ -579,9 +590,22 @@ export function App() {
                 {l}
               </button>
             ))}
+            <button className="side-hide" aria-label="Hide the side panel" title="Hide the side panel (Side panel in the top bar brings it back)" onClick={() => setSideHidden(true)}>
+              »
+            </button>
           </nav>
           {engine.current && tab === "inspector" && <Inspector key={sel.v} engine={engine.current} review={review} sel={sel.t} onAction={setAction} />}
-          {engine.current && tab === "history" && <HistoryPanel engine={engine.current} live={live} onRange={setRange} onInterdiff={setInterdiff} onSnapshot={(rev) => openSnapshotAt(rev).catch((x) => setToast(`Could not open ${rev.slice(0, 12)}: ${(x as Error).message}`))} />}
+          {engine.current && tab === "history" && (
+            <HistoryPanel
+              engine={engine.current}
+              live={live}
+              onRange={setRange}
+              onDiff={(revset) => void openRange(revset, { diff: "cumulative" }).catch(() => {})}
+              onInterdiff={setInterdiff}
+              onSnapshot={(rev) => openSnapshotAt(rev).catch((x) => setToast(`Could not open ${rev.slice(0, 12)}: ${(x as Error).message}`))}
+              onGraph={(changes) => (setGraphOpen(true), setGraphFocus((f) => ({ changes, n: (f?.n ?? 0) + 1 })))}
+            />
+          )}
           {engine.current && tab === "review" && <ReviewPanel engine={engine.current} review={review} onOpen={(t) => openThread(t)} />}
           {engine.current && tab === "workspaces" && <WorkspacesPanel engine={engine.current} live={live} onRange={setRange} onCompare={compare} onOpenAt={(rev, options) => openSnapshotAt(rev, options).catch((x) => { setToast(`Could not open ${rev}: ${(x as Error).message}`); throw x; })} />}
           {engine.current && tab === "hotspots" && <HotspotsPanel engine={engine.current} />}

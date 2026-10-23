@@ -6,7 +6,7 @@
 //   that commit, and a preview targets it;
 // - Workspaces "Open @" opens a snapshot of that workspace's @ with its live files (REPO: a real
 //   second workspace with an unsnapshotted edit), and "@" comes back to the same view;
-// - History "Review range" gives `older::newer` whichever row was clicked first;
+// - History "Diff of range" gives `older::newer` whichever row was clicked first;
 // - a 404 "view-unknown" (the server restarted) re-opens the view instead of leaving windows empty;
 // - search lists review threads (REPO: a thread made here).
 // Usage: URL=… [REPO=<repo cv serve serves>] node scripts/views-flow.mjs <screenshot dir>
@@ -229,17 +229,17 @@ let atRev;
   }
 }
 
-// ── History "Review range": order of the clicks does not matter ───────────────────────────────
+// ── History "Diff of range": order of the clicks does not matter ───────────────────────────────
 {
   await tab("History");
   await page.waitForSelector(".hist li[data-change]", { timeout: ms(30000) }).catch(() => {});
   const rows = await page.$$eval(".hist li[data-change]", (ls) => ls.map((l) => l.getAttribute("data-change")));
-  if (rows.length < 3) skip(`Review range order: ${rows.length} history rows`);
+  if (rows.length < 3) skip(`Diff of range order: ${rows.length} history rows`);
   else {
     const range = async (first, second) => {
       await page.click(`.hist li[data-change='${first}']`);
       await page.click(`.hist li[data-change='${second}']`, { modifiers: ["Shift"] });
-      await page.click(".hist-bar button:has-text('Review range')");
+      await page.click(".hist-bar button:has-text('Diff of range')");
       const v = await page.waitForSelector("[aria-label=Revset]", { timeout: ms(30000) }).then((h) => h.inputValue()).catch(() => null);
       await page.keyboard.press("Escape");
       await page.waitForSelector("[aria-label=Revset]", { state: "detached", timeout: ms(30000) }).catch(() => {});
@@ -249,7 +249,7 @@ let atRev;
     const a = await range(newer, older);
     const b = await range(older, newer);
     const want = `${older.slice(0, 8)}::${newer.slice(0, 8)}`;
-    check(a === want && b === want, `History "Review range" is older::newer either way (${a} / ${b})`);
+    check(a === want && b === want, `History "Diff of range" is older::newer either way (${a} / ${b})`);
   }
 }
 

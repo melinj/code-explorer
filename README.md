@@ -195,10 +195,16 @@ cd web && npm install && npm run dev      # http://127.0.0.1:5178
 - Review: click the gutter to comment on a line, drag in the gutter for a range (drag the band's
   handles to adjust); double-click code to edit it; open conflicts from their red markers.
 - Range review (`Range` in the top bar) shows what changed in a revset, in place.
-- **Graph** (top bar, or `g`) docks the jj graph left of the map: lanes, workspaces, bookmarks.
-  - The map shows **All files** by default. Switch to **Selected** and the map follows what
-    you pick in the graph (click, `⇧` for a run, `⌘`/`Ctrl` to add one): one change, a chain
-    (cumulative), or unrelated changes commit by commit. Double-click a change for the whole map at it.
+- **Graph** (top bar, or `g`; in the co-change lens `g` gathers instead) docks the jj graph left of
+  the map: lanes, workspaces, bookmarks.
+  - Pick a change (click; `⇧` for a run, `⌘`/`Ctrl` to add one) and choose what the map shows:
+    **State at commit** (the whole repository as it was there), **Diff of commit** (only what it
+    changed; double-click does this too) or, with several picked, **Diff of range** (a chain,
+    together) / **Diff of commits** (unrelated ones, each on its own). The **Map: Repo | Diff**
+    switch says which one is on; in Diff the map follows the selection.
+  - The **History** tab offers the same three (**State at commit**, **Diff of commit**, **Diff of
+    range…**) and **Open in Graph**, which opens this panel on the change picked there.
+  - **Side panel** in the top bar (or **»** in its tabs) hides the right-hand panel for a wider map.
   - **⤢** (Expand, or `G`) fills the window with the graph for big histories; **⤡** docks it again.
   - **Commit…** (next to a workspace with work, or on a selected `@`) is `jj commit`: `@` gets
     your message, a new empty `@` starts on top, and optionally a bookmark (say `main`) moves to it.

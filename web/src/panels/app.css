@@ -435,6 +435,13 @@ pre.side.resolved { border: 1px solid color-mix(in oklab, var(--add) 50%, var(--
 /* Graph side panel: the jj graph docked left of the canvas (GraphPanel.tsx). */
 main.with-graph { grid-template-columns: var(--graph-w) minmax(0, 1fr) 300px; position: relative; }
 main.with-graph.graph-max { grid-template-columns: minmax(0, 1fr) 300px; }
+/* The side panel hidden (top bar "Side panel", or » in its tabs): the map takes its column. */
+main.no-side { grid-template-columns: minmax(0, 1fr); }
+main.with-graph.no-side { grid-template-columns: var(--graph-w) minmax(0, 1fr); }
+main.with-graph.graph-max.no-side { grid-template-columns: minmax(0, 1fr); }
+main.no-side > .side { display: none; }
+.side-btn.on { color: var(--accent); }
+.tabs .side-hide { margin-left: auto; font-size: 14px; padding: 0 8px; }
 .graph-btn.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .graph-panel { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--surface); border-right: 1px solid var(--line); outline: none; }
 .gp-head { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid var(--line); }
@@ -478,6 +485,9 @@ button.danger { color: var(--bad); border-color: color-mix(in oklab, var(--bad) 
 .graph-panel.max .gp-meta { max-width: none; }
 .gp-when { flex: none; min-width: 13em; text-align: right; }
 .gp-expand { font-size: 15px; line-height: 1; padding: 2px 6px; }
+.gp-map { display: inline-flex; align-items: center; gap: 5px; }
+.gp-break { flex-basis: 100%; height: 0; }
+.gp-actions button.on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .gp-head .seg button { white-space: nowrap; }
 .gp-expand[aria-pressed="true"] { color: var(--accent); }
 /* Bookmarks: a strip of every local bookmark and, on click, a menu of its moves. */
@@ -519,7 +529,10 @@ button.danger { color: var(--bad); border-color: color-mix(in oklab, var(--bad) 
 .gp-preview { min-height: 2.6em; padding: 8px 10px; background: var(--surface-2); border-radius: var(--radius); display: grid; gap: 4px; }
 .gp-list { margin: 0; padding-left: 18px; }
 @media (max-width: 800px) {
-  main.with-graph { grid-template-columns: minmax(0, 1fr); }
+  main.with-graph, main.with-graph.no-side { grid-template-columns: minmax(0, 1fr); }
+  /* Narrow screens keep the side panel as a drawer (Panels): nothing to hide. */
+  main.no-side > .side { display: flex; }
+  .side-btn, .tabs .side-hide { display: none; }
   .graph-panel { position: absolute; inset: 0; z-index: 9; width: 100% !important; }
   .gp-resize { display: none; }
 }

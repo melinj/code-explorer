@@ -65,6 +65,8 @@ export interface GraphPanelProps {
   /** Expanded: the graph fills the whole area (the map and the side bar stay underneath). */
   expanded?: boolean;
   onExpand?: (on: boolean) => void;
+  /** Select these changes and scroll to them (the History tab's "Open in Graph"); n: a new request. */
+  focus?: { changes: string[]; n: number };
 }
 
 /**
@@ -76,7 +78,7 @@ export interface GraphPanelProps {
  * row or in the bookmark strip) opens its moves: to a workspace's @, to the selected change, to a
  * change clicked next, landing on the trunk, deleting it.
  */
-export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange, onSnapshot, onRangeDialog, vcs = "jj", onPick, expanded = false, onExpand }: GraphPanelProps) {
+export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange, onSnapshot, onRangeDialog, vcs = "jj", onPick, expanded = false, onExpand, focus }: GraphPanelProps) {
   const git = vcs === "git";
   const presets = git ? GIT_PRESETS : PRESETS;
   const [rows, setRows] = useState<GraphRow[]>([]);
@@ -196,6 +198,40 @@ export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange,
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, pick.join(","), rows.length]);
+
+  // ── What the map shows: the state at a commit, or the diff of the selection ──
+  /** State at commit: the whole repository at this change (a snapshot); the map stops following. */
+  const stateAt = (r: GraphRow) => {
+    want.current = undefined;
+    opened.current = undefined;
+    setMode("all");
+    onExpand?.(false);
+    onSnapshot?.(r.rev.change.slice(0, 12));
+  };
+  /** Diff of commit / range / commits: the map shows the selection's diff and follows it. */
+  const showDiff = (commits: string[] = pick) => {
+    setMode("changes");
+    onExpand?.(false);
+    want.current = selectionView(rows, commits);
+    void follow();
+  };
+  const sv = selectionView(rows, pick);
+  const diffLabel = picked.length === 1 ? "Diff of commit" : sv?.diff === "cumulative" ? "Diff of range" : "Diff of commits";
+
+  // ── The History tab's "Open in Graph": select its changes once they are loaded ──
+  const focused = useRef(0);
+  useEffect(() => {
+    if (!focus || focused.current === focus.n || !rows.length) return;
+    focused.current = focus.n;
+    setView("graph");
+    const commits = rows.filter((r) => focus.changes.includes(r.rev.change)).map((r) => r.rev.commit);
+    if (focus.changes.length && !commits.length) {
+      setNote(`${focus.changes.map(short).join(", ")} is not in this graph's revset; try the All preset.`);
+      return;
+    }
+    setPick(commits);
+    if (commits[0]) setTimeout(() => root.current?.querySelector(`[data-commit="${commits[0]}"]`)?.scrollIntoView({ block: "center" }), 0);
+  }, [focus?.n, rows]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Selection ──
   const click = (r: GraphRow, e: React.MouseEvent) => {
@@ -377,14 +413,19 @@ export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange,
             git · read-only
           </span>
         ) : (
-          view === "graph" && <div className="seg small" role="group" aria-label="The map shows">
-            <button className={mode === "all" ? "on" : ""} onClick={() => setMode("all")} title="The map shows every file (the snapshot)">
-              All files
-            </button>
-            <button className={mode === "changes" ? "on" : ""} onClick={() => setMode("changes")} title="The map shows only what the selected changes change">
-              Selected
-            </button>
-          </div>
+          view === "graph" && (
+            <span className="gp-map small">
+              <span className="muted">Map</span>
+              <span className="seg small" role="group" aria-label="The map shows">
+                <button className={mode === "all" ? "on" : ""} aria-pressed={mode === "all"} onClick={() => setMode("all")} title="Repo: the whole repository (at @, or at the commit whose state you opened)">
+                  Repo
+                </button>
+                <button className={mode === "changes" ? "on" : ""} aria-pressed={mode === "changes"} onClick={() => showDiff()} title="Diff: the map follows the selection, showing what one commit changed, or a range of them">
+                  Diff
+                </button>
+              </span>
+            </span>
+          )
         )}
         {mapBusy && <span className="gp-busy small muted" role="status">opening…</span>}
         <span className="grow" />
@@ -533,7 +574,7 @@ export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange,
                 className={`gp-row ${on ? "on" : ""} ${dropOn === r.rev.commit ? "drop" : ""} ${destFor || moveFor || squashFor ? "picking" : ""}`}
                 style={{ height: ROW }}
                 onClick={(e) => click(r, e)}
-                onDoubleClick={() => onSnapshot?.(r.rev.change.slice(0, 12))}
+                onDoubleClick={() => !git && (setPick([r.rev.commit]), showDiff([r.rev.commit]))}
                 draggable={!git && !f.immutable}
                 onDragStart={(e) => {
                   drag.current = { kind: "change", commit: r.rev.commit };
@@ -548,7 +589,7 @@ export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange,
                 onDragLeave={() => setDropOn((d) => (d === r.rev.commit ? undefined : d))}
                 onDrop={(e) => (e.preventDefault(), onDrop(r))}
                 onDragEnd={() => ((drag.current = undefined), setDropOn(undefined))}
-                title={git ? `${r.rev.commit.slice(0, 12)}\n${r.rev.description}` : `${r.rev.change.slice(0, 12)} · ${r.rev.commit.slice(0, 12)}\n${r.rev.description || "(no description set)"}\nDouble-click: open the whole map at this change`}
+                title={git ? `${r.rev.commit.slice(0, 12)}\n${r.rev.description}` : `${r.rev.change.slice(0, 12)} · ${r.rev.commit.slice(0, 12)}\n${r.rev.description || "(no description set)"}\nDouble-click: diff of this commit on the map`}
               >
                 <span className="mono gp-id">
                   <b>{r.rev.change.slice(0, r.rev.shortest.change)}</b>
@@ -644,20 +685,21 @@ export function GraphPanel({ live, width, onResize, onClose, onShow, shownRange,
         {git ? (
           <span className="small muted">Read-only git history. Initialise jj for the map, bookmarks, landing and history edits.</span>
         ) : !picked.length ? (
-          <span className="small muted">Click a change for its actions (⇧ adds a range, ⌘ one more). Click a bookmark to move or push it, or drag it onto a change.</span>
+          <span className="small muted">Click a change for its state, its diff and actions; ⇧-click a second for a range, ⌘ adds one. Double-click: diff of commit. Click a bookmark to move or push it.</span>
         ) : (
           <>
-            <span className="small muted">{picked.length === 1 ? short(picked[0].rev.change) : `${picked.length} selected`}</span>
-            {mode === "all" && (
-              <button onClick={() => (setMode("changes"), onExpand?.(false))} title="Show only what the selection changes on the map">
-                Show changes
+            <span className="small muted">Show {picked.length === 1 ? short(picked[0].rev.change) : `${picked.length} changes`}:</span>
+            {one && (
+              <button onClick={() => stateAt(one)} title="State at commit: the whole repository as it was at this change">
+                State at commit
               </button>
             )}
+            <button className={mode === "changes" ? "on" : ""} aria-pressed={mode === "changes"} onClick={() => showDiff()} title={picked.length === 1 ? "Diff of commit: only what this change changed, against its parent" : sv?.diff === "cumulative" ? "Diff of range: what these changes changed together, oldest to newest" : "Diff of commits: each change's own diff (they are not one chain)"}>
+              {diffLabel}
+            </button>
+            <span className="gp-break" />
             {one && (
               <>
-                <button onClick={() => onSnapshot?.(one.rev.change.slice(0, 12))} title="The whole map at this change">
-                  Open snapshot
-                </button>
                 <button onClick={() => setDialog({ kind: "set-bookmark", name: one.rev.bookmarks.find((b) => !b.includes("@")) ?? "", to: one.rev.commit })}>Bookmark…</button>
                 {trunk && !one.rev.bookmarks.includes(trunk) && <button onClick={() => setDialog(landFrom(one))}>Land on {trunk}…</button>}
                 {one.rev.workspaces.length > 0 && !one.rev.flags.immutable && (

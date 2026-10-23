@@ -1,6 +1,7 @@
 // End-to-end check of the Graph side panel against `cv serve` on a scripted jj repo: `g` opens it,
-// "Selected" makes the map follow the selection (a range view) and "All files" returns to
-// the snapshot, a bookmark dragged onto another change is previewed (backwards needs the toggle),
+// double-click / "Diff of commit" show a commit's diff, "State at commit" its snapshot, the Diff
+// mode follows the selection and "Repo" returns to the snapshot, History's "Open in Graph" selects
+// a change there, the side panel hides and comes back, a bookmark dragged onto another change is previewed (backwards needs the toggle),
 // applied and undone, workspace `ws` lands on `main` by merge (its @ follows) and is undone, a
 // bookmark's menu moves main to ws@ (and undoes it) or to a change clicked next, Commit runs
 // jj commit in ws (moving feature along, undone), Squash folds ws@ into S1, the operation log
@@ -85,19 +86,53 @@ check(await row("root()").isVisible(), "the root commit reads root()");
 check(await page.locator(".gp-lanes path").count() >= 3, "lane edges drawn");
 await page.screenshot({ path: join(out, "1-graph-open.png") });
 
-// The map follows the selection.
-await page.getByRole("button", { name: "Selected", exact: true }).click();
-await row("S1").click();
-await page.waitForFunction(() => window.__cv.engine.isRange, null, { timeout: 30000 }).catch(() => {});
-check(await page.evaluate(() => window.__cv.engine.isRange), "selecting a change opens it as a range view");
+// What the map shows: double-click = diff of commit; State at commit; Diff of commit; the Diff
+// mode follows the selection (two unrelated changes: per commit); Repo goes back.
+const spec = () => page.evaluate(() => ({ range: window.__cv.engine.isRange, revset: window.__cv.engine.client.view?.spec?.revset ?? "" }));
+const s1 = log("feature", "change_id.short(12)");
+await row("S1").dblclick();
+await page.waitForFunction((c) => window.__cv.engine.isRange && window.__cv.engine.client.view.spec.revset === c, s1, { timeout: 30000 }).catch(() => {});
+check((await spec()).revset === s1, `double-click shows the diff of that commit (${(await spec()).revset})`);
+check(await page.getByRole("group", { name: "The map shows" }).getByRole("button", { name: "Diff" }).getAttribute("aria-pressed") === "true", "the map switch says Diff");
 await page.waitForTimeout(1200);
-await page.screenshot({ path: join(out, "2-selected-changes.png") });
-await row("T1").click({ modifiers: ["ControlOrMeta"] });
-await page.waitForFunction(() => / \| /.test(window.__cv.engine.client.view.spec.revset ?? ""), null, { timeout: 30000 }).catch(() => {});
-check(await page.evaluate(() => / \| /.test(window.__cv.engine.client.view.spec.revset ?? "")), "two unrelated changes open per commit");
-await page.getByRole("button", { name: "All files" }).click();
+await page.screenshot({ path: join(out, "2-diff-of-commit.png") });
+const actions = page.locator(".gp-actions");
+await actions.getByRole("button", { name: "State at commit" }).click();
 await page.waitForFunction(() => !window.__cv.engine.isRange, null, { timeout: 30000 }).catch(() => {});
-check(await page.evaluate(() => !window.__cv.engine.isRange), "All files returns to the snapshot");
+check(!(await spec()).range, "State at commit opens a snapshot");
+await page.waitForFunction(() => document.querySelector(".rev-chip")?.textContent?.trim() !== "@", null, { timeout: 30000 }).catch(() => {});
+const chip = await page.locator(".rev-chip").innerText();
+check(chip.startsWith(s1.slice(0, 8)) || log("feature", "commit_id").startsWith(chip.slice(0, 12)), `the snapshot is at that change (${chip})`);
+check(await page.getByRole("group", { name: "The map shows" }).getByRole("button", { name: "Repo" }).getAttribute("aria-pressed") === "true", "the map switch says Repo");
+await actions.getByRole("button", { name: "Diff of commit" }).click();
+await page.waitForFunction((c) => window.__cv.engine.isRange && window.__cv.engine.client.view.spec.revset === c, s1, { timeout: 30000 }).catch(() => {});
+check((await spec()).revset === s1, "Diff of commit opens its diff");
+await row("T1").click({ modifiers: ["ControlOrMeta"] });
+check(await actions.getByRole("button", { name: "Diff of commits" }).isVisible(), "two unrelated changes offer Diff of commits");
+await page.waitForFunction(() => / \| /.test(window.__cv.engine.client.view.spec.revset ?? ""), null, { timeout: 30000 }).catch(() => {});
+check(/ \| /.test((await spec()).revset), "and the map follows: per commit");
+await row("S1").click();
+await row("ws@").click({ modifiers: ["Shift"] });
+check(await actions.getByRole("button", { name: "Diff of range" }).isVisible(), "a chain offers Diff of range");
+await page.getByRole("group", { name: "The map shows" }).getByRole("button", { name: "Repo" }).click();
+await page.waitForFunction(() => !window.__cv.engine.isRange, null, { timeout: 30000 }).catch(() => {});
+check(!(await spec()).range, "Repo goes back to the snapshot");
+
+// The History tab opens the Graph panel on the change picked there; the side panel hides.
+await page.keyboard.press("g");
+await panel.waitFor({ state: "detached" });
+await page.getByRole("button", { name: "History", exact: true }).click();
+await page.locator(".hist li", { hasText: "T0: initial" }).click();
+await page.locator(".hist-bar").getByRole("button", { name: "Open in Graph" }).click();
+await panel.waitFor();
+await page.locator(".gp-row.on", { hasText: "T0" }).waitFor({ timeout: 10000 }).catch(() => {});
+check(await page.locator(".gp-row.on", { hasText: "T0" }).isVisible(), "History's Open in Graph selects that change in the graph");
+await page.getByRole("button", { name: "Hide the side panel" }).click();
+check(!(await page.locator("aside.side").isVisible()), "» hides the side panel");
+await page.screenshot({ path: join(out, "2b-side-hidden.png") });
+await page.getByRole("button", { name: "Side panel" }).click();
+check(await page.locator("aside.side").isVisible(), "Side panel brings it back");
+await page.getByRole("button", { name: "Inspector", exact: true }).click();
 
 // Drag `feature` onto T0: backwards, so the preview refuses until allowed.
 const t0 = log("main-", "commit_id");

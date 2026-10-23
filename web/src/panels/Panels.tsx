@@ -51,7 +51,26 @@ export interface InterdiffTarget {
 /** Safety-net re-read of /revisions while History is open (review marks arrive as review.marked). */
 const HISTORY_REFRESH_MS = 15000;
 
-export function HistoryPanel({ engine, live, onRange, onInterdiff, onSnapshot }: { engine: Engine; live: Live; onRange: (revset: string) => void; onInterdiff: (t: InterdiffTarget) => void; onSnapshot?: (rev: string) => void }) {
+export function HistoryPanel({
+  engine,
+  live,
+  onRange,
+  onDiff,
+  onInterdiff,
+  onSnapshot,
+  onGraph,
+}: {
+  engine: Engine;
+  live: Live;
+  /** The Range dialog, prefilled. */
+  onRange: (revset: string) => void;
+  /** Open this revset's diff on the map straight away. */
+  onDiff?: (revset: string) => void;
+  onInterdiff: (t: InterdiffTarget) => void;
+  onSnapshot?: (rev: string) => void;
+  /** Open the Graph panel on these changes. */
+  onGraph?: (changes: string[]) => void;
+}) {
   const [rows, setRows] = useState<GraphRow[]>([]);
   const [truncated, setTruncated] = useState(false);
   const [pick, setPick] = useState<string[]>([]);
@@ -201,21 +220,33 @@ export function HistoryPanel({ engine, live, onRange, onInterdiff, onSnapshot }:
       {truncated && <div className="small muted pad0">showing the first {rows.length}; narrow the revset for more</div>}
       {note && <div className="small pad0">{note}</div>}
       <footer className="hist-bar">
-        <span className="muted small">{pick.length ? `${pick.length} selected · shift-click for a range` : "click a change; shift-click a second for a range"}</span>
+        <span className="muted small">{pick.length ? `${pick.length} selected · shift-click a second for a range` : "click a change; shift-click a second for a range"}</span>
         <div className="grow" />
         {picked && (
           <button onClick={markReviewed} title="Remember this commit as reviewed; a later rewrite shows “changed since review”">
             Mark reviewed
           </button>
         )}
-        {picked && onSnapshot && (
-          <button className="open-snap" onClick={() => onSnapshot(picked.rev.change)} title="Show the whole map at this change (DESIGN §7); edits there amend it, or go after it (§6)">
-            Open snapshot
+        {onGraph && (
+          <button onClick={() => onGraph(pick)} title={pick.length ? "Open the Graph panel with these changes selected" : "Open the Graph panel"}>
+            Open in Graph
           </button>
         )}
-        <button onClick={() => onRange(rangeOf || "trunk()..@")}>Range…</button>
-        <button className="primary" disabled={pick.length !== 2} onClick={() => onRange(rangeOf)}>
-          Review range
+        {picked && onSnapshot && (
+          <button className="open-snap" onClick={() => onSnapshot(picked.rev.change)} title="State at commit: the whole repository as it was at this change (DESIGN §7); edits there amend it, or go after it (§6)">
+            State at commit
+          </button>
+        )}
+        {picked && onDiff && (
+          <button className="primary" onClick={() => onDiff(picked.rev.change.slice(0, 12))} title="Diff of commit: only what this change changed, against its parent">
+            Diff of commit
+          </button>
+        )}
+        <button className={pick.length === 2 ? "primary" : ""} disabled={pick.length !== 2} onClick={() => onRange(rangeOf)} title="Diff of range: everything the changes from the older to the newer one changed, together (opens the Range dialog)">
+          Diff of range…
+        </button>
+        <button onClick={() => onRange(rangeOf || "trunk()..@")} title="A range of your own (any revset)">
+          Range…
         </button>
       </footer>
     </div>
