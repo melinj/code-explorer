@@ -108,6 +108,114 @@ export interface WorkspaceSummary extends WorkspaceInfo {
   stale?: { reason: "working-copy" | "divergent"; note: string; commits: CommitId[] };
 }
 
+// ─── Graph view: bookmarks, landing, history edits (jj) ─────────────────────
+
+/** A local bookmark and the remote bookmarks of the same name (`@git` left out). */
+export interface BookmarkInfo {
+  name: string;
+  targets: CommitId[]; // more than one: conflicted; none: deleted locally but still on a remote
+  /** ahead / behind: tracked, one target on each side; commits only local / only on the remote (capped at 1000). */
+  remotes: Array<{ remote: string; targets: CommitId[]; tracked: boolean; ahead?: number; behind?: number }>;
+}
+
+/** What a "land" operation brings onto the trunk bookmark; exactly one field. */
+export interface LandSource {
+  workspace?: WorkspaceName; // its @, or @'s parent when @ is an empty undescribed scratch commit (which then follows)
+  bookmark?: string;
+  commit?: CommitId;
+}
+
+/**
+ * One operation from the Graph view; each is one jj operation, undone with POST /graph:undo. None
+ * moves the serving workspace's @ on purpose ("new" is `jj new --no-edit`).
+ */
+export type GraphOp =
+  | { kind: "set-bookmark"; name: string; to: CommitId; allowBackwards?: boolean } // jj bookmark set (creates or moves)
+  | { kind: "delete-bookmark"; name: string } // jj bookmark delete
+  | {
+      kind: "land";
+      source: LandSource;
+      trunk: string; // a local bookmark
+      strategy: "fast-forward" | "rebase" | "merge"; // ff when possible whatever the strategy
+      message?: string; // merge commit description
+      deleteBookmark?: string; // delete it afterwards (the landed feature bookmark)
+    }
+  | { kind: "rebase"; source: CommitId; mode: "revision" | "source" | "branch"; dest: CommitId[] } // jj rebase -r | -s | -b
+  | { kind: "describe"; commit: CommitId; message: string }
+  | { kind: "abandon"; commits: CommitId[] }
+  | { kind: "new"; parents: CommitId[]; message?: string } // jj new --no-edit
+  | { kind: "commit"; workspace: WorkspaceName; message: string; bookmark?: string } // jj commit in that workspace (@ described, a new empty @ on top); bookmark created or moved forward to the committed change
+  | { kind: "squash"; source: CommitId; into?: CommitId; message?: string }; // jj squash --from source --into (default: its only parent); no message: the two descriptions combined (destination, blank line, source)
+
+/** One jj operation (GET /ops), newest first. user: user@host. */
+export interface OpEntry {
+  op: OpId;
+  parents: OpId[];
+  time: string;
+  description: string;
+  user: string;
+  snapshot: boolean;
+}
+
+export interface OpLog {
+  ops: OpEntry[];
+  truncated: boolean;
+  current: OpId;
+}
+
+/** GET /ops/:op: what an operation changed, against its first parent. */
+export interface OpDetail {
+  op: OpId;
+  changed: ChangeId[];
+  abandoned: ChangeId[];
+  bookmarks: Array<{ name: string; from?: CommitId; to?: CommitId }>;
+}
+
+export interface RestoreRequest {
+  op: OpId;
+  dryRun?: boolean;
+}
+
+export interface FetchRequest {
+  remote?: string; // jj's default remotes when absent
+}
+
+export interface PushRequest {
+  bookmarks: string[];
+  remote?: string;
+  dryRun?: boolean; // jj git push --dry-run: output says what would be pushed
+}
+
+/** A fetch or push: what jj printed and which bookmarks moved (`name`, or `name@remote` for remote-tracking ones). */
+export interface RemoteResult {
+  status: "previewed" | "applied" | "failed";
+  summary: string;
+  output: string;
+  moved: Array<{ name: string; from?: CommitId; to?: CommitId }>;
+  opAfter?: OpId;
+  error?: { code: string; message: string };
+}
+
+export interface GraphOpRequest {
+  op: GraphOp;
+  dryRun?: boolean; // exact preview: nothing is written
+}
+
+export interface GraphOpResult {
+  status: "previewed" | "applied" | "rejected" | "failed";
+  actor: Actor;
+  summary: string; // one line: what it did (or would do)
+  opBefore?: OpId;
+  opAfter?: OpId; // undo: POST /graph:undo { op: opAfter }
+  created?: ChangeId;
+  rewritten: ChangeId[];
+  bookmarks: Array<{ name: string; from?: CommitId; to?: CommitId }>; // created, moved or deleted local bookmarks
+  workspaces: Array<{ name: WorkspaceName; snapshotted: boolean; updated: boolean; recoveredInto?: CommitId }>;
+  conflicts: ConflictRecord[]; // new conflicts (predicted for a preview)
+  divergent: ChangeId[];
+  error?: { code: EditErrorCode | "invalid"; message: string };
+}
+
 // ─── Views ───────────────────────────────────────────────────────────────────
 
 export type ViewSpec =

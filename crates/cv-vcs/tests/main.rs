@@ -5,6 +5,7 @@
 mod conflict;
 mod fileset;
 mod golden;
+mod graph;
 mod read;
 mod write;
 

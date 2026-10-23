@@ -41,6 +41,7 @@ fn internal(e: impl std::fmt::Display) -> ApiErr {
 
 pub fn router() -> Router<Arc<AppState>> {
     Router::new()
+        .route("/api/v1/setup", get(setup_route))
         .route("/api/v1/repo", get(repo_route))
         .route("/api/v1/lanes", get(lanes_route))
         .route("/api/v1/ranges", get(ranges_route))
@@ -52,6 +53,16 @@ pub fn router() -> Router<Arc<AppState>> {
 
 async fn blocking<T: Send + 'static>(f: impl FnOnce() -> R<T> + Send + 'static) -> R<T> {
     tokio::task::spawn_blocking(f).await.map_err(internal)?
+}
+
+/// GET /setup: a jj repository (git mode answers this route itself, crate::git_mode).
+async fn setup_route(State(app): St) -> Json<cv_contracts::api::SetupInfo> {
+    let root = app.repo.root().to_path_buf();
+    Json(
+        tokio::task::spawn_blocking(move || crate::git_mode::jj_setup(&root))
+            .await
+            .expect("blocking task"),
+    )
 }
 
 // ─── Lanes ───────────────────────────────────────────────────────────────────

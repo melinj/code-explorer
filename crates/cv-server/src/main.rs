@@ -209,12 +209,21 @@ fn main() {
             } else {
                 eprintln!("cv: {}: {msg}", path.display());
             }
-            // A plain git repository: jj can be added alongside it.
-            let git = path.ancestors().any(|p| p.join(".git").exists());
-            let jj = path.ancestors().any(|p| p.join(".jj").exists());
-            if git && !jj {
+            // A plain git repository: `cv serve` shows its history and offers to add jj alongside
+            // it from the UI (git mode); `cv index` needs jj.
+            if let Some(git) = cv_server::git_mode::GitRepo::discover(&path) {
+                if cmd == "serve" {
+                    eprintln!(
+                        "cv: {} is a git repository without jj: serving its history read-only; initialise jj from the UI (or run `{}` there) for the map, reviews and edits",
+                        git.root.display(),
+                        cv_server::git_mode::INIT_COMMAND
+                    );
+                    serve_git(git, &args, port);
+                    return;
+                }
                 eprintln!(
-                    "cv: this is a git repository without jj; run `jj git init --colocate` at its root (git keeps working)"
+                    "cv: this is a git repository without jj; run `{}` at its root (git keeps working)",
+                    cv_server::git_mode::INIT_COMMAND
                 );
             }
             std::process::exit(1);
@@ -270,20 +279,32 @@ fn main() {
     // Workspaces (D12): live overlays of unsnapshotted files, overlaps, workspace.updated.
     cv_server::workspaces::start(&state);
     let token_file = cv_server::auth::token_file();
-    let token = if args.iter().any(|a| a == "--no-auth") {
+    let token = token_for(&args, &root, &token_file);
+    let app = routes::router(state.clone()).merge(cv_server::mcp::router(state));
+    serve(app, &args, port, token, &token_file, true);
+}
+
+/// The bearer token for this run: none with `--no-auth`, `--token`/`CV_TOKEN` for this run only,
+/// else the stable one in the token file (generated once).
+fn token_for(
+    args: &[String],
+    root: &std::path::Path,
+    token_file: &std::path::Path,
+) -> Option<String> {
+    if args.iter().any(|a| a == "--no-auth") {
         eprintln!("cv: auth disabled (--no-auth)");
         None
     } else if let Some(t) =
-        arg(&args, "--token").or_else(|| std::env::var("CV_TOKEN").ok().filter(|t| !t.is_empty()))
+        arg(args, "--token").or_else(|| std::env::var("CV_TOKEN").ok().filter(|t| !t.is_empty()))
     {
         // An explicit token is for this run only: the stable one in the token file stays as it is.
         Some(t)
     } else {
         // The stable token: generated once, then the same for every run on every repo.
-        let legacy = cv_store::StorePaths::for_repo(&root)
+        let legacy = cv_store::StorePaths::for_repo(root)
             .review_db
             .with_file_name("token");
-        match cv_server::auth::stable_token(&token_file, Some(&legacy)) {
+        match cv_server::auth::stable_token(token_file, Some(&legacy)) {
             Ok((t, new)) => {
                 eprintln!(
                     "bearer token in {}{}",
@@ -300,7 +321,19 @@ fn main() {
                 Some(cv_server::auth::generate())
             }
         }
-    };
+    }
+}
+
+/// Serves `app` on 127.0.0.1:`port` with the token check, the built UI and the loopback-only
+/// guard; prints the UI link (and the MCP command when `mcp`).
+fn serve(
+    app: axum::Router,
+    args: &[String],
+    port: u16,
+    token: Option<String>,
+    token_file: &std::path::Path,
+    mcp: bool,
+) {
     let rt = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()
@@ -315,16 +348,20 @@ fn main() {
         let base = format!("http://127.0.0.1:{port}");
         let q = token.as_deref().map(|t| format!("?token={t}")).unwrap_or_default();
         eprintln!("cv serving on {base}/api/v1");
-        let app = routes::router(state.clone()).merge(cv_server::mcp::router(state));
         let app = match &token {
-            Some(t) => cv_server::auth::protect_with(app, t, Some(&token_file)),
+            Some(t) => cv_server::auth::protect_with(app, t, Some(token_file)),
             None => app,
         };
         // The UI's static files sit outside the token check (the page reads ?token= itself).
-        let app = match (args.iter().any(|a| a == "--no-ui"), cv_server::ui::find_dir(arg(&args, "--ui"))) {
+        let app = match (args.iter().any(|a| a == "--no-ui"), cv_server::ui::find_dir(arg(args, "--ui"))) {
             (true, _) => app,
             (false, Some(dir)) => {
-                eprintln!("\n  UI:  {base}/{q}\n");
+                if std::env::var_os("CV_RESTARTED").is_some() {
+                    // Restarted from git mode: the page is open already (start.sh opens "  UI:" links).
+                    eprintln!("cv: restarted with jj; the open page reloads itself ({base}/)");
+                } else {
+                    eprintln!("\n  UI:  {base}/{q}\n");
+                }
                 app.merge(cv_server::ui::router(&dir))
             }
             (false, None) => {
@@ -334,8 +371,63 @@ fn main() {
         };
         // Only requests addressed to the loopback interface (no DNS rebinding from a web page).
         let app = cv_server::auth::local_hosts_only(app);
-        let header = token.as_deref().map(|t| format!(" --header \"Authorization: Bearer {t}\"")).unwrap_or_default();
-        eprintln!("  MCP: claude mcp add --transport http cv {base}/mcp/editor{header}\n");
+        if mcp {
+            let header = token.as_deref().map(|t| format!(" --header \"Authorization: Bearer {t}\"")).unwrap_or_default();
+            eprintln!("  MCP: claude mcp add --transport http cv {base}/mcp/editor{header}\n");
+        }
         axum::serve(listener, app).await.expect("server");
     });
+}
+
+/// Git mode (crate::git_mode): the history read-only and "Initialise jj", after which this process
+/// replaces itself with a fresh `cv serve` (same arguments) on the now-jj repository.
+fn serve_git(git: cv_server::git_mode::GitRepo, args: &[String], port: u16) {
+    let token_file = cv_server::auth::token_file();
+    let token = token_for(args, &git.root, &token_file);
+    #[cfg(unix)]
+    let restart: Option<Box<dyn Fn() + Send + Sync>> = Some(Box::new(restart_self));
+    #[cfg(not(unix))]
+    let restart: Option<Box<dyn Fn() + Send + Sync>> = None;
+    // jj set up from a terminal (`jj git init --colocate` there): restart once the repository opens
+    // as jj, so the page waiting in git mode reloads into the full app.
+    #[cfg(unix)]
+    {
+        let root = git.root.clone();
+        std::thread::spawn(move || {
+            loop {
+                std::thread::sleep(std::time::Duration::from_secs(1));
+                if !cv_server::git_mode::INIT_RUNNING.load(std::sync::atomic::Ordering::SeqCst)
+                    && root.join(".jj").is_dir()
+                    && cv_vcs::JjRepo::open(&root).is_ok()
+                {
+                    // Let a running `jj git init` finish writing.
+                    std::thread::sleep(std::time::Duration::from_millis(800));
+                    restart_self();
+                }
+            }
+        });
+    }
+    let state = std::sync::Arc::new(cv_server::git_mode::GitState { repo: git, restart });
+    serve(
+        cv_server::git_mode::router(state),
+        args,
+        port,
+        token,
+        &token_file,
+        false,
+    );
+}
+
+/// Replaces this process with `cv serve` and the same arguments (git mode, once jj is set up).
+#[cfg(unix)]
+fn restart_self() {
+    use std::os::unix::process::CommandExt;
+    let exe = std::env::current_exe().unwrap_or_else(|_| "cv".into());
+    eprintln!("cv: jj is set up; restarting as `cv serve` on it");
+    let e = std::process::Command::new(exe)
+        .args(std::env::args_os().skip(1))
+        .env("CV_RESTARTED", "1")
+        .exec();
+    eprintln!("cv: restart failed: {e}; run cv serve again");
+    std::process::exit(1);
 }

@@ -203,6 +203,45 @@ pub struct RepoCapabilities {
     pub jj_lib: bool,
 }
 
+/// `SetupInfo.jj`: the jj CLI on the server's PATH.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct JjInstall {
+    pub installed: bool,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+}
+
+/// GET /setup: what the server serves; "git" is a plain git repository without jj yet.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct SetupInfo {
+    /// "jj" | "git"
+    pub vcs: String,
+    pub root: String,
+    pub jj: JjInstall,
+    pub init_command: String,
+}
+
+/// One file of [`GitCommitDetail`]; counts absent for binary files.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct GitFileStat {
+    pub path: RepoPath,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub added: Option<u32>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub removed: Option<u32>,
+}
+
+/// GET /git/commits/:commit (git mode).
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct GitCommitDetail {
+    pub commit: CommitId,
+    pub files: Vec<GitFileStat>,
+}
+
 /// GET /repo.
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 #[serde(rename_all = "camelCase")]

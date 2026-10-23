@@ -14,7 +14,8 @@
 #    (a scripted MCP agent, no model) to answer "Ask agent to resolve" and a comment (with a
 #    multi-patch code change; the thread must stay addressed through later jj ops); NO_SIM_AGENT=1
 #    for both. review-flow runs with REQUIRE: a check it has to skip fails the gate. Then
-#    views-flow (also run on cv-mock after panels-flow).
+#    views-flow (also run on cv-mock after panels-flow), graph-flow on a repo of its own, and git-flow
+#    (git mode on a plain git repository, then initialising jj from the page).
 #
 # Env: CHROME (browser binary), CHROME_ARGS (GPU flags; default SwiftShader when CI is set),
 #      E2E_MOCK_PORT (8085), E2E_SERVE_PORT (8086), E2E_PREVIEW_PORT (5225), E2E_OUT (screenshots and
@@ -239,6 +240,34 @@ PY
   sed 's/^/   /' "$OUT/scripted-agent.log"
   # Last (it files a thread of its own): snapshots at other revisions and workspaces, made with jj.
   run serve-views-flow env URL="$URL" REPO="$REPO" node scripts/views-flow.mjs "$OUT/serve-views"
+  # The Graph side panel on a repo of its own (graph-flow.mjs makes it with jj: main moved on past a
+  # workspace's stack): the map following the selection, a bookmark drag, landing by merge, undo.
+  GREPO="$TMP/graph"
+  (cd web && SETUP_ONLY=1 node scripts/graph-flow.mjs "$GREPO") | sed 's/^/   /'
+  GRAPH_PORT=$((SERVE_PORT + 1))
+  "$BIN/cv" serve "$GREPO" --port "$GRAPH_PORT" --ui "$ROOT/web/dist" > "$OUT/cv-serve-graph.log" 2>&1 &
+  pids+=("$!")
+  t=$((SECONDS + 180))
+  until grep -q 'UI:' "$OUT/cv-serve-graph.log" 2>/dev/null; do
+    ((SECONDS < t)) || { echo "ci-e2e: cv serve (graph) did not start" >&2; tail -n 30 "$OUT/cv-serve-graph.log" >&2; exit 1; }
+    sleep 1
+  done
+  GURL="$(grep -o 'http://127.0.0.1:[0-9]*/?token=[0-9a-f]*' "$OUT/cv-serve-graph.log" | head -1)"
+  run serve-graph-flow env URL="$GURL" node scripts/graph-flow.mjs "$GREPO" "$OUT/serve-graph"
+  # Git mode: a plain git repository (git-flow.mjs makes it), its history read-only, then
+  # "Initialise jj" from the page; the server restarts itself on the new jj repository.
+  GITREPO="$TMP/plain-git"
+  (cd web && SETUP_ONLY=1 node scripts/git-flow.mjs "$GITREPO") | sed 's/^/   /'
+  GIT_PORT=$((SERVE_PORT + 2))
+  "$BIN/cv" serve "$GITREPO" --port "$GIT_PORT" --ui "$ROOT/web/dist" > "$OUT/cv-serve-git.log" 2>&1 &
+  pids+=("$!")
+  t=$((SECONDS + 60))
+  until grep -q 'UI:' "$OUT/cv-serve-git.log" 2>/dev/null; do
+    ((SECONDS < t)) || { echo "ci-e2e: cv serve (git mode) did not start" >&2; tail -n 30 "$OUT/cv-serve-git.log" >&2; exit 1; }
+    sleep 1
+  done
+  GITURL="$(grep -o 'http://127.0.0.1:[0-9]*/?token=[0-9a-f]*' "$OUT/cv-serve-git.log" | head -1)"
+  run serve-git-flow env URL="$GITURL" node scripts/git-flow.mjs "$GITREPO" "$OUT/serve-git"
 fi
 
 if ((${#failed[@]})); then

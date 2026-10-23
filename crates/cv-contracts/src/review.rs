@@ -363,6 +363,259 @@ pub struct UndoBlocked {
     pub suggestion: String,
 }
 
+// ── Graph view (model.ts "Graph view") ──
+
+/// A remote bookmark of the same name as a local one.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct BookmarkRemote {
+    pub remote: String,
+    pub targets: Vec<CommitId>,
+    pub tracked: bool,
+    /// Tracked, one target on each side: local commits the remote lacks (capped at 1000).
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub ahead: Option<u32>,
+    /// Tracked, one target on each side: remote commits not in the local bookmark (capped at 1000).
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub behind: Option<u32>,
+}
+
+/// A local bookmark and the remote bookmarks of the same name (`@git` left out).
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct BookmarkInfo {
+    pub name: String,
+    /// More than one: conflicted; none: deleted locally but still on a remote.
+    pub targets: Vec<CommitId>,
+    pub remotes: Vec<BookmarkRemote>,
+}
+
+/// GET /refs.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct RefsResponse {
+    pub bookmarks: Vec<BookmarkInfo>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trunk: Option<String>,
+    pub colocated: bool,
+    /// The git remotes fetch and push can use, sorted.
+    #[serde(default)]
+    pub remotes: Vec<String>,
+}
+
+/// What a "land" operation brings onto the trunk bookmark; exactly one field.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, TS)]
+pub struct LandSource {
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub workspace: Option<WorkspaceName>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bookmark: Option<String>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub commit: Option<CommitId>,
+}
+
+/// One Graph view operation (model.ts `GraphOp`). `strategy` and `mode` are validated by cv-review.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(tag = "kind", rename_all = "kebab-case")]
+pub enum GraphOp {
+    SetBookmark {
+        name: String,
+        to: CommitId,
+        #[ts(optional)]
+        #[serde(
+            default,
+            rename = "allowBackwards",
+            skip_serializing_if = "Option::is_none"
+        )]
+        allow_backwards: Option<bool>,
+    },
+    DeleteBookmark {
+        name: String,
+    },
+    Land {
+        source: LandSource,
+        trunk: String,
+        /// "fast-forward" | "rebase" | "merge"
+        strategy: String,
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        message: Option<String>,
+        #[ts(optional)]
+        #[serde(
+            default,
+            rename = "deleteBookmark",
+            skip_serializing_if = "Option::is_none"
+        )]
+        delete_bookmark: Option<String>,
+    },
+    Rebase {
+        source: CommitId,
+        /// "revision" | "source" | "branch"
+        mode: String,
+        dest: Vec<CommitId>,
+    },
+    Describe {
+        commit: CommitId,
+        message: String,
+    },
+    Abandon {
+        commits: Vec<CommitId>,
+    },
+    New {
+        parents: Vec<CommitId>,
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        message: Option<String>,
+    },
+    Commit {
+        workspace: WorkspaceName,
+        message: String,
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        bookmark: Option<String>,
+    },
+    Squash {
+        source: CommitId,
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        into: Option<CommitId>,
+        #[ts(optional)]
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        message: Option<String>,
+    },
+}
+
+/// One jj operation (GET /ops), newest first.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct OpEntry {
+    pub op: OpId,
+    pub parents: Vec<OpId>,
+    pub time: String,
+    pub description: String,
+    /// user@host
+    pub user: String,
+    pub snapshot: bool,
+}
+
+/// GET /ops.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct OpLog {
+    pub ops: Vec<OpEntry>,
+    pub truncated: bool,
+    pub current: OpId,
+}
+
+/// GET /ops/:op: what an operation changed, against its first parent.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct OpDetail {
+    pub op: OpId,
+    pub changed: Vec<ChangeId>,
+    pub abandoned: Vec<ChangeId>,
+    pub bookmarks: Vec<BookmarkMove>,
+}
+
+/// POST /ops:restore.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct RestoreRequest {
+    pub op: OpId,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dry_run: Option<bool>,
+}
+
+/// POST /git:fetch.
+#[derive(Clone, Debug, Default, Serialize, Deserialize, PartialEq, TS)]
+pub struct FetchRequest {
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub remote: Option<String>,
+}
+
+/// POST /git:push.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct PushRequest {
+    pub bookmarks: Vec<String>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub remote: Option<String>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dry_run: Option<bool>,
+}
+
+/// A fetch or push: what jj said and which bookmarks (`name`, `name@remote`) moved.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoteResult {
+    /// "previewed" | "applied" | "failed"
+    pub status: String,
+    pub summary: String,
+    pub output: String,
+    pub moved: Vec<BookmarkMove>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub op_after: Option<OpId>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<EditError>,
+}
+
+pub const LAND_STRATEGIES: [&str; 3] = ["fast-forward", "rebase", "merge"];
+pub const REBASE_MODES: [&str; 3] = ["revision", "source", "branch"];
+
+/// POST /graph:op.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct GraphOpRequest {
+    pub op: GraphOp,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dry_run: Option<bool>,
+}
+
+/// A local bookmark a graph operation created (no `from`), moved or deleted (no `to`).
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct BookmarkMove {
+    pub name: String,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<CommitId>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<CommitId>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct GraphOpResult {
+    /// "previewed" | "applied" | "rejected" | "failed"
+    pub status: String,
+    pub actor: Actor,
+    pub summary: String,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub op_before: Option<OpId>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub op_after: Option<OpId>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created: Option<ChangeId>,
+    pub rewritten: Vec<ChangeId>,
+    pub bookmarks: Vec<BookmarkMove>,
+    pub workspaces: Vec<EditWorkspace>,
+    pub conflicts: Vec<ConflictRecord>,
+    pub divergent: Vec<ChangeId>,
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<EditError>,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct EditedFile {

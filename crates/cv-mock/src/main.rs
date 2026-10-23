@@ -5,6 +5,7 @@
 
 mod events;
 mod extras;
+mod graph;
 mod layout;
 mod panels;
 mod range;
@@ -50,6 +51,8 @@ struct App {
     saved_ranges: std::sync::Mutex<Vec<serde_json::Value>>,
     /// Declared links, link ratings and review marks.
     extras: std::sync::Mutex<extras::Extras>,
+    /// Bookmarks of the Graph view (an overlay on the synthetic history).
+    graph: std::sync::Mutex<graph::Graph>,
 }
 
 impl App {
@@ -123,6 +126,7 @@ fn build(n: usize, latency: Duration, sim_agent: bool) -> Arc<App> {
     );
     let review = std::sync::Mutex::new(review::Review::new(&view));
     let panels = panels::Panels::new(&view);
+    let graph = std::sync::Mutex::new(graph::Graph::new(&panels.revisions));
     Arc::new(App {
         view: std::sync::RwLock::new(Arc::new(view)),
         latency,
@@ -135,6 +139,7 @@ fn build(n: usize, latency: Duration, sim_agent: bool) -> Arc<App> {
         permissions: std::sync::Mutex::new(std::collections::HashMap::new()),
         saved_ranges: Default::default(),
         extras: Default::default(),
+        graph,
     })
 }
 
@@ -182,6 +187,18 @@ fn router(app: Arc<App>) -> Router {
             get(conflict_detail).post(resolve_conflict),
         )
         .route("/api/v1/revisions", get(revisions))
+        .route(
+            "/api/v1/setup",
+            get(|| async {
+                Json(json!({ "vcs": "jj", "root": "/home/dev/workspace/sample-app", "jj": { "installed": true, "version": "0.46.0" }, "initCommand": "jj git init --colocate" }))
+            }),
+        )
+        .route("/api/v1/refs", get(graph::refs))
+        .route("/api/v1/graph:op", post(graph::op))
+        .route("/api/v1/graph:undo", post(graph::undo))
+        .route("/api/v1/ops", get(graph::ops))
+        .route("/api/v1/git:fetch", post(graph::no_remote))
+        .route("/api/v1/git:push", post(graph::no_remote))
         .route("/api/v1/workspaces", get(workspaces))
         .route("/api/v1/workspaces:compare", post(compare_workspaces))
         .route("/api/v1/views/{view}/metrics", get(metrics))
@@ -965,7 +982,8 @@ async fn ws(State(app): St, Query(q): Query<WsQ>, up: axum::extract::WebSocketUp
 }
 
 async fn revisions(State(app): St) -> Response {
-    Json(json!({ "rows": app.panels.revisions, "truncated": false })).into_response()
+    let rows = app.graph.lock().unwrap().rows(&app.panels.revisions);
+    Json(json!({ "rows": rows, "truncated": false })).into_response()
 }
 
 async fn workspaces(State(app): St) -> Response {

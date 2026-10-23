@@ -55,6 +55,11 @@ use jj_lib::workspace_store::{SimpleWorkspaceStore, WorkspaceStore};
 use crate::{CommitInfo, Error, Result, chrono_now, err, info};
 
 mod cli;
+mod graph;
+mod remote;
+
+pub use graph::{BookmarkAt, GraphOp, LandStrategy, RebaseMode, RemoteBookmarkAt};
+pub use remote::{RefMove, RemoteOutcome};
 
 /// jj-cli 0.45.1's built-in revset aliases (`jj config list --include-defaults revset-aliases`),
 /// so `immutable()`, `mutable()` and `trunk()` mean what they mean in the user's jj.
@@ -127,6 +132,10 @@ pub enum MutationPlan {
     },
     /// `jj op revert <op>`: targeted undo.
     Revert { op: String },
+    /// `jj op restore <op>`: the repo as it was after `op` (git's own refs stay current).
+    Restore { op: String },
+    /// A bookmark or history operation from the Graph view ([`GraphOp`]).
+    Graph(GraphOp),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -163,6 +172,8 @@ pub struct MutationOutcome {
     /// Changes the plan leaves with more than one visible commit that had at most one before
     /// (for a mutation: also a workspace's `@` split by recovering its unsnapshotted files).
     pub divergent: Vec<String>,
+    /// Local bookmarks the plan created, moved or deleted: (name, commit before, commit after).
+    pub bookmarks: Vec<(String, Option<String>, Option<String>)>,
 }
 
 /// A file read at a commit. Conflicted files come back materialized with jj's markers.
@@ -205,6 +216,8 @@ pub struct OpDiff {
     pub changed: Vec<String>,
     /// Changes visible before and not any more (abandoned, squashed away).
     pub abandoned: Vec<String>,
+    /// Local bookmarks created, moved or deleted: (name, before, after).
+    pub bookmarks: Vec<(String, Option<String>, Option<String>)>,
 }
 
 #[derive(Debug, Clone)]
@@ -372,6 +385,18 @@ fn aliases_from(config: &StackedConfig) -> Result<RevsetAliasesMap> {
 
 fn block<F: std::future::Future>(f: F) -> F::Output {
     pollster::block_on(f)
+}
+
+fn op_info_of(o: &jj_lib::operation::Operation) -> OpInfo {
+    let m = o.metadata();
+    OpInfo {
+        id: o.id().hex(),
+        description: m.description.clone(),
+        time_ms: m.time.end.timestamp.0,
+        user: format!("{}@{}", m.username, m.hostname),
+        is_snapshot: m.is_snapshot,
+        parents: o.parent_ids().iter().map(|p| p.hex()).collect(),
+    }
 }
 
 fn parse_commit_id(hex: &str) -> Result<JjCommitId> {
@@ -877,18 +902,39 @@ impl JjWriter {
         }
     }
 
+    /// How many commits `revset` has, counting at most `cap` (the newest).
+    pub fn count(&self, revset: &str, cap: usize) -> Result<usize> {
+        let repo = self.head()?;
+        Ok(self
+            .eval_in(repo.as_ref(), &format!("latest(({revset}), {cap})"))?
+            .len())
+    }
+
     pub fn op_info(&self, op: &str) -> Result<OpInfo> {
         let id = OperationId::try_from_hex(op).ok_or_else(|| Error(format!("bad op id {op}")))?;
         let o = block(self.loader.load_operation(&id)).map_err(err)?;
-        let m = o.metadata();
-        Ok(OpInfo {
-            id: op.to_string(),
-            description: m.description.clone(),
-            time_ms: m.time.end.timestamp.0,
-            user: format!("{}@{}", m.username, m.hostname),
-            is_snapshot: m.is_snapshot,
-            parents: o.parent_ids().iter().map(|p| p.hex()).collect(),
-        })
+        Ok(op_info_of(&o))
+    }
+
+    /// The operation log from the head operation back (first parents and merges alike, newest
+    /// first, as `jj op log`): at most `limit` operations, and whether there are more.
+    pub fn op_log(&self, limit: usize) -> Result<(Vec<OpInfo>, bool)> {
+        let repo = self.head()?;
+        let ops = block(async {
+            let mut s = Box::pin(jj_lib::op_walk::walk_ancestors(std::slice::from_ref(
+                repo.operation(),
+            )));
+            let mut out = Vec::new();
+            while out.len() <= limit {
+                match s.next().await {
+                    Some(o) => out.push(o.map_err(err)?),
+                    None => break,
+                }
+            }
+            Ok::<_, Error>(out)
+        })?;
+        let more = ops.len() > limit;
+        Ok((ops.iter().take(limit).map(op_info_of).collect(), more))
     }
 
     /// Changes whose visible commits differ between two operations.
@@ -930,6 +976,7 @@ impl JjWriter {
             }
         }
         Ok(OpDiff {
+            bookmarks: graph::moved_bookmarks(old.as_ref(), new.as_ref()),
             changed: changed.into_iter().collect(),
             abandoned: abandoned.into_iter().collect(),
         })
@@ -977,6 +1024,12 @@ impl JjWriter {
             }
             r => r,
         }
+    }
+
+    /// [`Self::validate`] on its own: the user errors [`Self::mutate`] would refuse `plan` with
+    /// (a preview does not check them).
+    pub fn check(&self, plan: &MutationPlan) -> Result<()> {
+        self.validate(plan)
     }
 
     /// The checks every path shares, so their failures are user errors and never fall back:
@@ -1028,6 +1081,7 @@ impl JjWriter {
                     )));
                 }
             }
+            MutationPlan::Graph(op) => self.validate_graph(repo.as_ref(), op)?,
             MutationPlan::Revert { op } => {
                 let id = OperationId::try_from_hex(op)
                     .ok_or_else(|| Error(format!("bad op id {op}")))?;
@@ -1035,6 +1089,18 @@ impl JjWriter {
                     .map_err(|e| Error(format!("unknown operation {op}: {e}")))?;
                 if target.parent_ids().len() != 1 {
                     return Err(Error("cannot revert the root or a merge operation".into()));
+                }
+            }
+            MutationPlan::Restore { op } => {
+                let id = OperationId::try_from_hex(op)
+                    .ok_or_else(|| Error(format!("bad op id {op}")))?;
+                let target = block(self.loader.load_operation(&id))
+                    .map_err(|e| Error(format!("unknown operation {op}: {e}")))?;
+                if target.parent_ids().is_empty() {
+                    return Err(Error("cannot restore the root operation".into()));
+                }
+                if *target.id() == *repo.op_id() {
+                    return Err(Error("that is the current operation already".into()));
                 }
             }
         }
@@ -1084,8 +1150,17 @@ impl JjWriter {
                 },
             );
         }
-        // The real run, on the repo as the snapshots left it.
+        // The real run, on the repo as the snapshots left it. A snapshot rewrites `@`: graph
+        // operations follow the commits they name to the rewritten ones.
         let repo = self.head()?;
+        let followed;
+        let plan = match graph::graph_op(plan) {
+            Some(op) if effects.values().any(|e| e.snapshotted) => {
+                followed = MutationPlan::Graph(op.map_commits(&|c| self.follow_rewrite(&repo, c)));
+                &followed
+            }
+            _ => plan,
+        };
         let mut tx = repo.start_transaction();
         tx.set_workspace_name(&self.workspace_name);
         let created = self.run_plan(&mut tx, plan)?;
@@ -1101,7 +1176,10 @@ impl JjWriter {
                     .is_some_and(|r| r.join(".git").exists())
             })
             .collect();
-        if !colocated.is_empty() && jj_lib::git::get_git_backend(repo.store()).is_ok() {
+        // Bookmarks are git branches in a colocated repo: export them as the jj CLI would.
+        let export = !colocated.is_empty()
+            || (graph::graph_op(plan).is_some() && self.root.join(".git").exists());
+        if export && jj_lib::git::get_git_backend(repo.store()).is_ok() {
             for name in &colocated {
                 let ws_name = WorkspaceNameBuf::from(name.as_str());
                 let root = roots.get(*name).cloned().flatten().unwrap_or_default();
@@ -1331,6 +1409,11 @@ impl JjWriter {
                 self.revert(tx, op)?;
                 None
             }
+            MutationPlan::Restore { op } => {
+                self.restore(tx, op)?;
+                None
+            }
+            MutationPlan::Graph(op) => self.run_graph(tx, op)?,
         };
         if tx.repo().has_rewrites() {
             block(tx.repo_mut().rebase_descendants()).map_err(err)?;
@@ -1557,6 +1640,19 @@ impl JjWriter {
         Ok(())
     }
 
+    /// `jj op restore <op>`: the repo and remote-tracking portions of the view as `op` left them.
+    fn restore(&self, tx: &mut Transaction, op: &str) -> Result<()> {
+        let id = OperationId::try_from_hex(op).ok_or_else(|| Error(format!("bad op id {op}")))?;
+        let target = block(self.loader.load_operation(&id)).map_err(err)?;
+        let at = block(self.loader.load_at(&target)).map_err(err)?;
+        let current = tx.base_repo().view().store_view().clone();
+        let mut view = at.view().store_view().clone();
+        view.git_refs = current.git_refs;
+        view.git_heads = current.git_heads;
+        tx.repo_mut().set_view(view);
+        Ok(())
+    }
+
     /// Rewritten / created changes and new conflicts between `before` and the transaction.
     fn summarize(
         &self,
@@ -1629,6 +1725,7 @@ impl JjWriter {
             new_conflicts,
             workspaces: vec![],
             divergent: divergent.into_iter().collect(),
+            bookmarks: graph::moved_bookmarks(before.as_ref(), after),
         })
     }
 

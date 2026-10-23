@@ -536,3 +536,61 @@ async fn diff_fileset_range_options_unknown_views_and_session_permissions() {
     let ev = t.events("agent.permissions").await;
     assert_eq!(ev.last().unwrap()["permissions"]["session"], "a");
 }
+
+#[tokio::test]
+async fn graph_view_moves_bookmarks_and_fast_forwards_with_undo() {
+    let (t, _) = T::new();
+    let (s, refs) = t.get("/api/v1/refs").await;
+    assert_eq!(s, StatusCode::OK);
+    assert_eq!(refs["trunk"], "trunk");
+    let target = |name: &str| {
+        refs["bookmarks"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|b| b["name"] == name)
+            .map(|b| b["targets"][0].as_str().unwrap().to_string())
+    };
+    let trunk0 = target("trunk").unwrap();
+    assert!(target("feature/gym").is_some(), "{refs}");
+
+    // Landing the gym stack is a fast-forward only when trunk is its base: the synthetic stacks
+    // branch off older trunk commits, so it is refused, nothing written.
+    let land = json!({ "op": { "kind": "land", "source": { "bookmark": "feature/gym" }, "trunk": "trunk", "strategy": "merge" } });
+    let (_, r) = t.post("/api/v1/graph:op", land).await;
+    assert_eq!(r["status"], "rejected", "{r}");
+
+    // A new bookmark, previewed then applied, shows up in /revisions; undo removes it.
+    let op = json!({ "kind": "set-bookmark", "name": "review/me", "to": trunk0 });
+    let (_, p) = t
+        .post("/api/v1/graph:op", json!({ "op": op, "dryRun": true }))
+        .await;
+    assert_eq!(p["status"], "previewed", "{p}");
+    assert_eq!(p["bookmarks"][0]["name"], "review/me");
+    let (_, a) = t.post("/api/v1/graph:op", json!({ "op": op })).await;
+    assert_eq!(a["status"], "applied", "{a}");
+    let has = |rows: &Value| {
+        rows["rows"].as_array().unwrap().iter().any(|r| {
+            r["rev"]["bookmarks"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|b| b == "review/me")
+        })
+    };
+    assert!(has(&t.get("/api/v1/revisions").await.1));
+    let (_, u) = t
+        .post("/api/v1/graph:undo", json!({ "op": a["opAfter"] }))
+        .await;
+    assert_eq!(u["status"], "applied", "{u}");
+    assert!(!has(&t.get("/api/v1/revisions").await.1));
+
+    // History rewrites are refused in the demo.
+    let (_, r) = t
+        .post(
+            "/api/v1/graph:op",
+            json!({ "op": { "kind": "abandon", "commits": [trunk0] } }),
+        )
+        .await;
+    assert_eq!(r["status"], "rejected");
+}

@@ -12,6 +12,7 @@
 //!   up to date (`jj workspace update-stale`) after, like the jj-lib path;
 //! - every command is logged to stderr.
 
+use std::io::Read as _;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -20,8 +21,8 @@ use jj_lib::object_id::ObjectId;
 use jj_lib::repo::Repo;
 
 use super::{
-    EditMode, FileWrite, JjWriter, MutationOutcome, MutationPlan, WorkspaceEffect, parse_commit_id,
-    toml_str,
+    EditMode, FileWrite, GraphOp, JjWriter, LandStrategy, MutationOutcome, MutationPlan,
+    RebaseMode, WorkspaceEffect, parse_commit_id, toml_str,
 };
 use crate::{Error, Result, err};
 
@@ -43,6 +44,8 @@ pub(super) fn plan_name(plan: &MutationPlan) -> &'static str {
         MutationPlan::Absorb { .. } => "absorb",
         MutationPlan::Resolve { .. } => "resolve",
         MutationPlan::Revert { .. } => "revert",
+        MutationPlan::Restore { .. } => "restore",
+        MutationPlan::Graph(op) => op.name(),
     }
 }
 
@@ -56,7 +59,7 @@ fn fileset(paths: impl IntoIterator<Item = impl AsRef<str>>) -> String {
 }
 
 /// One fallback run: its private directory, config files and temporary workspace.
-struct Run<'a> {
+pub(super) struct Run<'a> {
     w: &'a JjWriter,
     dir: PathBuf,
     configs: Vec<PathBuf>,
@@ -67,7 +70,7 @@ struct Run<'a> {
 }
 
 impl<'a> Run<'a> {
-    fn new(w: &'a JjWriter, resolve_content: Option<&[u8]>) -> Result<Self> {
+    pub(super) fn new(w: &'a JjWriter, resolve_content: Option<&[u8]>) -> Result<Self> {
         let n = RUN.fetch_add(1, Ordering::Relaxed);
         let dir = std::env::temp_dir().join(format!(
             "cv-jj-cli-{}-{n}-{}",
@@ -109,8 +112,8 @@ impl<'a> Run<'a> {
         Ok(run)
     }
 
-    /// `jj <args>` in `cwd`, argv only; stdout on success.
-    fn jj(&self, cwd: &Path, args: &[&str]) -> Result<String> {
+    /// `jj <args>` in `cwd` with the server's config files, argv only; logged unless `quiet`.
+    fn command(&self, cwd: &Path, args: &[&str], quiet: bool) -> Command {
         let mut cmd = Command::new(jj_bin());
         for c in &self.configs {
             cmd.arg("--config-file").arg(c);
@@ -123,11 +126,98 @@ impl<'a> Run<'a> {
         if self.w.isolated {
             cmd.env("JJ_CONFIG", &self.empty);
         }
-        eprintln!(
-            "cv-vcs: jj CLI (in {}): jj {}",
-            cwd.display(),
-            args.join(" ")
+        if !quiet {
+            eprintln!(
+                "cv-vcs: jj CLI (in {}): jj {}",
+                cwd.display(),
+                args.join(" ")
+            );
+        }
+        cmd
+    }
+
+    /// A network command (`jj git fetch | push`): never interactive (no controlling terminal, so
+    /// ssh cannot ask for a passphrase there; no git credential prompts) and killed with its
+    /// children after `timeout`. What jj printed (it reports on stderr) on success.
+    pub(super) fn jj_net(
+        &self,
+        cwd: &Path,
+        args: &[&str],
+        timeout: std::time::Duration,
+    ) -> Result<String> {
+        let mut cmd = self.command(cwd, args, false);
+        cmd.env("GIT_TERMINAL_PROMPT", "0")
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped());
+        #[cfg(unix)]
+        {
+            use std::os::unix::process::CommandExt;
+            // SAFETY: setsid is async-signal-safe; the child gets its own session and group.
+            unsafe {
+                cmd.pre_exec(|| {
+                    libc::setsid();
+                    Ok(())
+                });
+            }
+        }
+        let what = args.iter().take(2).copied().collect::<Vec<_>>().join(" ");
+        let mut child = cmd
+            .spawn()
+            .map_err(|e| Error(format!("cannot run {}: {e}", jj_bin())))?;
+        let read = |p: Option<Box<dyn std::io::Read + Send>>| {
+            std::thread::spawn(move || {
+                let mut s = String::new();
+                if let Some(mut p) = p {
+                    let _ = p.read_to_string(&mut s);
+                }
+                s
+            })
+        };
+        let out = read(child.stdout.take().map(|p| Box::new(p) as _));
+        let errs = read(child.stderr.take().map(|p| Box::new(p) as _));
+        let start = std::time::Instant::now();
+        let status = loop {
+            if let Some(st) = child.try_wait().map_err(err)? {
+                break st;
+            }
+            if start.elapsed() > timeout {
+                #[cfg(unix)]
+                // SAFETY: signals the child's own process group (setsid above).
+                unsafe {
+                    libc::kill(-(child.id() as i32), libc::SIGKILL);
+                }
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(Error(format!(
+                    "jj {what} gave no answer in {} s (a remote asking for credentials?)",
+                    timeout.as_secs()
+                )));
+            }
+            std::thread::sleep(std::time::Duration::from_millis(50));
+        };
+        let (out, errs) = (
+            out.join().unwrap_or_default(),
+            errs.join().unwrap_or_default(),
         );
+        if !status.success() {
+            return Err(Error(format!("jj {what}: {}", errs.trim())));
+        }
+        Ok(format!("{}{}", out, errs).trim().to_string())
+    }
+
+    /// `jj <args>` for a read that must not snapshot or log (`--ignore-working-copy`).
+    pub(super) fn jj_quiet(&self, cwd: &Path, args: &[&str]) -> Result<String> {
+        let mut all = vec!["--ignore-working-copy"];
+        all.extend_from_slice(args);
+        self.output(self.command(cwd, &all, true), args)
+    }
+
+    /// `jj <args>` in `cwd`, argv only; stdout on success.
+    fn jj(&self, cwd: &Path, args: &[&str]) -> Result<String> {
+        self.output(self.command(cwd, args, false), args)
+    }
+
+    fn output(&self, mut cmd: Command, args: &[&str]) -> Result<String> {
         let out = cmd
             .output()
             .map_err(|e| Error(format!("cannot run {}: {e}", jj_bin())))?;
@@ -195,6 +285,43 @@ impl<'a> Run<'a> {
         // Any command run in the workspace snapshots its files into its `@`.
         self.jj(&path, &["status"])?;
         Ok(format!("{name}@"))
+    }
+
+    /// Change ids of the commits of `revset`, one per line of `jj log`.
+    fn changes_of(&self, revset: &str) -> Result<Vec<String>> {
+        Ok(self
+            .jj(
+                self.root(),
+                &[
+                    "log",
+                    "--no-graph",
+                    "-r",
+                    revset,
+                    "-T",
+                    "change_id ++ \"\\n\"",
+                ],
+            )?
+            .lines()
+            .map(str::to_string)
+            .filter(|l| !l.is_empty())
+            .collect())
+    }
+
+    /// `jj new --no-edit <parents> [-m <message>]`, returning the new change (the child of the
+    /// first parent that was not there before).
+    fn new_no_edit(&self, parents: &[String], message: Option<&str>) -> Result<String> {
+        let first = parents.first().ok_or_else(|| Error("no parents".into()))?;
+        let before = self.changes_of(&format!("children({first})"))?;
+        let mut args = vec!["new", "--no-edit"];
+        args.extend(parents.iter().map(String::as_str));
+        if let Some(m) = message.filter(|m| !m.trim().is_empty()) {
+            args.extend(["-m", m]);
+        }
+        self.jj(self.root(), &args)?;
+        self.changes_of(&format!("children({first})"))?
+            .into_iter()
+            .find(|c| !before.contains(c))
+            .ok_or_else(|| Error("jj new: the new change was not found".into()))
     }
 
     fn change_of(&self, rev: &str) -> Result<String> {
@@ -330,6 +457,10 @@ impl JjWriter {
             MutationPlan::Revert { op } => {
                 run.jj(run.root(), &["op", "revert", op])?;
             }
+            MutationPlan::Restore { op } => {
+                run.jj(run.root(), &["op", "restore", op])?;
+            }
+            MutationPlan::Graph(op) => created = graph_recipe(&run, op, &change)?,
         }
         run.drop_workspace()?;
         // Bring every other workspace to its new `@` (the recipe ran in this one or in the
@@ -374,4 +505,154 @@ impl JjWriter {
             .collect();
         Ok(out)
     }
+}
+
+/// The CLI recipe of a graph operation; returns the change it created, if any. Commits are named
+/// by change id (`change`), since the snapshots before the recipe may have rewritten them.
+fn graph_recipe(
+    run: &Run<'_>,
+    op: &GraphOp,
+    change: &dyn Fn(&str) -> Result<String>,
+) -> Result<Option<String>> {
+    let root = run.root();
+    match op {
+        GraphOp::SetBookmark {
+            name,
+            to,
+            allow_backwards,
+        } => {
+            let to = change(to)?;
+            let mut args = vec!["bookmark", "set", name.as_str(), "-r", to.as_str()];
+            if *allow_backwards {
+                args.push("--allow-backwards");
+            }
+            run.jj(root, &args)?;
+        }
+        GraphOp::DeleteBookmark { name } => {
+            run.jj(
+                root,
+                &["bookmark", "delete", &format!("exact:{}", toml_str(name))],
+            )?;
+        }
+        GraphOp::Land {
+            head,
+            trunk,
+            strategy,
+            message,
+            carry,
+            delete_bookmark,
+        } => {
+            let head = change(head)?;
+            let ff = !run.changes_of(&format!("{trunk} & ::{head}"))?.is_empty();
+            let mut created = None;
+            let target = if ff {
+                head
+            } else {
+                match strategy {
+                    LandStrategy::FastForward => {
+                        return Err(Error(format!("{trunk} cannot fast-forward")));
+                    }
+                    LandStrategy::Rebase => {
+                        run.jj(root, &["rebase", "-b", &head, "-d", trunk])?;
+                        head
+                    }
+                    LandStrategy::Merge => {
+                        let m = run.new_no_edit(
+                            &[trunk.clone(), head.clone()],
+                            Some(
+                                message
+                                    .as_deref()
+                                    .filter(|m| !m.trim().is_empty())
+                                    .unwrap_or(&format!(
+                                        "Merge {} into {trunk}",
+                                        &head[..12.min(head.len())]
+                                    )),
+                            ),
+                        )?;
+                        if let Some(c) = carry {
+                            let c = change(c)?;
+                            run.jj(root, &["rebase", "-r", &c, "-d", &m])?;
+                        }
+                        created = Some(m.clone());
+                        m
+                    }
+                }
+            };
+            run.jj(root, &["bookmark", "set", trunk, "-r", &target])?;
+            if let Some(b) = delete_bookmark {
+                run.jj(
+                    root,
+                    &["bookmark", "delete", &format!("exact:{}", toml_str(b))],
+                )?;
+            }
+            return Ok(created);
+        }
+        GraphOp::Rebase { source, mode, dest } => {
+            let s = change(source)?;
+            let flag = match mode {
+                RebaseMode::Revision => "-r",
+                RebaseMode::Source => "-s",
+                RebaseMode::Branch => "-b",
+            };
+            let dests: Vec<String> = dest.iter().map(|d| change(d)).collect::<Result<_>>()?;
+            let mut args = vec!["rebase", flag, s.as_str()];
+            for d in &dests {
+                args.extend(["-d", d.as_str()]);
+            }
+            run.jj(root, &args)?;
+        }
+        GraphOp::Describe { commit, message } => {
+            let c = change(commit)?;
+            run.jj(root, &["describe", &c, "-m", message])?;
+        }
+        GraphOp::Abandon { commits } => {
+            let cs: Vec<String> = commits.iter().map(|c| change(c)).collect::<Result<_>>()?;
+            let mut args = vec!["abandon"];
+            args.extend(cs.iter().map(String::as_str));
+            run.jj(root, &args)?;
+        }
+        GraphOp::New { parents, message } => {
+            let ps: Vec<String> = parents.iter().map(|p| change(p)).collect::<Result<_>>()?;
+            return Ok(Some(run.new_no_edit(&ps, message.as_deref())?));
+        }
+        GraphOp::Squash {
+            source,
+            into,
+            message,
+        } => {
+            // The description is decided here, as jj-lib does it (jj's would open an editor).
+            let repo = run.w.head()?;
+            let (src, dest, m) =
+                run.w
+                    .squash_parts(repo.as_ref(), source, into.as_deref(), message.as_deref())?;
+            let (s, d) = (change(&src.id().hex())?, change(&dest.id().hex())?);
+            run.jj(
+                root,
+                &["squash", "--from", &s, "--into", &d, "-m", m.trim_end()],
+            )?;
+        }
+        GraphOp::Commit {
+            workspace,
+            message,
+            bookmark,
+        } => {
+            // `jj commit` runs in the workspace; the committed change keeps @'s change id.
+            let w = run
+                .w
+                .workspaces()?
+                .into_iter()
+                .find(|w| w.name == *workspace)
+                .ok_or_else(|| Error(format!("no workspace named {workspace}")))?;
+            let ws_root = w
+                .root
+                .filter(|r| r.join(".jj").is_dir())
+                .ok_or_else(|| Error(format!("workspace {workspace} has no files here")))?;
+            run.jj(&ws_root, &["commit", "-m", message])?;
+            if let Some(b) = bookmark {
+                run.jj(root, &["bookmark", "set", b, "-r", &w.change])?;
+            }
+            return Ok(Some(w.change));
+        }
+    }
+    Ok(None)
 }

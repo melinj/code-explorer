@@ -149,6 +149,114 @@ conflicted: Array<ConflictRecord>,
  */
 suggestion: string, };
 
+/**
+ * A remote bookmark of the same name as a local one.
+ */
+export type BookmarkRemote = { remote: string, targets: Array<string>, tracked: boolean, 
+/**
+ * Tracked, one target on each side: local commits the remote lacks (capped at 1000).
+ */
+ahead?: number, 
+/**
+ * Tracked, one target on each side: remote commits not in the local bookmark (capped at 1000).
+ */
+behind?: number, };
+
+/**
+ * A local bookmark and the remote bookmarks of the same name (`@git` left out).
+ */
+export type BookmarkInfo = { name: string, 
+/**
+ * More than one: conflicted; none: deleted locally but still on a remote.
+ */
+targets: Array<string>, remotes: Array<BookmarkRemote>, };
+
+/**
+ * GET /refs.
+ */
+export type RefsResponse = { bookmarks: Array<BookmarkInfo>, trunk?: string, colocated: boolean, 
+/**
+ * The git remotes fetch and push can use, sorted.
+ */
+remotes: Array<string>, };
+
+/**
+ * What a "land" operation brings onto the trunk bookmark; exactly one field.
+ */
+export type LandSource = { workspace?: string, bookmark?: string, commit?: string, };
+
+/**
+ * One Graph view operation (model.ts `GraphOp`). `strategy` and `mode` are validated by cv-review.
+ */
+export type GraphOp = { "kind": "set-bookmark", name: string, to: string, allowBackwards?: boolean, } | { "kind": "delete-bookmark", name: string, } | { "kind": "land", source: LandSource, trunk: string, 
+/**
+ * "fast-forward" | "rebase" | "merge"
+ */
+strategy: string, message?: string, deleteBookmark?: string, } | { "kind": "rebase", source: string, 
+/**
+ * "revision" | "source" | "branch"
+ */
+mode: string, dest: Array<string>, } | { "kind": "describe", commit: string, message: string, } | { "kind": "abandon", commits: Array<string>, } | { "kind": "new", parents: Array<string>, message?: string, } | { "kind": "commit", workspace: string, message: string, bookmark?: string, } | { "kind": "squash", source: string, into?: string, message?: string, };
+
+/**
+ * POST /graph:op.
+ */
+export type GraphOpRequest = { op: GraphOp, dryRun?: boolean, };
+
+/**
+ * A local bookmark a graph operation created (no `from`), moved or deleted (no `to`).
+ */
+export type BookmarkMove = { name: string, from?: string, to?: string, };
+
+export type GraphOpResult = { 
+/**
+ * "previewed" | "applied" | "rejected" | "failed"
+ */
+status: string, actor: Actor, summary: string, opBefore?: string, opAfter?: string, created?: string, rewritten: Array<string>, bookmarks: Array<BookmarkMove>, workspaces: Array<EditWorkspace>, conflicts: Array<ConflictRecord>, divergent: Array<string>, error?: EditError, };
+
+/**
+ * One jj operation (GET /ops), newest first.
+ */
+export type OpEntry = { op: string, parents: Array<string>, time: string, description: string, 
+/**
+ * user@host
+ */
+user: string, snapshot: boolean, };
+
+/**
+ * GET /ops.
+ */
+export type OpLog = { ops: Array<OpEntry>, truncated: boolean, current: string, };
+
+/**
+ * GET /ops/:op: what an operation changed, against its first parent.
+ */
+export type OpDetail = { op: string, changed: Array<string>, abandoned: Array<string>, bookmarks: Array<BookmarkMove>, };
+
+/**
+ * POST /ops:restore.
+ */
+export type RestoreRequest = { op: string, dryRun?: boolean, };
+
+/**
+ * POST /git:fetch.
+ */
+export type FetchRequest = { remote?: string, };
+
+/**
+ * POST /git:push.
+ */
+export type PushRequest = { bookmarks: Array<string>, remote?: string, dryRun?: boolean, };
+
+/**
+ * A fetch or push: what jj said and which bookmarks (`name`, `name@remote`) moved.
+ */
+export type RemoteResult = { 
+/**
+ * "previewed" | "applied" | "failed"
+ */
+status: string, summary: string, output: string, moved: Array<BookmarkMove>, opAfter?: string, error?: EditError, };
+
 export type ConflictRecord = { change: string, commit: string, path: string, sides: number, firstSeenOp: string, introducedBy?: string, };
 
 export type ConflictSide = { label: string, text: string, };

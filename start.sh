@@ -12,6 +12,9 @@
 #   --rebuild         rebuild the server and the UI even if they look up to date
 #   --mcp             also register the MCP server with Claude Code for REPO (claude mcp add, local scope)
 #   --yes             answer yes to prompts (e.g. making a plain git repo a colocated jj repo)
+#
+# A plain git repository works without jj too: its history is shown read-only, and the page offers
+# to add jj alongside git (`jj git init --colocate`) for the map, reviews and edits.
 #   -h, --help        this help
 set -euo pipefail
 
@@ -58,29 +61,39 @@ IFS=. read -r node_major node_minor _ <<<"$node_v"
 if (( node_major < 22 || (node_major == 22 && node_minor < 12) )); then die "Node.js $node_v is too old for the UI build; install 22.12 or newer"; fi
 if [[ $demo -eq 1 ]]; then
   [[ $repo_set -eq 0 && $register_mcp -eq 0 ]] || die "--demo shows a synthetic repository; drop REPO and --mcp"
-else
-  need jj "install jj from https://jj-vcs.github.io/jj/latest/install-and-setup/"
 fi
+have_jj=0; command -v jj >/dev/null 2>&1 && have_jj=1
 
 # ── The repository ───────────────────────────────────────────────────────────────────────────────
 if [[ $demo -eq 0 ]]; then
 [[ -d "$repo" ]] || die "no such folder: $repo"
 repo="$(cd "$repo" && pwd)"
 # `jj root` from inside the folder finds the repository above it (`jj root -R` would not).
-if ! root="$(cd "$repo" && jj root 2>/dev/null)"; then
+if ! { ((have_jj)) && root="$(cd "$repo" && jj root 2>/dev/null)"; }; then
   if top="$(git -C "$repo" rev-parse --show-toplevel 2>/dev/null)"; then
     # A jj repository jj can't open (a jj version or config problem): show jj's own error.
-    [[ -d "$top/.jj" ]] && { (cd "$repo" && jj root) || true; die "jj could not open $top"; }
-    echo "$top is a git repository but not a jj one."
-    echo "Code Viewer needs jj; 'jj git init --colocate' adds it alongside git (git keeps working)."
-    if [[ $yes -eq 1 ]]; then answer=y
-    elif [[ -t 0 ]]; then read -r -p "Run it now? [y/N] " answer || answer=n
-    else answer=n
+    if [[ -d "$top/.jj" ]]; then
+      ((have_jj)) || die "$top is a jj repository but jj is not installed — https://jj-vcs.github.io/jj/latest/install-and-setup/"
+      (cd "$repo" && jj root) || true; die "jj could not open $top"
     fi
-    [[ "$answer" =~ ^[Yy] ]] || die "not a jj repository: $repo (run 'jj git init --colocate' in $top, or pass --yes)"
-    (cd "$top" && jj git init --colocate)
+    echo "$top is a git repository but not a jj one."
+    echo "Code Viewer needs jj for the map, reviews and edits; 'jj git init --colocate' adds it alongside git (git keeps working)."
+    answer=n
+    if ((have_jj)); then
+      if [[ $yes -eq 1 ]]; then answer=y
+      elif [[ -t 0 ]]; then read -r -p "Run it now? [y/N] " answer || answer=n
+      fi
+    else
+      echo "jj is not installed (https://jj-vcs.github.io/jj/latest/install-and-setup/)."
+    fi
+    if [[ "$answer" =~ ^[Yy] ]]; then
+      (cd "$top" && jj git init --colocate)
+    else
+      echo "Serving its git history read-only; the page shows how to set up jj (and can do it for you)."
+    fi
     root="$top"
   else
+    ((have_jj)) || die "jj not found — install jj from https://jj-vcs.github.io/jj/latest/install-and-setup/ (or try ./start.sh --demo)"
     die "$repo is not inside a jj (or git) repository (try ./start.sh --demo to look around first)"
   fi
 fi

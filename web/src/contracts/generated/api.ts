@@ -131,6 +131,30 @@ state: string, lastOp?: string, files: number, blobsParsed: number, churn?: Chur
 export type RepoCapabilities = { scip: boolean, runtimeLinks: boolean, jjLib: boolean, };
 
 /**
+ * `SetupInfo.jj`: the jj CLI on the server's PATH.
+ */
+export type JjInstall = { installed: boolean, version?: string, };
+
+/**
+ * GET /setup: what the server serves; "git" is a plain git repository without jj yet.
+ */
+export type SetupInfo = { 
+/**
+ * "jj" | "git"
+ */
+vcs: string, root: string, jj: JjInstall, initCommand: string, };
+
+/**
+ * One file of [`GitCommitDetail`]; counts absent for binary files.
+ */
+export type GitFileStat = { path: string, added?: number, removed?: number, };
+
+/**
+ * GET /git/commits/:commit (git mode).
+ */
+export type GitCommitDetail = { commit: string, files: Array<GitFileStat>, };
+
+/**
  * GET /repo.
  */
 export type RepoInfo = { name: string, root: string, jjVersion: string, op: string, trunk?: string, workspaces: Array<WorkspaceInfo>, index: RepoIndex, capabilities: RepoCapabilities, };

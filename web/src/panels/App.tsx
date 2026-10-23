@@ -19,6 +19,8 @@ import { session } from "../data/auth";
 import { actorName, presenceName } from "../canvas/presence";
 import { drawnStubs } from "../canvas/chunks";
 import type { Tour } from "../contracts/http";
+import { GraphPanel } from "./GraphPanel";
+import type { SelectionView } from "./graphLayout";
 
 type Tab = "inspector" | "history" | "review" | "workspaces" | "hotspots" | "agent";
 const TABS: Array<[Tab, string]> = [
@@ -104,6 +106,27 @@ export function App() {
   // The snapshot on screen (or the one "Snapshot" returns to): its revision and commit, for the top-bar chip.
   const [snap, setSnap] = useState<{ rev: string; head?: string; workspace?: string }>({ rev: "@" });
   const [revPicker, setRevPicker] = useState(false);
+  // The Graph side panel (docked left of the canvas) and its width, remembered per browser.
+  const [graphOpen, setGraphOpen] = useState(() => localStorage.getItem("cv.graph.open") === "1");
+  const [graphW, setGraphW] = useState(() => Number(localStorage.getItem("cv.graph.w")) || 440);
+  useEffect(() => localStorage.setItem("cv.graph.open", graphOpen ? "1" : "0"), [graphOpen]);
+  useEffect(() => localStorage.setItem("cv.graph.w", String(graphW)), [graphW]);
+  // Expanded: the graph fills the window over the map (G); not remembered, the map is the default view.
+  const [graphMax, setGraphMax] = useState(false);
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      if ((e.key !== "g" && e.key !== "G") || e.metaKey || e.ctrlKey || e.altKey || (e.target as HTMLElement).closest?.("input,textarea,select,[contenteditable],.cm-editor")) return;
+      if (e.key === "G") {
+        setGraphOpen(true);
+        setGraphMax((m) => !m);
+      } else {
+        setGraphOpen((o) => !o);
+        setGraphMax(false);
+      }
+    };
+    window.addEventListener("keydown", k);
+    return () => window.removeEventListener("keydown", k);
+  }, []);
   const [tour, setTour] = useState<Tour>();
   // Short-lived notices (a refused move or pin).
   const [toast, setToast] = useState<string>();
@@ -339,6 +362,15 @@ export function App() {
     await engine.current!.openSnapshot(rev, options);
     setRangeView(undefined);
   };
+  /** Graph panel, "Selected": the map shows the selection as a range view, or all files again. */
+  const showSelection = async (v?: SelectionView) => {
+    if (v) await openRange(v.revset, { diff: v.diff, allowNonChain: v.allowNonChain }).catch(() => {});
+    else if (engine.current?.isRange) await engine.current.backToSnapshot().then(() => setRangeView(undefined));
+  };
+  const shownRange = () => {
+    const spec = engine.current?.client.view?.spec as { mode?: string; revset?: string } | undefined;
+    return spec?.mode === "range" ? spec.revset : undefined;
+  };
   const pickLens = (l: Lens) => {
     setLens(l);
     engine.current?.setLens(l);
@@ -388,6 +420,9 @@ export function App() {
           </span>
         )}
         <div className="grow" />
+        <button className={`ghost graph-btn ${graphOpen ? "on" : ""}`} aria-pressed={graphOpen} onClick={() => setGraphOpen((o) => !o)} title="The jj graph: bookmarks, workspaces, landing (g)">
+          Graph
+        </button>
         {agent && Date.now() - agent.at < 60_000 && (
           <button className="chip agent-chip" onClick={() => setTab("agent")} title="Agent activity">
             <i /> {agent.name} · {agent.tool}
@@ -449,7 +484,22 @@ export function App() {
           );
         })()}
       </div>
-      <main>
+      <main className={graphOpen ? `with-graph ${graphMax ? "graph-max" : ""}` : ""} style={{ ["--graph-w" as string]: `${graphW}px` }}>
+        {graphOpen && engine.current && (
+          <GraphPanel
+            live={live}
+            width={graphW}
+            onResize={setGraphW}
+            onClose={() => (setGraphOpen(false), setGraphMax(false))}
+            expanded={graphMax}
+            onExpand={setGraphMax}
+            onShow={showSelection}
+            shownRange={shownRange}
+            // Opening something on the map docks the expanded graph so the map shows.
+            onSnapshot={(rev) => (setGraphMax(false), openSnapshotAt(rev).catch((x) => setToast(`Could not open ${rev}: ${(x as Error).message}`)))}
+            onRangeDialog={(r) => (setGraphMax(false), setRange(r))}
+          />
+        )}
         <div className="canvas" ref={host}>
           {error && (
             <div className="error">

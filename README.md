@@ -48,8 +48,13 @@ repository you care about, read [what it does to your repository](#before-you-st
 - **Languages:** Python, TypeScript/JavaScript, Rust and C/C++, plus config files (YAML, TOML,
   JSON, Dockerfile, shell, HCL). Files in other languages show up, but without symbols or links.
 - **First build:** compiles a few hundred crates, which takes several minutes.
-- The folder you point `cv` at must be a **jj workspace**. Any folder inside it works; `cv` finds
-  the root. A plain git repo can be made one in place with `jj git init --colocate`, run inside it.
+- The folder you point `cv` at should be a **jj workspace**. Any folder inside it works; `cv` finds
+  the root.
+- **Plain git repositories** open in **git mode**: the history graph (branches, tags, HEAD,
+  worktrees, each commit's files), read-only, and a page that explains what jj adds. Its
+  **Initialise jj here** button runs `jj git init --colocate` (git keeps working; delete `.jj` to
+  undo) and the server restarts on the jj repository by itself. Running that command in a terminal
+  works too: the open page notices and reloads. The map, reviews, edits and graph operations need jj.
 
 ### Before you start: what it does to your repository
 
@@ -90,7 +95,8 @@ Code Viewer is a local tool, and it trusts whoever holds its token.
 ```
 
 `start.sh` builds the server and the UI when they are missing or out of date, checks the folder is a jj
-repository (and offers `jj git init --colocate` for a plain git one), picks a free port starting at
+repository (for a plain git one it offers `jj git init --colocate`, and otherwise serves git mode;
+jj itself is optional until then), picks a free port starting at
 7878, starts the server and opens the UI in your browser. Ctrl-C stops it. Options: `--port N`,
 `--no-open`, `--rebuild`, `--mcp` (runs `claude mcp add` for that repo, local scope), `--yes`,
 `--demo` (the synthetic repository instead of a real one), and anything after `--` goes to
@@ -189,6 +195,30 @@ cd web && npm install && npm run dev      # http://127.0.0.1:5178
 - Review: click the gutter to comment on a line, drag in the gutter for a range (drag the band's
   handles to adjust); double-click code to edit it; open conflicts from their red markers.
 - Range review (`Range` in the top bar) shows what changed in a revset, in place.
+- **Graph** (top bar, or `g`) docks the jj graph left of the map: lanes, workspaces, bookmarks.
+  - The map shows **All files** by default. Switch to **Selected** and the map follows what
+    you pick in the graph (click, `⇧` for a run, `⌘`/`Ctrl` to add one): one change, a chain
+    (cumulative), or unrelated changes commit by commit. Double-click a change for the whole map at it.
+  - **⤢** (Expand, or `G`) fills the window with the graph for big histories; **⤡** docks it again.
+  - **Commit…** (next to a workspace with work, or on a selected `@`) is `jj commit`: `@` gets
+    your message, a new empty `@` starts on top, and optionally a bookmark (say `main`) moves to it.
+  - **Squash…** on a selected change is `jj squash`: its changes move into its parent (or a change
+    you click), with both descriptions combined for you to edit.
+  - Click a bookmark (on a change, or in the **Bookmarks** strip) for its moves: to a workspace's `@`
+    (e.g. `main` forward to `default@`), to the selected change, to a change you click next, land it,
+    delete it, push it. Or drag it onto a change. Drag a change onto another to rebase it.
+  - **Fetch** (bookmark strip) and **Push…** (bookmark menu) run `jj git fetch` / `jj git push -b`
+    with your own git setup; a push shows jj's dry run first. Bookmarks show `↑2` / `↓1` against
+    their tracked remote. Nothing prompts: a remote that wants a password fails (use an ssh agent
+    or a credential helper). A push is not undone by Undo.
+  - **Land** brings a workspace's stack (or a bookmark, or a change) into the trunk bookmark by
+    fast-forward, rebase or merge; the workspace's empty `@` comes along. Also: create, move and
+    delete bookmarks, describe, new change (`jj new --no-edit`), rebase, abandon.
+  - Every operation shows an exact preview first (nothing is written until Apply) and can be undone.
+  - **Operations** (panel tab) is the operation log (`jj op log`, snapshots hidden unless asked):
+    open one to see what it changed, **Undo** just that one (`jj op revert`) or **Restore to here**
+    (`jj op restore`, previewed).
+  - In a git-colocated repo the bookmarks are git branches, so moving one moves the branch.
 - **Lenses** (top bar) change emphasis, never the layout. What a lens leaves out turns grey, along
   with the links between such windows.
   - **Heat:** how often code changes, on one continuous scale (legend: Frozen → Hot), with a glow

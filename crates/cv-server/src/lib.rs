@@ -4,6 +4,7 @@ pub mod agent_api;
 pub mod auth;
 pub mod channels;
 pub mod extras_api;
+pub mod git_mode;
 pub mod grades;
 pub mod incremental;
 pub mod index;

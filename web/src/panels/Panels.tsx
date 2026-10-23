@@ -14,7 +14,7 @@ import { markPath, markShape } from "./hotspotMarks";
 
 const api = (path: string, init?: RequestInit) => fetch("/api/v1" + path, init).then((r) => r.json());
 /** "5 min ago" from epoch seconds or an ISO-8601 time (ids.ts; older servers sent epoch strings). */
-const ago = (t: string | number) => {
+export const ago = (t: string | number) => {
   const n = Number(t);
   const secs = Number.isFinite(n) ? n : Date.parse(String(t)) / 1000;
   if (!Number.isFinite(secs)) return "";

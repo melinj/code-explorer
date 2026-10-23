@@ -43,6 +43,7 @@ import type {
   WorkspaceName,
 } from "./ids";
 import type {
+  BookmarkInfo,
   ChurnSummary,
   Cluster,
   CoChangePair,
@@ -53,6 +54,14 @@ import type {
   EditRequest,
   EditResult,
   FileDiff,
+  GraphOpRequest,
+  GraphOpResult,
+  OpLog,
+  OpDetail,
+  RestoreRequest,
+  FetchRequest,
+  PushRequest,
+  RemoteResult,
   GraphRow,
   GridColumn,
   Hub,
@@ -84,6 +93,21 @@ import type { ServerEvent, ViewState } from "./ws";
 /** Typed route table: "METHOD /path" → request/response shapes. */
 export interface Routes {
   // ── Repo, workspaces, lanes and views ──
+  /**
+   * Additive: what the server serves. `vcs: "git"`: `cv serve` was pointed at a plain git repository
+   * (no jj yet). Then only /setup, /setup:init-jj, /revisions (git history, read-only), /refs,
+   * /workspaces (always []) and /git/commits/:commit answer; every other route is 409 "jj-required".
+   */
+  "GET /api/v1/setup": { res: SetupInfo };
+  /**
+   * Git mode only: run SetupInfo.initCommand (`jj git init --colocate`) at the repository root, then
+   * restart into the full server (`restarting`; poll /setup until vcs is "jj"). Humans only (403 for
+   * an agent); 409 "jj-missing" when jj is not installed, 409 "already-jj" in jj mode; 400 without
+   * `confirm: true`.
+   */
+  "POST /api/v1/setup:init-jj": { body: { confirm: true }; res: { ok: true; restarting: boolean; message: string } };
+  /** Git mode only: the files a commit changes against its first parent (no renames). */
+  "GET /api/v1/git/commits/:commit": { res: GitCommitDetail };
   "GET /api/v1/repo": { res: RepoInfo };
   "GET /api/v1/workspaces": { res: WorkspaceSummary[] }; // first-class workspaces; updates via ws workspace.updated
   /**
@@ -129,6 +153,29 @@ export interface Routes {
   "PUT /api/v1/ranges/:name": { body: SavedRange; res: SavedRange };
   "DELETE /api/v1/ranges/:name": { res: { ok: true } }; // 404 when no range has that name
   /** Hunk old/new are [start, count]; every DiffLine carries text here (no blob to read from). */
+  /** The Graph view's bookmark pickers. `trunk`: the local bookmark "land" targets by default (trunk()'s name, else main, master or trunk). */
+  "GET /api/v1/refs": { res: { bookmarks: BookmarkInfo[]; trunk?: string; colocated: boolean; remotes: string[] } };
+  /**
+   * Graph view operations (model.ts GraphOp). Same rules as edits: agents need the edit permission
+   * (403 "agent-edit-disabled"), 409 "locked" when the mutation queue stays busy. A refused
+   * operation (immutable commit, backwards bookmark move, not fast-forwardable, …) answers 200 with
+   * status "rejected" and error; nothing is written.
+   */
+  "POST /api/v1/graph:op": { body: GraphOpRequest; res: GraphOpResult };
+  /** jj op revert <op> (a GraphOpResult's opAfter); "rejected" with error "undo-blocked" when that would leave changes divergent or conflicted. */
+  "POST /api/v1/graph:undo": { body: { op: OpId }; res: GraphOpResult };
+  /** The operation log (jj op log), newest first; limit default 100, at most 1000. */
+  "GET /api/v1/ops": { query: { limit?: number }; res: OpLog };
+  "GET /api/v1/ops/:op": { res: OpDetail };
+  /** jj op restore: the repo as it was after that operation. Humans only (403 "human-only"); dryRun previews. */
+  "POST /api/v1/ops:restore": { body: RestoreRequest; res: GraphOpResult };
+  /**
+   * jj git fetch / jj git push -b … through the user's git setup, never interactive (a remote that
+   * asks for a password fails). Humans only (403 "human-only"). Refusals and jj errors answer 200
+   * with status "failed" and error.
+   */
+  "POST /api/v1/git:fetch": { body: FetchRequest; res: RemoteResult };
+  "POST /api/v1/git:push": { body: PushRequest; res: RemoteResult };
   "GET /api/v1/interdiff": { query: { change: ChangeId; from: CommitId }; res: { files: FileDiff[]; description?: [string, string] } };
   /**
    * Additive: the files that differ between two revisions' trees, as `jj diff --from <from> --to
@@ -236,6 +283,18 @@ export interface AgentPermissions {
   session?: string; // additive: the UI session these toggles belong to
   agent?: string; // additive: the agent they apply to, "*" = every agent
   effective?: boolean; // additive: true when this is what is in force for an agent across sessions
+}
+
+export interface SetupInfo {
+  vcs: "jj" | "git";
+  root: string; // the repository root
+  jj: { installed: boolean; version?: string }; // the jj CLI on the server's PATH
+  initCommand: string; // what "Initialise jj" runs in root: "jj git init --colocate"
+}
+
+export interface GitCommitDetail {
+  commit: CommitId;
+  files: Array<{ path: RepoPath; added?: number; removed?: number }>; // counts absent for binary files
 }
 
 export interface RepoInfo {

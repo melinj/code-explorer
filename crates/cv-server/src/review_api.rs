@@ -181,6 +181,14 @@ pub fn router() -> Router<Arc<AppState>> {
         .route("/api/v1/edits/{id}", get(get_edit))
         .route("/api/v1/edits/{id}/apply", post(apply_edit))
         .route("/api/v1/edits/{id}/undo", post(undo_edit))
+        .route("/api/v1/refs", get(refs))
+        .route("/api/v1/graph:op", post(graph_op))
+        .route("/api/v1/graph:undo", post(graph_undo))
+        .route("/api/v1/ops", get(ops))
+        .route("/api/v1/ops/{op}", get(op_detail))
+        .route("/api/v1/ops:restore", post(ops_restore))
+        .route("/api/v1/git:fetch", post(git_fetch))
+        .route("/api/v1/git:push", post(git_push))
         .route("/api/v1/conflicts", get(conflicts))
         .route(
             "/api/v1/conflicts/{commit}/{*path}",
@@ -411,6 +419,101 @@ async fn undo_edit(State(app): St, headers: HeaderMap, Path(id): Path<String>) -
         }
         Err(e) => e.into_response(),
     }
+}
+
+// ── Graph view ──
+
+async fn refs(State(app): St) -> R<Json<RefsResponse>> {
+    Ok(Json(blocking(&app, move |r| r.refs()).await?))
+}
+
+/// POST /graph:op: bookmarks, landing and history edits from the Graph view. Agents need the edit
+/// permission, like edits.
+async fn graph_op(
+    State(app): St,
+    headers: HeaderMap,
+    Json(req): Json<GraphOpRequest>,
+) -> R<Json<GraphOpResult>> {
+    let who = actor(&headers);
+    crate::agent_api::check_edit(&app, &who)?;
+    if !req.dry_run.unwrap_or(false) {
+        crate::workspaces::note_edit(&app, &who);
+    }
+    Ok(Json(blocking(&app, move |r| r.graph_op(req, &who)).await?))
+}
+
+#[derive(Deserialize)]
+struct UndoOp {
+    op: String,
+}
+
+async fn graph_undo(
+    State(app): St,
+    headers: HeaderMap,
+    Json(req): Json<UndoOp>,
+) -> R<Json<GraphOpResult>> {
+    let who = actor(&headers);
+    crate::agent_api::check_edit(&app, &who)?;
+    Ok(Json(
+        blocking(&app, move |r| r.undo_graph_op(&req.op, &who)).await?,
+    ))
+}
+
+/// Operations that reach past this session (restoring the whole repo, the network): the human only.
+fn human_only(who: &Actor) -> R<()> {
+    if who.agent_name().is_some() {
+        return Err(RErr(ReviewError {
+            status: 403,
+            code: "human-only",
+            message: "Only the human at the UI can do this.".into(),
+        }));
+    }
+    Ok(())
+}
+
+#[derive(Deserialize)]
+struct OpsQ {
+    limit: Option<usize>,
+}
+
+async fn ops(State(app): St, Query(q): Query<OpsQ>) -> R<Json<OpLog>> {
+    Ok(Json(blocking(&app, move |r| r.ops(q.limit)).await?))
+}
+
+async fn op_detail(State(app): St, Path(op): Path<String>) -> R<Json<OpDetail>> {
+    Ok(Json(blocking(&app, move |r| r.op_detail(&op)).await?))
+}
+
+async fn ops_restore(
+    State(app): St,
+    headers: HeaderMap,
+    Json(req): Json<RestoreRequest>,
+) -> R<Json<GraphOpResult>> {
+    let who = actor(&headers);
+    human_only(&who)?;
+    Ok(Json(
+        blocking(&app, move |r| r.restore_op(req, &who)).await?,
+    ))
+}
+
+async fn git_fetch(
+    State(app): St,
+    headers: HeaderMap,
+    Json(req): Json<FetchRequest>,
+) -> R<Json<RemoteResult>> {
+    let who = actor(&headers);
+    human_only(&who)?;
+    Ok(Json(blocking(&app, move |r| r.git_fetch(req, &who)).await?))
+}
+
+async fn git_push(
+    State(app): St,
+    headers: HeaderMap,
+    Json(req): Json<PushRequest>,
+) -> R<Json<RemoteResult>> {
+    let who = actor(&headers);
+    human_only(&who)?;
+    Ok(Json(blocking(&app, move |r| r.git_push(req, &who)).await?))
 }
 
 // ── Conflicts ──
