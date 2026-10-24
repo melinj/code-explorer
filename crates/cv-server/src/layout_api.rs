@@ -391,24 +391,39 @@ fn move_cluster(
     moved
 }
 
+/// A window's rect with the room its cluster keeps around it.
+fn padded(r: Rect) -> Rect {
+    Rect {
+        x: r.x - CLUSTER_PAD,
+        y: r.y - CLUSTER_TITLE,
+        w: r.w + 2.0 * CLUSTER_PAD,
+        h: r.h + CLUSTER_TITLE + CLUSTER_PAD,
+    }
+}
+
+/// Grows `frame` to contain a member window at `r`. A pinned window grows it only when it still
+/// overlaps the frame: one pinned elsewhere floats on its own, as a frame stretched across the
+/// canvas to reach it would cover every cluster in between.
+fn hold(frame: Rect, r: Rect, pinned: bool) -> Rect {
+    let p = padded(r);
+    if pinned && !p.intersects(&frame) {
+        return frame;
+    }
+    union(frame, p)
+}
+
 /// Recomputes everything derived from window positions: cluster rects grow to contain their
-/// windows, the world grows to contain the clusters, hub anchors follow their windows and the
-/// grid index is rebuilt. Link endpoints are computed from window rects on demand.
+/// windows (see [`hold`] for pinned ones), the world grows to contain the clusters and every
+/// window, hub anchors follow their windows and the grid index is rebuilt. Link endpoints are
+/// computed from window rects on demand.
 pub fn refresh_geometry(v: &mut View) {
     let groups = members_by_cluster(v);
     let b = &mut v.bootstrap.base;
     for c in b.clusters.iter_mut() {
         for &w in groups.get(&c.id).map(Vec::as_slice).unwrap_or(&[]) {
-            let r = v.windows[w].header.rect;
-            c.rect = union(
-                c.rect,
-                Rect {
-                    x: r.x - CLUSTER_PAD,
-                    y: r.y - CLUSTER_TITLE,
-                    w: r.w + 2.0 * CLUSTER_PAD,
-                    h: r.h + CLUSTER_TITLE + CLUSTER_PAD,
-                },
-            );
+            let h = &v.windows[w].header;
+            c.rect = hold(c.rect, h.rect, h.flags.pinned);
+            b.world = union(b.world, h.rect);
         }
         b.world = union(b.world, c.rect);
     }
@@ -815,8 +830,11 @@ fn remember_moves(app: &AppState, v: &View, moved: &[usize], clusters: &[usize])
         return;
     }
     let repo_key = app.repo.root().display().to_string();
-    let rect_of = |w: usize| (v.windows[w].header.key.clone(), v.windows[w].header.rect);
-    let rects: Vec<(String, Rect)> = moved.iter().map(|&w| rect_of(w)).collect();
+    let rect_of = |w: usize| {
+        let h = &v.windows[w].header;
+        (h.key.clone(), h.rect, h.flags.pinned)
+    };
+    let rects: Vec<(String, Rect, bool)> = moved.iter().map(|&w| rect_of(w)).collect();
     let groups = members_by_cluster(v);
     // A moved cluster: its placed twin (the cluster most of its windows sat in) takes its rect.
     let cluster_rects: Vec<(Vec<String>, Rect)> = clusters
@@ -844,7 +862,9 @@ fn remember_moves(app: &AppState, v: &View, moved: &[usize], clusters: &[usize])
                 c.rect = *r;
             }
         }
-        for (key, r) in &rects {
+        // A pinned window keeps its placed spot: cv-layout puts it at its pin anyway, and its
+        // cluster would otherwise be laid out around wherever it was pinned.
+        for (key, r, _) in rects.iter().filter(|(_, _, pinned)| !pinned) {
             let Some((pc, pr)) = p.windows.get_mut(key) else {
                 continue;
             };
@@ -852,15 +872,7 @@ fn remember_moves(app: &AppState, v: &View, moved: &[usize], clusters: &[usize])
             pr.y = r.y;
             let pc = *pc;
             if let Some(c) = p.clusters.get_mut(pc) {
-                c.rect = union(
-                    c.rect,
-                    Rect {
-                        x: r.x - CLUSTER_PAD,
-                        y: r.y - CLUSTER_TITLE,
-                        w: r.w + 2.0 * CLUSTER_PAD,
-                        h: r.h + CLUSTER_TITLE + CLUSTER_PAD,
-                    },
-                );
+                c.rect = union(c.rect, padded(*r));
             }
         }
     });

@@ -777,3 +777,140 @@ fn expand_pushes_what_it_would_cover_down() {
         }
     });
 }
+
+/// A window pinned far from its cluster floats on its own: the cluster's frame does not stretch
+/// across the canvas to hold it (a huge box over its neighbours), before or after a restart, and
+/// a pin on that cluster still moves the cluster's other windows with it.
+#[test]
+fn far_pinned_window_does_not_stretch_its_cluster() {
+    if !have_jj() {
+        return;
+    }
+    let tmp = tempfile::tempdir().unwrap();
+    std::fs::write(tmp.path().join("jjconfig.toml"), USER).unwrap();
+    let repo = tmp.path().join("repo");
+    let store = tmp.path().join("store");
+    std::fs::create_dir_all(&repo).unwrap();
+    jj(&repo, &["git", "init"]);
+    for (p, text) in files() {
+        let full = repo.join(&p);
+        std::fs::create_dir_all(full.parent().unwrap()).unwrap();
+        std::fs::write(full, text).unwrap();
+    }
+    jj(&repo, &["commit", "-m", "base"]);
+    let rt = tokio::runtime::Builder::new_multi_thread()
+        .worker_threads(2)
+        .enable_all()
+        .build()
+        .unwrap();
+    let cluster = |b: &Value, id: &str| {
+        b["clusters"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .find(|c| c["id"] == id)
+            .unwrap()
+            .clone()
+    };
+    let (_state, app) = start(&repo, &store);
+    let (key, to, far, size0) = rt.block_on(async {
+        let snap = app.view("@-").await;
+        let ws = app.windows(&snap).await;
+        let w = ws
+            .iter()
+            .find(|w| w["path"] == "src/auth/auth2.py")
+            .unwrap()
+            .clone();
+        let (key, cid) = (
+            w["key"].as_str().unwrap().to_string(),
+            w["cluster"].as_str().unwrap().to_string(),
+        );
+        let (_, b) = app.get(&format!("/api/v1/views/{snap}/bootstrap")).await;
+        let c0 = cluster(&b, &cid);
+        let size0 = (
+            c0["rect"]["w"].as_f64().unwrap(),
+            c0["rect"]["h"].as_f64().unwrap(),
+        );
+        let base = b["view"]["layoutVersion"].as_u64().unwrap();
+        // Far below the whole world.
+        let far = (
+            c0["rect"]["x"].as_f64().unwrap(),
+            b["world"]["y"].as_f64().unwrap() + b["world"]["h"].as_f64().unwrap() + 30_000.0,
+        );
+        let (st, out) = app
+            .call(
+                "PATCH",
+                &format!("/api/v1/views/{snap}/layout"),
+                Some(json!({ "moves": [{ "key": key, "x": far.0, "y": far.1, "pinned": true }], "baseLayoutVersion": base })),
+                false,
+            )
+            .await;
+        assert_eq!(st, 200, "{out}");
+        let (_, b) = app.get(&format!("/api/v1/views/{snap}/bootstrap")).await;
+        let r = &cluster(&b, &cid)["rect"];
+        assert!(
+            r["h"].as_f64().unwrap() <= size0.1 + 1.0,
+            "the frame stretched to the pinned window: {r}"
+        );
+        // Then the cluster itself is dragged and pinned, 3000 to the right.
+        let to = (
+            r["x"].as_f64().unwrap() + 3_000.0,
+            r["y"].as_f64().unwrap(),
+        );
+        let base = b["view"]["layoutVersion"].as_u64().unwrap();
+        let (st, out) = app
+            .call(
+                "PATCH",
+                &format!("/api/v1/views/{snap}/layout"),
+                Some(json!({ "moves": [{ "key": format!("cluster:{cid}"), "x": to.0, "y": to.1, "pinned": true }], "baseLayoutVersion": base })),
+                false,
+            )
+            .await;
+        assert_eq!(st, 200, "{out}");
+        let ws = app.windows(&snap).await;
+        assert_eq!(rect(by_key(&ws, &key)), far, "a pinned window stays put");
+        (key, to, far, size0)
+    });
+    // After a restart the pin is honoured, and the frame still holds only the other windows.
+    // After a restart both pins are honoured: the window where it was pinned, the cluster (with
+    // its other windows) at its pin, and the frame holds only the other windows.
+    let (_state, app) = restart(&repo, &store);
+    rt.block_on(async {
+        let snap = app.view("@-").await;
+        let ws = app.windows(&snap).await;
+        assert_eq!(rect(by_key(&ws, &key)), far);
+        let (_, b) = app.get(&format!("/api/v1/views/{snap}/bootstrap")).await;
+        let cid = by_key(&ws, &key)["cluster"].as_str().unwrap().to_string();
+        let c = cluster(&b, &cid);
+        assert_eq!(c["pinned"], true, "{c}");
+        let r = &c["rect"];
+        assert_eq!(
+            (r["x"].as_f64().unwrap(), r["y"].as_f64().unwrap()),
+            to,
+            "{c}"
+        );
+        assert!(
+            r["h"].as_f64().unwrap() <= size0.1 + 1.0 && r["w"].as_f64().unwrap() <= size0.0 + 1.0,
+            "after a restart the frame stretched to the pinned window: {r}"
+        );
+        let rr = Rect4::of(r);
+        for w in ws.iter().filter(|w| w["cluster"] == cid && w["key"] != key) {
+            assert!(rr.holds(&Rect4::of(&w["rect"])), "{} outside {r}", w["key"]);
+        }
+    });
+}
+
+struct Rect4(f64, f64, f64, f64);
+
+impl Rect4 {
+    fn of(v: &Value) -> Self {
+        let f = |k: &str| v[k].as_f64().unwrap();
+        Rect4(f("x"), f("y"), f("w"), f("h"))
+    }
+    fn holds(&self, o: &Rect4) -> bool {
+        o.0 >= self.0
+            && o.1 >= self.1
+            && o.0 + o.2 <= self.0 + self.2
+            && o.1 + o.3 <= self.1 + self.3
+    }
+}
