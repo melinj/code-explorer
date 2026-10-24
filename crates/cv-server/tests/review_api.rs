@@ -261,7 +261,10 @@ fn review_flow_over_http_and_websocket() {
         let hello = next_frame(&mut ws).await;
         assert_eq!(hello["event"]["type"], "hello");
         assert_eq!(hello["event"]["resync"], true, "{hello}");
-        assert_eq!(hello["event"]["cursor"], head.to_string());
+        // The head when the socket connected: background work after the op (settle, heat) may
+        // have logged more events since `head` was read.
+        let at: u64 = hello["event"]["cursor"].as_str().unwrap().parse().unwrap();
+        assert!(at >= head, "{hello} (head {head})");
         drop(ws);
 
 

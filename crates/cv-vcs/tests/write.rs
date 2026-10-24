@@ -55,15 +55,20 @@ impl Fixture {
         Fixture { _tmp: tmp, dir }
     }
 
-    fn jj(&self, repo: &Path, args: &[&str]) -> String {
-        let out = Command::new("jj")
-            .args(args)
-            .current_dir(repo)
+    /// The jj CLI on `repo` as the fixture's user. JJ_USER / JJ_EMAIL override the config's
+    /// [user] in the CLI only (the writer reads the config), so they are set to the same user:
+    /// otherwise a caller's (CI sets them) would give the CLI oracle other commit ids.
+    fn cli(&self, repo: &Path) -> Command {
+        let mut c = Command::new("jj");
+        c.current_dir(repo)
             .env("JJ_CONFIG", self.dir.join("jjconfig.toml"))
             .env("JJ_USER", "Test")
-            .env("JJ_EMAIL", "test@example.com")
-            .output()
-            .expect("run jj");
+            .env("JJ_EMAIL", "test@example.com");
+        c
+    }
+
+    fn jj(&self, repo: &Path, args: &[&str]) -> String {
+        let out = self.cli(repo).args(args).output().expect("run jj");
         assert!(
             out.status.success(),
             "jj {args:?}: {}",
@@ -167,10 +172,9 @@ impl Fixture {
             }
             let mut files = BTreeMap::new();
             for p in paths {
-                let o = Command::new("jj")
+                let o = self
+                    .cli(repo)
                     .args(["file", "show", "--ignore-working-copy", "-r", commit, p])
-                    .current_dir(repo)
-                    .env("JJ_CONFIG", self.dir.join("jjconfig.toml"))
                     .output()
                     .unwrap();
                 if o.status.success() {
@@ -199,10 +203,9 @@ impl Fixture {
         ];
         args.extend_from_slice(extra);
         args.extend(["--", path]);
-        let out = Command::new("jj")
+        let out = self
+            .cli(repo)
             .args(&args)
-            .current_dir(repo)
-            .env("JJ_CONFIG", self.dir.join("jjconfig.toml"))
             .env("CV_PATH", path)
             .env("CV_CONTENT", &content_file)
             .output()
@@ -218,10 +221,9 @@ impl Fixture {
     fn cli_resolve(&self, repo: &Path, rev: &str, path: &str, content: &str) {
         let content_file = self.dir.join("resolution.txt");
         std::fs::write(&content_file, content).unwrap();
-        let out = Command::new("jj")
+        let out = self
+            .cli(repo)
             .args(["resolve", "-r", rev, "--tool", "cv-resolve", "--", path])
-            .current_dir(repo)
-            .env("JJ_CONFIG", self.dir.join("jjconfig.toml"))
             .env("CV_CONTENT", &content_file)
             .output()
             .unwrap();
