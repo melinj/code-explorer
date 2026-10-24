@@ -172,12 +172,14 @@ fn new_and_deleted_files_update_the_view() {
             .find(|c| c.id == id)
             .unwrap()
     };
-    // Where: c.py right below its cluster (same x, one gap under its old bottom)...
+    // Where: c.py in free space inside its cluster's old frame (it has a hole that fits)...
     let (c, src0) = (rect_of("src/c.py"), cluster0(&cluster_of("src/a.py")).rect);
-    assert_eq!(c.x, src0.x, "{c:?} under {src0:?}");
     assert!(
-        c.y >= src0.y + src0.h && c.y <= src0.y + src0.h + 4.0 * 120.0,
-        "{c:?} under {src0:?}"
+        c.x >= src0.x + cv_layout::CLUSTER_PAD
+            && c.y >= src0.y + cv_layout::CLUSTER_TITLE
+            && c.x + c.w <= src0.x + src0.w - cv_layout::CLUSTER_PAD
+            && c.y + c.h <= src0.y + src0.h - cv_layout::CLUSTER_PAD,
+        "{c:?} in {src0:?}"
     );
     // ...d.py in a "new files" cluster at the code lane's right edge (right of every code cluster
     // of v0, by the same margin), level with the top of the code band, nowhere near the world's.
@@ -286,6 +288,108 @@ fn new_and_deleted_files_update_the_view() {
         v1.windows.len()
     );
     assert_eq!(v1.bootstrap.base.view.stats.files as usize, v1.files.len());
+}
+
+/// A new file whose directory's cluster is boxed in by neighbouring clusters (below and to the
+/// right) does not walk past them to the first free hole: that stretched the cluster's frame into
+/// a tall box over its neighbours, its windows among theirs. It goes to the lane's "new files"
+/// cluster instead, and the sibling's frame stays clear of its neighbours.
+#[test]
+fn new_file_does_not_stretch_a_boxed_in_cluster() {
+    if !have_jj() {
+        return;
+    }
+    let tmp = tempfile::tempdir().unwrap();
+    std::fs::write(tmp.path().join("jjconfig.toml"), USER).unwrap();
+    let repo = tmp.path().join("repo");
+    std::fs::create_dir_all(&repo).unwrap();
+    jj(&repo, &["git", "init"]);
+    write(&repo, "src/a.py", "def f0(x):\n    return x\n");
+    write(
+        &repo,
+        "src/b.py",
+        "from a import f0\n\n\ndef main():\n    return f0(1)\n",
+    );
+    jj(&repo, &["commit", "-m", "base"]);
+    let reg = index::registry();
+    let r0 = cv_vcs::JjRepo::open(&repo).unwrap();
+    let c0 = r0.resolve_one("@-").unwrap();
+    let spec = json!({ "mode": "snapshot", "rev": "@-" });
+    let mut v0 = index::build_view(&r0, &reg, spec, &c0, Options { max_commits: 50 }).unwrap();
+    let src_id = v0.windows[v0.files[v0.by_path["src/a.py"]].windows[0]]
+        .header
+        .cluster
+        .clone();
+    let src = v0
+        .bootstrap
+        .base
+        .clusters
+        .iter()
+        .find(|c| c.id == src_id)
+        .unwrap()
+        .clone();
+    // Neighbours one cell gap below and to the right, each far bigger than the new file.
+    let below = cv_contracts::Rect {
+        x: src.rect.x - 5_000.0,
+        y: src.rect.y + src.rect.h + 160.0,
+        w: src.rect.w + 20_000.0,
+        h: 20_000.0,
+    };
+    let right = cv_contracts::Rect {
+        x: src.rect.x + src.rect.w + 160.0,
+        y: src.rect.y - 5_000.0,
+        w: 20_000.0,
+        h: src.rect.h + 5_000.0,
+    };
+    for (i, rect) in [below, right].into_iter().enumerate() {
+        let mut c = src.clone();
+        c.id = format!("c_wall{i}");
+        c.rect = rect;
+        v0.bootstrap.base.clusters.push(c);
+    }
+
+    // Functions too tall for the free space left inside the sibling's frame.
+    let body: String = (0..6)
+        .map(|i| {
+            let lines: String = (0..15).map(|j| format!("    x = x + {j}\n")).collect();
+            format!("def g{i}(x):\n{lines}    return x + {i}\n\n\n")
+        })
+        .collect();
+    write(&repo, "src/big.py", &body);
+    jj(&repo, &["commit", "-m", "add"]);
+    let r1 = cv_vcs::JjRepo::open(&repo).unwrap();
+    let c1 = r1.resolve_one("@-").unwrap();
+    let (v1, _) = cv_server::review_api::refresh_view(&v0, &reg, &r1, &c1, &r1.op_id()).unwrap();
+
+    let frame = |id: &str| {
+        v1.bootstrap
+            .base
+            .clusters
+            .iter()
+            .find(|c| c.id == id)
+            .unwrap()
+            .rect
+    };
+    let src1 = frame(&src_id);
+    for wall in [below, right] {
+        assert!(!src1.intersects(&wall), "{src1:?} runs into {wall:?}");
+    }
+    let fi = v1.by_path["src/big.py"];
+    for &w in &v1.files[fi].windows {
+        let h = &v1.windows[w].header;
+        for wall in [below, right] {
+            assert!(!h.rect.intersects(&wall), "{:?} inside {wall:?}", h.rect);
+        }
+        let label = &v1
+            .bootstrap
+            .base
+            .clusters
+            .iter()
+            .find(|c| c.id == h.cluster)
+            .unwrap()
+            .label;
+        assert_eq!(label, "new files", "{:?}", h.rect);
+    }
 }
 
 /// §4.1 complete incremental updates: an op adds a file that existing code already imports and

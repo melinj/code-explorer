@@ -5,11 +5,11 @@
 //! - **Deleted files:** their windows and every link touching them leave the view; hub sites in
 //!   them are dropped; the old text stays readable by blob id (`View::retired`).
 //! - **New files** (in a lane the view shows): parsed (through the parse cache), chunked into
-//!   windows and placed next to their directory: below the cluster of the nearest same-lane file
-//!   in the same or a parent directory, in the first free spot; else in a new cluster to the right
-//!   of the world in their lane. Their outgoing code links resolve through their imports
-//!   (lexical tier). The same placement draws never-snapshotted files in live overlays
-//!   (crate::workspaces).
+//!   windows and placed next to their directory: in the cluster of the nearest same-lane file in
+//!   the same or a parent directory, in a free spot inside or just outside its frame that keeps
+//!   the frame clear of other clusters; else in a new cluster to the right of the world in their
+//!   lane. Their outgoing code links resolve through their imports (lexical tier). The same
+//!   placement draws never-snapshotted files in live overlays (crate::workspaces).
 //! - **Everything derived from the link graph** (links into new files, re-resolved refs,
 //!   connectedness, then channel links and heat in the background): see "Complete incremental
 //!   updates" below. Only the positions a full layout would choose wait for the next full index.
@@ -451,10 +451,86 @@ struct NewCluster {
     col_w: f64,
 }
 
-/// A spot for a `w`×`h` window: below the sibling cluster when one has room, else in this lane's
-/// new cluster at the lane's right edge (right of the lane's own clusters, inside the lane band: a
-/// column that would run out of the band continues in a new column to its right). Grows the
-/// cluster, lane band and world to include it.
+/// A spot for a `w`×`h` window in the sibling cluster `ci`: the nearest free spot inside its frame
+/// (from its bottom-left), else just outside it, where the grown frame stays clear of every other
+/// cluster's frame. `None` when no nearby spot allows that: walking further away would stretch the
+/// frame over its neighbours (a tall box whose windows sit among other clusters' windows).
+fn beside(v: &View, ci: usize, w: f64, h: f64) -> Option<Rect> {
+    const TRIES: usize = 48;
+    let (pad, title) = (cv_layout::CLUSTER_PAD, cv_layout::CLUSTER_TITLE);
+    let frame = v.bootstrap.base.clusters[ci].rect;
+    let reach = w.max(h) + 8.0 * GAP;
+    let area = Rect {
+        x: frame.x - reach,
+        y: frame.y - reach,
+        w: frame.w + 2.0 * reach,
+        h: frame.h + 2.0 * reach,
+    };
+    // Neighbouring frames (that do not already overlap this one) are walls, grown by the padding.
+    let frames: Vec<Rect> = v
+        .bootstrap
+        .base
+        .clusters
+        .iter()
+        .enumerate()
+        .filter(|&(c, k)| {
+            c != ci && k.rect.w > 0.0 && k.rect.intersects(&area) && !k.rect.intersects(&frame)
+        })
+        .map(|(_, k)| k.rect)
+        .collect();
+    let cell = |x: f64| (x / TILE_BASE_WU).floor() as i64;
+    let mut near: Vec<usize> = Vec::new();
+    for tx in cell(area.x)..=cell(area.x + area.w) {
+        for ty in cell(area.y)..=cell(area.y + area.h) {
+            if let Some((ws, _)) = v.tiles.get(&(tx, ty)) {
+                near.extend(ws.iter().copied());
+            }
+        }
+    }
+    near.sort_unstable();
+    near.dedup();
+    let mut placed: Vec<Rect> = near
+        .into_iter()
+        .map(|i| v.windows[i].header.rect)
+        .filter(|r| r.intersects(&area))
+        .chain(frames.iter().map(|f| Rect {
+            x: f.x - pad,
+            y: f.y - pad,
+            w: f.w + 2.0 * pad,
+            h: f.h + 2.0 * pad,
+        }))
+        .collect();
+    let min = (frame.x + pad, frame.y + title);
+    let room = (frame.x + frame.w - pad, frame.y + frame.h - pad);
+    for _ in 0..TRIES {
+        let (x, y) = cv_layout::free_spot(
+            &placed,
+            w,
+            h,
+            (min.0, room.1),
+            min,
+            f64::INFINITY,
+            room,
+            GAP,
+        );
+        let r = Rect { x, y, w, h };
+        let grown = crate::review_api::grown_frame(&frame, &r, pad);
+        let within = r.x + r.w <= area.x + area.w && r.y + r.h <= area.y + area.h;
+        if within && is_free(v, &r) && !frames.iter().any(|f| f.intersects(&grown)) {
+            return Some(r);
+        }
+        if !within {
+            return None;
+        }
+        placed.push(r);
+    }
+    None
+}
+
+/// A spot for a `w`×`h` window: with the sibling cluster when it has room ([`beside`]), else in
+/// this lane's new cluster at the lane's right edge (right of the lane's own clusters, inside the
+/// lane band: a column that would run out of the band continues in a new column to its right).
+/// Grows the cluster, lane band and world to include it.
 fn place(
     v: &mut View,
     sibling: Option<usize>,
@@ -463,19 +539,7 @@ fn place(
     w: f64,
     h: f64,
 ) -> (usize, Rect) {
-    let mut spot = None;
-    if let Some(ci) = sibling {
-        let c = v.bootstrap.base.clusters[ci].rect;
-        let mut y = c.y + c.h + GAP;
-        for _ in 0..400 {
-            let r = Rect { x: c.x, y, w, h };
-            if is_free(v, &r) {
-                spot = Some((ci, r));
-                break;
-            }
-            y += 4.0 * GAP;
-        }
-    }
+    let spot = sibling.and_then(|ci| beside(v, ci, w, h).map(|r| (ci, r)));
     let world = v.bootstrap.base.world;
     let band = v
         .bootstrap
@@ -560,6 +624,8 @@ fn place(
     let c = &mut b.clusters[ci].rect;
     *c = if c.w == 0.0 && c.h == 0.0 {
         rect
+    } else if spot.is_some() {
+        crate::review_api::grown_frame(c, &rect, cv_layout::CLUSTER_PAD)
     } else {
         union(c, &rect)
     };
