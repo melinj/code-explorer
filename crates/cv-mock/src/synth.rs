@@ -336,6 +336,7 @@ pub fn generate(total_windows: usize, seed: u64) -> View {
                                 truncated: lines == WINDOW_MAX_LINES,
                             },
                             diff_stat: None,
+                            expanded_from: None,
                         },
                         file: fi,
                         out_links: Vec::new(),

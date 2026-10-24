@@ -13,14 +13,14 @@ import { mix, type Theme } from "../canvas/theme";
  * typed-array fill, so windows can stream in while the camera moves. Selection and editing belong
  * to the activated window (CodeMirror, F3), not to these meshes.
  */
-/** A clickable "load more lines" pill at a window's top or bottom fade. */
+/** A clickable "load more lines" pill at a window's top or bottom fade, or "collapse" (back to `expandedFrom`). */
 export interface ExpandHit {
   x: number;
   y: number;
   w: number;
   h: number;
   window: WindowHeader;
-  req: { before?: number | "file"; after?: number | "file" };
+  req: { before?: number | "file"; after?: number | "file"; collapse?: true };
 }
 
 const MORE = 20;
@@ -64,47 +64,59 @@ export function buildCodeText(w: WindowHeader, text: BlobText, t: Theme, diff?: 
     }
     if (at < line.length) run(at, line.length, t.ink);
   }
-  // Fades where the file continues beyond the window, with pills that widen it in place.
+  // Fades where the file continues beyond the window, with pills that widen it in place; an
+  // expanded window also gets a "collapse" pill at its bottom, after the others.
   const above = w.lines.start - 1;
   const below = w.lines.fileLines - w.lines.end;
+  const collapsible = !!w.expandedFrom;
   const fade = new RectBatch(16);
   const pills = new LabelBatch(sansFont());
-  const edge = (top: boolean, n: number) => {
+  const edge = (top: boolean, n: number, collapse = false) => {
     const y = top ? r.y + HEADER_WU : r.y + r.h - 3 * LINE_WU;
     for (let k = 0; k < 3; k++) {
       const row = top ? k : 2 - k;
       const last = !top && k === 2;
       fade.round(r.x + 2, y + k * LINE_WU, r.w - 4, last ? LINE_WU - 2 : LINE_WU, last ? 4 : 0, t.body, [0.75, 0.45, 0.2][row], BL | BR);
     }
-    const label = `${top ? "↑" : "↓"} ${n} lines ${top ? "above" : "below"}`;
     const size = 13;
     const pillH = 20;
     const py = top ? y + 4 : y + 3 * LINE_WU - pillH - 4;
-    const lw = textWidth(sansFont(), label, size) + 20;
-    const px = r.x + r.w / 2 - lw / 2 - 40;
     const rim = mix(t.header, t.line, 0.35);
     const pill = (x: number, w: number) => {
       fade.round(x, py, w, pillH, pillH / 2, rim);
       fade.round(x + 1, py + 1, w - 2, pillH - 2, pillH / 2 - 1, t.header);
     };
-    pill(px, lw);
-    pills.add(label, px + 10, py + 3, size, t.ink);
-    const moreW = textWidth(sansFont(), `+${MORE}`, size) + 16;
-    fade.round(px + lw + 6, py, moreW, pillH, pillH / 2, t.accent);
-    pills.add(`+${MORE}`, px + lw + 14, py + 3, size, t.bg);
-    const allW = textWidth(sansFont(), "all", size) + 16;
-    pill(px + lw + moreW + 12, allW);
-    pills.add("all", px + lw + moreW + 20, py + 3, size, t.ink);
     const req = (v: number | "file") => (top ? { before: v } : { after: v });
-    hits?.push({ x: px, y: py, w: lw + moreW + 6, h: pillH, window: w, req: req(MORE) });
-    hits?.push({ x: px + lw + moreW + 12, y: py, w: allW, h: pillH, window: w, req: req("file") });
+    const label = `${top ? "↑" : "↓"} ${n} lines ${top ? "above" : "below"}`;
+    const lw = n > 0 ? textWidth(sansFont(), label, size) + 20 : 0;
+    const moreW = n > 0 ? textWidth(sansFont(), `+${MORE}`, size) + 16 : 0;
+    const allW = n > 0 ? textWidth(sansFont(), "all", size) + 16 : 0;
+    const colW = collapse ? textWidth(sansFont(), "collapse", size) + 16 : 0;
+    const total = n > 0 ? lw + moreW + allW + 12 + (collapse ? colW + 6 : 0) : colW;
+    let px = r.x + r.w / 2 - total / 2;
+    if (n > 0) {
+      pill(px, lw);
+      pills.add(label, px + 10, py + 3, size, t.ink);
+      fade.round(px + lw + 6, py, moreW, pillH, pillH / 2, t.accent);
+      pills.add(`+${MORE}`, px + lw + 14, py + 3, size, t.bg);
+      pill(px + lw + moreW + 12, allW);
+      pills.add("all", px + lw + moreW + 20, py + 3, size, t.ink);
+      hits?.push({ x: px, y: py, w: lw + moreW + 6, h: pillH, window: w, req: req(MORE) });
+      hits?.push({ x: px + lw + moreW + 12, y: py, w: allW, h: pillH, window: w, req: req("file") });
+      px += lw + moreW + allW + 18;
+    }
+    if (collapse) {
+      pill(px, colW);
+      pills.add("collapse", px + 8, py + 3, size, t.ink);
+      hits?.push({ x: px, y: py, w: colW, h: pillH, window: w, req: { collapse: true } });
+    }
   };
   if (above > 0) edge(true, above);
-  if (below > 0) edge(false, below);
+  if (below > 0 || collapsible) edge(false, below, collapsible);
   const glyphs = new Container();
   batch.build(glyphs);
   c.addChild(glyphs);
-  if (above > 0 || below > 0) {
+  if (above > 0 || below > 0 || collapsible) {
     const f = new Container();
     fade.build(f);
     const p = new Container();

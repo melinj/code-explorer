@@ -499,6 +499,8 @@ export interface WindowHeader {
   };
   /** Range-view hunk windows: lines added and removed in this window (header "+12 −3"). */
   diffStat?: { added: number; removed: number };
+  /** Set while the window is expanded: the span it showed before (POST …/collapse restores it). */
+  expandedFrom?: { start: number; end: number };
 }
 
 /** Fragments of one file attract each other in layout; the chip selects all of them. */

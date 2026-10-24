@@ -107,6 +107,11 @@ export type SymbolRef = { name: string, qualname: string, kind: string, };
 
 export type LineSpan = { start: number, end: number, fileLines: number, };
 
+/**
+ * The span a window showed before it was expanded (`WindowHeader.expandedFrom`).
+ */
+export type LineRange = { start: number, end: number, };
+
 export type FileFragment = { index: number, of: number, chip: number, siblings: Array<string>, };
 
 export type WindowCounts = { openThreads: number, ports: number, conflicts: number, };
@@ -122,7 +127,11 @@ export type WindowHeader = { id: string, key: string, kind: string, cluster: str
 /**
  * Range views: lines added and removed over the range.
  */
-diffStat?: DiffStat, };
+diffStat?: DiffStat, 
+/**
+ * Set while the window is expanded: the span it showed before (POST …/collapse restores it).
+ */
+expandedFrom?: LineRange, };
 
 /**
  * Window-to-window link geometry for L1/L2 edges (additive to TileResponse). Endpoints are world

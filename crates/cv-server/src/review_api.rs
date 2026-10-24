@@ -1101,7 +1101,12 @@ pub fn replace_file(
             file_lines: n,
         };
         h.rect.h = HEADER_WU + (e - s + 1) as f64 * LINE_WU;
+        // Re-chunked at its normal span: no longer expanded.
+        h.expanded_from = None;
         changed.push(h.id.clone());
+    }
+    for &w in &wins {
+        v.expansions.remove(&v.windows[w].header.id);
     }
     changed
 }

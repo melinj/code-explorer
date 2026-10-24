@@ -132,6 +132,8 @@ export interface Routes {
   "POST /api/v1/views/:viewId/windows:batch": { body: WindowBatchRequest; res: WindowBatchResponse }; // T2
   /** Snapshot views: a layout change (the window keeps its top, what it would cover moves down; res carries the new layoutVersion). Range views: an overlay. */
   "POST /api/v1/views/:viewId/windows/:windowId/expand": { body: ExpandRequest; res: WindowHeader & { layoutVersion?: number } };
+  /** Back to WindowHeader.expandedFrom: in a snapshot view the reverse of the expand (a layout change, with layoutVersion); 409 not-expanded otherwise. */
+  "POST /api/v1/views/:viewId/windows/:windowId/collapse": { res: WindowHeader & { layoutVersion?: number } };
   "PATCH /api/v1/views/:viewId/layout": { body: LayoutPatch; res: { layoutVersion: number } };
   /** Range views (additive): every point carries heat.inRange; rank "inRange" orders by it (then risk) before `limit`. */
   "GET /api/v1/views/:viewId/metrics": {

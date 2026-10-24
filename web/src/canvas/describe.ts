@@ -94,6 +94,10 @@ export function describe(t: Target, c: DataClient, edges: Edge[]): string {
     }
     case "expand": {
       const r = t.h.req;
+      if (r.collapse) {
+        const f = t.h.window.expandedFrom;
+        return `<div class="t">Collapse${f ? ` to lines ${f.start}–${f.end}` : ""}</div><div class="hint">back to its size before you expanded it</div>`;
+      }
       const dir = r.before !== undefined ? "above" : "below";
       const v = r.before ?? r.after;
       return `<div class="t">Show ${v === "file" ? "every line" : `${v} more lines`} ${dir}</div><div class="hint">the window grows in place; neighbours stay put</div>`;

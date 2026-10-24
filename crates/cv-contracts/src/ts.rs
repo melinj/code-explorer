@@ -60,6 +60,7 @@ const MODULES: &[(&str, &[&str], &[Decl])] = &[
         crate::Connectedness,
         crate::SymbolRef,
         crate::LineSpan,
+        crate::LineRange,
         crate::FileFragment,
         crate::WindowCounts,
         crate::WindowFlags,

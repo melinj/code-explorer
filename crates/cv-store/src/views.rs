@@ -901,6 +901,7 @@ fn select_windows(
                         truncated: r.get::<_, i64>(31)? != 0,
                     },
                     diff_stat: None,
+                    expanded_from: None,
                 },
                 r.get::<_, String>(20)?,
                 r.get::<_, String>(21)?,

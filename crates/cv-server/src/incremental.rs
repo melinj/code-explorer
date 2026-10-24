@@ -401,6 +401,7 @@ pub fn add_files(
                         truncated: false,
                     },
                     diff_stat: None,
+                    expanded_from: None,
                 },
                 file: fi,
                 out_links: vec![],

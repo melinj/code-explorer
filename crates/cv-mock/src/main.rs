@@ -152,6 +152,7 @@ fn router(app: Arc<App>) -> Router {
         .route("/api/v1/views/{view}/tiles/{z}/{x}/{y}", get(tile))
         .route("/api/v1/views/{view}/windows:batch", post(batch))
         .route("/api/v1/views/{view}/windows/{window}/expand", post(expand))
+        .route("/api/v1/views/{view}/windows/{window}/collapse", post(collapse))
         .route("/api/v1/views/{view}/fragments", get(fragments))
         .route("/api/v1/blobs/{blob}/text", get(blob_text))
         .route("/api/v1/threads", get(threads).post(new_thread))
@@ -1206,7 +1207,22 @@ async fn expand(
     h["rect"]["y"] = json!(h["rect"]["y"].as_f64().unwrap() - (start - ns) as f64 * LINE_WU);
     h["rect"]["h"] = json!(HEADER_WU + (ne - ns + 1) as f64 * LINE_WU);
     h["flags"]["truncated"] = json!(ns > 1 || ne < file_lines);
+    if (ns, ne) != (start, end) {
+        h["expandedFrom"] = json!({ "start": start, "end": end });
+    }
     Json(h).into_response()
+}
+
+/// Collapse: expands are overlays here, so the window's own header is its original size.
+async fn collapse(State(app): St, Path((view, window)): Path<(String, String)>) -> Response {
+    if !app.knows(&view) {
+        return view_unknown(&view);
+    }
+    let v = &app.view();
+    let Some(&wi) = v.by_id.get(&window) else {
+        return not_found("unknown window");
+    };
+    Json(&v.windows[wi].header).into_response()
 }
 
 #[derive(Deserialize)]

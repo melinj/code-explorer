@@ -20,7 +20,7 @@ use axum::{
     routing::{get, post},
 };
 use cv_contracts::readside::*;
-use cv_contracts::{LINE_WU, SiteRef, WindowBatchRequest, WindowBatchResponse};
+use cv_contracts::{LINE_WU, LineRange, SiteRef, WindowBatchRequest, WindowBatchResponse};
 use cv_vcs::JjRepo;
 use cv_vcs::read::{self, RevsetEnv};
 use serde::Deserialize;
@@ -145,6 +145,10 @@ pub fn router() -> Router<Arc<AppState>> {
         .route("/api/v1/workspaces:compare", post(compare))
         .route("/api/v1/views/{view}/metrics", get(metrics_route))
         .route("/api/v1/views/{view}/windows/{window}/expand", post(expand))
+        .route(
+            "/api/v1/views/{view}/windows/{window}/collapse",
+            post(collapse),
+        )
         .route("/api/v1/search", get(search))
 }
 
@@ -1195,6 +1199,10 @@ pub fn expand_header(
         Some(ExpandAmount::To(t)) if t == "file" => n,
         Some(ExpandAmount::To(_)) => symbol_span().1.max(e0),
     };
+    if (start, end) != (s0, e0) {
+        h.expanded_from
+            .get_or_insert(LineRange { start: s0, end: e0 });
+    }
     h.lines.start = start;
     h.lines.end = end;
     h.rect.y -= (s0 - start) as f64 * LINE_WU;
@@ -1249,5 +1257,39 @@ async fn expand(
             tiles: None,
         });
     }
+    Ok(Json(h).into_response())
+}
+
+/// Takes an expanded window back to the span it had before (`WindowHeader.expandedFrom`). Snapshot
+/// views: a layout change, the reverse of the expand ([`crate::layout_api::collapse_in_layout`]).
+/// Range views (an overlay): the view's own header, which tiles serve anyway.
+async fn collapse(
+    State(app): St,
+    Path((view, window)): Path<(String, String)>,
+) -> Result<Response, ApiErr> {
+    if let Some(r) = app.read.range(&view) {
+        let v = crate::workspaces::display_view(&app, &view)?;
+        let &wi = v.by_id.get(&window).ok_or_else(|| {
+            api_err(
+                StatusCode::NOT_FOUND,
+                "not-found",
+                format!("unknown window {window}"),
+            )
+        })?;
+        let mut h = r.header_json(&v.windows[wi].header);
+        h["flags"]["minimized"] = serde_json::Value::Bool(false);
+        crate::workspaces::decorate_headers(&app, &view, &mut h);
+        return Ok(Json(h).into_response());
+    }
+    let app2 = app.clone();
+    let (view2, window2) = (view.clone(), window.clone());
+    let (header, version) = tokio::task::spawn_blocking(move || {
+        crate::layout_api::collapse_in_layout(&app2, &view2, &window2)
+    })
+    .await
+    .map_err(internal)??;
+    let mut h = serde_json::to_value(&header).map_err(internal)?;
+    crate::workspaces::decorate_headers(&app, &view, &mut h);
+    h["layoutVersion"] = version.into();
     Ok(Json(h).into_response())
 }

@@ -1064,6 +1064,17 @@ export class Engine {
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ ...req, lines: { start: w.lines.start, end: w.lines.end } }),
     });
+    await this.resized(w, r);
+  }
+
+  /** Take an expanded window back to its size before (POST …/collapse, the reverse of {@link expandWindow}). */
+  async collapseWindow(w: WindowHeader) {
+    const r = await fetch(`/api/v1/views/${this.client.view.id}/windows/${w.id}/collapse`, { method: "POST" });
+    await this.resized(w, r);
+  }
+
+  /** Apply an expand or collapse response: reload the layout (snapshot views) or swap the header in place. */
+  private async resized(w: WindowHeader, r: Response) {
     if (!r.ok) return void this.client.noteFailure(r);
     const nw = (await r.json()) as WindowHeader & { layoutVersion?: number };
     if (nw.layoutVersion !== undefined) {
@@ -2106,7 +2117,8 @@ export class Engine {
     }
     const t = this.pick(sx, sy);
     if (t?.type === "expand") {
-      this.expandWindow(t.h.window, t.h.req);
+      if (t.h.req.collapse) this.collapseWindow(t.h.window);
+      else this.expandWindow(t.h.window, t.h.req);
       return;
     }
     if (t?.type === "conflict") {

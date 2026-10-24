@@ -911,8 +911,21 @@ pub fn expand_in_layout(
     })?;
     let mut v = (*old).clone();
     let before = v.windows[wi].header.rect;
+    let id = v.windows[wi].header.id.clone();
+    let mut rec = v
+        .expansions
+        .remove(&id)
+        .unwrap_or_else(|| index::Expansion {
+            h: before.h,
+            truncated: v.windows[wi].header.flags.truncated,
+            ..Default::default()
+        });
     {
         let h = &mut v.windows[wi].header;
+        h.expanded_from.get_or_insert(cv_contracts::LineRange {
+            start: h.lines.start,
+            end: h.lines.end,
+        });
         h.rect.h += (h.lines.start.saturating_sub(lines.0) + lines.1.saturating_sub(h.lines.end))
             as f64
             * LINE_WU;
@@ -945,6 +958,7 @@ pub fn expand_in_layout(
         if push > 0.0 {
             for w in below {
                 v.windows[w].header.rect.y += push;
+                rec.windows.push((v.windows[w].header.key.clone(), push));
                 moved.push(w);
             }
         }
@@ -959,6 +973,7 @@ pub fn expand_in_layout(
         if let (Some(ci), Some(was)) = (ci, was) {
             let now = v.bootstrap.base.clusters[ci].rect;
             let cgrow = (now.y + now.h) - (was.y + was.h);
+            rec.frame += now.h - was.h;
             if cgrow > 0.0 {
                 let lane = v.bootstrap.base.clusters[ci].lane.clone();
                 let mut order: Vec<usize> = (0..v.bootstrap.base.clusters.len())
@@ -977,12 +992,119 @@ pub fn expand_in_layout(
                     let r = v.bootstrap.base.clusters[k].rect;
                     if pushed.iter().any(|p| x_overlap(p, &r)) {
                         pushed.push(r);
+                        let cid = v.bootstrap.base.clusters[k].id.clone();
+                        rec.clusters.push((cid, cgrow));
                         moved.extend(move_cluster(&mut v, &groups, k, r.x, r.y + cgrow));
                     }
                 }
             }
         }
     }
+    v.expansions.insert(id, rec);
+    finish_layout_change(app, &review, view_id, v, wi, moved)
+}
+
+/// Collapsing a window expanded by [`expand_in_layout`] (snapshot views): it takes back the span
+/// and height it had before its first expand, and what its expands pushed down (the rows of its
+/// cluster, the clusters below) moves back up by as much, as does the bottom of its cluster's
+/// frame. Windows and clusters pinned since, or gone, stay where they are. Same bookkeeping as an
+/// expand. Returns the stored header and the new layoutVersion.
+pub fn collapse_in_layout(
+    app: &Arc<AppState>,
+    view_id: &str,
+    window: &str,
+) -> R<(cv_contracts::WindowHeader, u32)> {
+    let review = app
+        .review()
+        .map_err(|e| err(StatusCode::INTERNAL_SERVER_ERROR, e.code, e.message))?;
+    let _g = lock().lock().unwrap();
+    let old = app.view(view_id)?;
+    let &wi = old.by_id.get(window).ok_or_else(|| {
+        err(
+            StatusCode::NOT_FOUND,
+            "not-found",
+            format!("unknown window {window}"),
+        )
+    })?;
+    let mut v = (*old).clone();
+    let Some(from) = v.windows[wi].header.expanded_from else {
+        return Err(err(
+            StatusCode::CONFLICT,
+            "not-expanded",
+            format!("window {window} is not expanded"),
+        ));
+    };
+    let rec = v.expansions.remove(window).unwrap_or_default();
+    {
+        let h = &mut v.windows[wi].header;
+        let lines = (h.lines.end - h.lines.start) as f64;
+        let was = (from.end - from.start) as f64;
+        h.rect.h = if rec.h > 0.0 {
+            rec.h
+        } else {
+            h.rect.h - (lines - was) * LINE_WU
+        };
+        h.lines.start = from.start;
+        h.lines.end = from.end;
+        h.flags.truncated = rec.truncated;
+        h.expanded_from = None;
+    }
+    let mut moved = vec![wi];
+    let by_key: HashMap<&str, usize> = v
+        .windows
+        .iter()
+        .enumerate()
+        .map(|(i, w)| (w.header.key.as_str(), i))
+        .collect();
+    let mut up: Vec<(usize, f64)> = Vec::new();
+    for (key, dy) in &rec.windows {
+        if let Some(&w) = by_key.get(key.as_str())
+            && !v.windows[w].header.flags.pinned
+        {
+            up.push((w, *dy));
+        }
+    }
+    for (w, dy) in up {
+        v.windows[w].header.rect.y -= dy;
+        moved.push(w);
+    }
+    let cluster = v.windows[wi].header.cluster.clone();
+    if let Some(c) = v
+        .bootstrap
+        .base
+        .clusters
+        .iter_mut()
+        .find(|c| c.id == cluster)
+    {
+        c.rect.h = (c.rect.h - rec.frame).max(0.0);
+    }
+    let groups = members_by_cluster(&v);
+    for (cid, dy) in &rec.clusters {
+        let Some(k) = v
+            .bootstrap
+            .base
+            .clusters
+            .iter()
+            .position(|c| &c.id == cid && !c.pinned)
+        else {
+            continue;
+        };
+        let r = v.bootstrap.base.clusters[k].rect;
+        moved.extend(move_cluster(&mut v, &groups, k, r.x, r.y - dy));
+    }
+    finish_layout_change(app, &review, view_id, v, wi, moved)
+}
+
+/// Stores a view changed by an expand or collapse: geometry, layoutVersion + 1, `view.invalidated
+/// "layout"` with the moved windows. Returns the window's header and the new layoutVersion.
+fn finish_layout_change(
+    app: &Arc<AppState>,
+    review: &Review,
+    view_id: &str,
+    mut v: View,
+    wi: usize,
+    mut moved: Vec<usize>,
+) -> R<(cv_contracts::WindowHeader, u32)> {
     refresh_geometry(&mut v);
     let version = v.bootstrap.base.view.layout_version + 1;
     v.bootstrap.base.view.layout_version = version;

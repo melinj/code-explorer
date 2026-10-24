@@ -775,6 +775,59 @@ fn expand_pushes_what_it_would_cover_down() {
             let covered = overlaps(r1, r) && r.1 < r1.1 + r1.3 && r1.1 < r.1 + r.3;
             assert!(!covered, "{} is covered: {r:?} vs {r1:?}", o["key"]);
         }
+        // The header says what it was expanded from.
+        assert_eq!(h["expandedFrom"]["start"], w["lines"]["start"], "{h}");
+        assert_eq!(h["expandedFrom"]["end"], w["lines"]["end"], "{h}");
+
+        // Collapse puts back exactly what the expand changed: the window's span and height, and
+        // every window and cluster frame it moved.
+        let (_, b1) = app.get(&format!("/api/v1/views/{snap}/bootstrap")).await;
+        let (st, c) = app
+            .call(
+                "POST",
+                &format!("/api/v1/views/{snap}/windows/{id}/collapse"),
+                None,
+                false,
+            )
+            .await;
+        assert_eq!(st, 200, "{c}");
+        assert_eq!(c["layoutVersion"].as_u64().unwrap(), base + 3, "{c}");
+        assert_eq!(c["lines"], w["lines"], "{c}");
+        assert!(c.get("expandedFrom").is_none(), "{c}");
+        assert_eq!(rect4(&c), r0);
+        let back = app.windows(&snap).await;
+        for o in &ws {
+            let n = back.iter().find(|n| n["id"] == o["id"]).unwrap();
+            assert_eq!(rect4(n), rect4(o), "{} is back", o["key"]);
+        }
+        let (_, b2) = app.get(&format!("/api/v1/views/{snap}/bootstrap")).await;
+        let frame = |b: &Value| {
+            let c = b["clusters"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .find(|c| c["id"] == w["cluster"])
+                .unwrap()
+                .clone();
+            rect4(&c)
+        };
+        assert!(frame(&b2).3 < frame(&b1).3, "the frame shrank back");
+        assert!(
+            back.iter()
+                .filter(|o| o["cluster"] == w["cluster"])
+                .all(|o| rect4(o).1 + rect4(o).3 <= frame(&b2).1 + frame(&b2).3),
+            "and still holds its windows"
+        );
+        // Collapsing again is refused: it is not expanded.
+        let (st, _) = app
+            .call(
+                "POST",
+                &format!("/api/v1/views/{snap}/windows/{id}/collapse"),
+                None,
+                false,
+            )
+            .await;
+        assert_eq!(st, 409);
     });
 }
 

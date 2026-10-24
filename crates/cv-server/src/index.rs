@@ -200,6 +200,22 @@ pub struct View {
     pub retired: HashMap<String, std::sync::Arc<FileRec>>,
     /// Renames the churn walk saw: old path → path at this view's head (carries window pins).
     pub renames: std::sync::Arc<HashMap<String, String>>,
+    /// Snapshot views: windows expanded in the layout (by window id), with what collapsing them
+    /// undoes (crate::layout_api::collapse_in_layout).
+    pub expansions: HashMap<String, Expansion>,
+}
+
+/// What an expand in the layout changed, so a collapse can put it back: the window's height and
+/// truncation before, and how far it pushed the windows (by key) and clusters (by id) below it
+/// down. Repeated expands of one window add up.
+#[derive(Clone, Debug, Default)]
+pub struct Expansion {
+    pub h: f64,
+    pub truncated: bool,
+    pub windows: Vec<(String, f64)>,
+    pub clusters: Vec<(String, f64)>,
+    /// How much its cluster's frame grew taller.
+    pub frame: f64,
 }
 
 impl View {
@@ -771,6 +787,7 @@ pub fn build_view_pinned(
                     truncated: false,
                 },
                 diff_stat: None,
+                expanded_from: None,
             },
             file: *fi,
             out_links: Vec::new(),
@@ -964,5 +981,6 @@ pub fn build_view_pinned(
         timings,
         retired: HashMap::new(),
         renames: std::sync::Arc::new(renames),
+        expansions: HashMap::new(),
     })
 }

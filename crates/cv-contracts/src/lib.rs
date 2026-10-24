@@ -296,6 +296,13 @@ pub struct LineSpan {
     pub file_lines: u32,
 }
 
+/// The span a window showed before it was expanded (`WindowHeader.expandedFrom`).
+#[derive(Clone, Copy, Debug, PartialEq, Serialize, Deserialize, TS)]
+pub struct LineRange {
+    pub start: u32,
+    pub end: u32,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
 pub struct FileFragment {
     pub index: u32,
@@ -349,6 +356,10 @@ pub struct WindowHeader {
     #[ts(optional)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub diff_stat: Option<DiffStat>,
+    /// Set while the window is expanded: the span it showed before (POST …/collapse restores it).
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expanded_from: Option<LineRange>,
 }
 
 /// Window-to-window link geometry for L1/L2 edges (additive to TileResponse). Endpoints are world

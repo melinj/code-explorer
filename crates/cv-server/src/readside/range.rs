@@ -1073,6 +1073,7 @@ fn build(
         timings: vec![],
         retired: HashMap::new(),
         renames: Default::default(),
+        expansions: Default::default(),
     };
     Ok(RangeView {
         id: inp.id,

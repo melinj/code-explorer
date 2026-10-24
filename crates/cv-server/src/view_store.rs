@@ -430,6 +430,7 @@ pub fn load(db: &IndexDb, id: &str, repo: &JjRepo, reg: &Registry) -> Result<Vie
         ],
         retired: HashMap::new(),
         renames: Arc::new(renames),
+        expansions: HashMap::new(),
     })
 }
 
