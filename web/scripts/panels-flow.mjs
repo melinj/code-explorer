@@ -552,6 +552,7 @@ await ensureCode();
     e.client.texts.delete(e.client.textKey(w));
     e.cam.animateTo(e.cam.x + 0.01, e.cam.y, e.cam.zoom, 0);
     const seen = [];
+    const at = [];
     let silUnder = true;
     await new Promise((res) => {
       const t0 = performance.now();
@@ -559,6 +560,7 @@ await ensureCode();
         const x = e["code"].get(id);
         if (x) {
           seen.push(x.c.alpha);
+          at.push(performance.now());
           if (x.c.alpha < 1) silUnder = silUnder && x.chunk.parts.sil.visible && x.chunk.parts.sil.children.length > 0;
         }
         if ((x && x.c.alpha >= 1) || performance.now() - t0 > 30000) res();
@@ -566,9 +568,13 @@ await ensureCode();
       };
       tick();
     });
-    return { frames: seen.length, mid: seen.filter((a) => a > 0 && a < 1).length, first: seen[0], last: seen[seen.length - 1], silUnder };
+    const dt = at.slice(1).map((t, i) => t - at[i]).sort((a, b) => a - b);
+    return { frames: seen.length, mid: seen.filter((a) => a > 0 && a < 1).length, first: seen[0], last: seen[seen.length - 1], silUnder, dt: dt[dt.length >> 1] ?? 0 };
   }, id);
-  check(fade.frames > 0 && fade.first < 0.5 && fade.mid >= 2 && fade.last === 1 && fade.silUnder, `L3 text crossfades over the silhouette (${fade.mid} frames between 0 and 1, from ${fade.first?.toFixed(2)} to ${fade.last})`);
+  // The fade lasts 150 ms: a renderer slower than ~50 ms a frame (SwiftShader on a busy CI runner) can
+  // step over it, so the frames in between are only required when frames come fast enough to land there.
+  const slow = fade.dt > 50;
+  check(fade.frames > 0 && fade.first < 0.5 && (fade.mid >= 2 || slow) && fade.last === 1 && fade.silUnder, `L3 text crossfades over the silhouette (${fade.mid} frames between 0 and 1, from ${fade.first?.toFixed(2)} to ${fade.last}${slow ? `; ${fade.dt.toFixed(0)} ms frames, too slow to require frames mid-fade` : ""})`);
 }
 
 // F2: the data client asks only for what is near the predicted view, aborts what leaves it, and an

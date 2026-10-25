@@ -213,7 +213,9 @@ await cm.getByLabel("Message").fill("S2: notes");
 await cm.getByLabel("Move a bookmark to it").check();
 check((await cm.getByLabel("Bookmark", { exact: true }).inputValue()) === "feature", "the bookmark on ws@'s parent is suggested");
 await cm.getByText("Preview:").waitFor();
-check(/feature/.test(await cm.locator(".gp-preview").innerText()), "the commit preview moves feature");
+// Ticking the bookmark re-asks for the preview: wait for that answer, not the one already shown.
+const movesFeature = await cm.locator(".gp-preview", { hasText: "feature" }).waitFor({ timeout: 15000 }).then(() => true, () => false);
+check(movesFeature, "the commit preview moves feature");
 await page.screenshot({ path: join(out, "6b-commit.png") });
 await cm.getByRole("button", { name: "Apply" }).click();
 await page.locator(".gp-done", { hasText: "commit ws@" }).waitFor();
