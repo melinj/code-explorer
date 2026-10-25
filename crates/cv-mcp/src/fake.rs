@@ -467,6 +467,31 @@ impl McpBackend for FakeBackend {
         )
     }
 
+    async fn structure(&self, _view: &str, _folder: Option<&str>) -> BResult<Value> {
+        Ok(json!({
+            "summary": { "folders": 2, "files": 3, "links": 4, "crossFolderLinks": 2, "linkLocality": 0.5,
+                         "divergence": 0.4, "misgrouped": 0.25, "heatTension": 0.3, "pressure": 0.5 },
+            "folders": [
+                { "path": "src", "depth": 1, "files": 2, "windows": 4, "internal": 2, "outgoing": 3, "incoming": 0,
+                  "pressure": 0.6, "inside": 0.4, "interface": 0, "interfaceShare": 0.0, "partners": 1, "gateways": 2, "spread": 1.0, "chain": 2, "modules": 2,
+                  "mass": 0.9, "tension": 0.6, "hotFiles": ["src/world.py"] },
+                { "path": "lib", "depth": 1, "files": 1, "windows": 2, "internal": 0, "outgoing": 0, "incoming": 2,
+                  "pressure": 1.0, "inside": 0.0, "interface": 1, "interfaceShare": 0.5, "partners": 1, "gateways": 1, "spread": 0.0, "chain": 1, "modules": 1,
+                  "mass": 0.0, "tension": 0.0, "hotFiles": [] }
+            ],
+            "files": [
+                { "path": "src/world.py", "folder": "src", "lane": "code", "heat": 4, "rate": 0.9, "internal": 1,
+                  "external": 0, "exports": 0, "tension": 1.0 },
+                { "path": "src/util.py", "folder": "src", "lane": "code", "heat": 0, "rate": 0.0, "internal": 1,
+                  "external": 2, "exports": 0, "tension": 0.0, "pull": { "folder": "lib", "links": 2 } }
+            ],
+            "windows": [
+                { "key": "src/world.py#file", "path": "src/world.py", "internal": 1, "external": 1, "incoming": 0, "tension": 1.0 },
+                { "key": "src/util.py#file", "path": "src/util.py", "internal": 1, "external": 2, "incoming": 0, "tension": 0.0 }
+            ]
+        }))
+    }
+
     async fn metrics(
         &self,
         _view: &str,

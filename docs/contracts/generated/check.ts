@@ -45,6 +45,8 @@ export type _GridColumn = Assert<Exact<U<G.GridColumn>, U<S_model.GridColumn>>>;
 export type _GridColumnKeys = Assert<Exact<AllKeys<G.GridColumn>, AllKeys<S_model.GridColumn>>>;
 export type _Cluster = Assert<Extends<U<G.Cluster>, U<S_model.Cluster>>>;
 export type _ClusterKeys = Assert<Exact<AllKeys<G.Cluster>, AllKeys<S_model.Cluster>>>;
+export type _FolderFrame = Assert<Exact<U<G.FolderFrame>, U<S_model.FolderFrame>>>;
+export type _FolderFrameKeys = Assert<Exact<AllKeys<G.FolderFrame>, AllKeys<S_model.FolderFrame>>>;
 export type _SiteRef = Assert<Exact<U<G.SiteRef>, U<S_model.SiteRef>>>;
 export type _SiteRefKeys = Assert<Exact<AllKeys<G.SiteRef>, AllKeys<S_model.SiteRef>>>;
 export type _Hub = Assert<Exact<U<G.Hub>, U<S_model.Hub>>>;
@@ -109,6 +111,16 @@ export type _CoChangePair = Assert<Exact<U<G.CoChangePair>, U<S_model.CoChangePa
 export type _CoChangePairKeys = Assert<Exact<AllKeys<G.CoChangePair>, AllKeys<S_model.CoChangePair>>>;
 export type _CoChangeClusterPair = Assert<Exact<U<G.CoChangeClusterPair>, U<S_model.CoChangeClusterPair>>>;
 export type _CoChangeClusterPairKeys = Assert<Exact<AllKeys<G.CoChangeClusterPair>, AllKeys<S_model.CoChangeClusterPair>>>;
+export type _StructureResponse = Assert<Exact<U<G.StructureResponse>, U<S_model.StructureResponse>>>;
+export type _StructureResponseKeys = Assert<Exact<AllKeys<G.StructureResponse>, AllKeys<S_model.StructureResponse>>>;
+export type _StructureSummary = Assert<Exact<U<G.StructureSummary>, U<S_model.StructureSummary>>>;
+export type _StructureSummaryKeys = Assert<Exact<AllKeys<G.StructureSummary>, AllKeys<S_model.StructureSummary>>>;
+export type _FolderStructure = Assert<Exact<U<G.FolderStructure>, U<S_model.FolderStructure>>>;
+export type _FolderStructureKeys = Assert<Exact<AllKeys<G.FolderStructure>, AllKeys<S_model.FolderStructure>>>;
+export type _FileStructure = Assert<Exact<U<G.FileStructure>, U<S_model.FileStructure>>>;
+export type _FileStructureKeys = Assert<Exact<AllKeys<G.FileStructure>, AllKeys<S_model.FileStructure>>>;
+export type _WindowStructure = Assert<Exact<U<G.WindowStructure>, U<S_model.WindowStructure>>>;
+export type _WindowStructureKeys = Assert<Exact<AllKeys<G.WindowStructure>, AllKeys<S_model.WindowStructure>>>;
 export type _SearchHit = Assert<Exact<U<G.SearchHit>, U<S_http.SearchHit>>>;
 export type _SearchHitKeys = Assert<Exact<AllKeys<G.SearchHit>, AllKeys<S_http.SearchHit>>>;
 export type _ExpandRequest = Assert<Extends<U<S_http.ExpandRequest>, U<G.ExpandRequest>>>;
@@ -200,4 +212,4 @@ export type _FragmentsResponseKeys = Assert<Exact<AllKeys<G.FragmentsResponse>, 
 export type _LayoutPatch = Assert<Exact<U<G.LayoutPatch>, U<S_http.LayoutPatch>>>;
 export type _LayoutPatchKeys = Assert<Exact<AllKeys<G.LayoutPatch>, AllKeys<S_http.LayoutPatch>>>;
 
-// Rust-only (no spec namesake): JsonValue, Texture, LaneRow, ViewStats, Resolved, InRange, SymbolRef, LineSpan, LineRange, WindowCounts, WindowFlags, DiffStat, Heading, Signature, ShortestPrefix, GraphEdge, RevisionsResponse, WorkspaceWc, StackSummary, AgentBinding, OpRef, WorkspaceOverlap, StaleReason, WorkspaceStale, RevsetSummary, RevsetError, MetricsResponse, SearchTarget, ExpandAmount, Fingerprint, Outdated, NewAnchor, EditFile, EditOrigin, EditWorkspace, EditError, EditedFile, LaterOp, BookmarkRemote, RefsResponse, BookmarkMove, ConflictSide, ConflictRegion, EventsResponse, ViewSelection, FileHunk, RepoIndex, RepoCapabilities, JjInstall, GitFileStat, FragmentRef, LayoutMove, InterdiffResponse, AgentViewState
+// Rust-only (no spec namesake): JsonValue, Texture, LaneRow, ViewStats, Resolved, InRange, SymbolRef, LineSpan, LineRange, WindowCounts, WindowFlags, DiffStat, Heading, Signature, ShortestPrefix, GraphEdge, RevisionsResponse, WorkspaceWc, StackSummary, AgentBinding, OpRef, WorkspaceOverlap, StaleReason, WorkspaceStale, RevsetSummary, RevsetError, MetricsResponse, FolderPull, SearchTarget, ExpandAmount, Fingerprint, Outdated, NewAnchor, EditFile, EditOrigin, EditWorkspace, EditError, EditedFile, LaterOp, BookmarkRemote, RefsResponse, BookmarkMove, ConflictSide, ConflictRegion, EventsResponse, ViewSelection, FileHunk, RepoIndex, RepoCapabilities, JjInstall, GitFileStat, FragmentRef, LayoutMove, InterdiffResponse, AgentViewState

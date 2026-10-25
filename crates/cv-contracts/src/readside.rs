@@ -6,7 +6,7 @@ use ts_rs::TS;
 
 use crate::{
     ChangeId, ClusterId, CommitId, Connectedness, Heat, HubId, LaneId, OpId, RepoPath, SiteRef,
-    WindowId,
+    WindowId, WindowKey,
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
@@ -299,10 +299,16 @@ pub struct MetricPoint {
     pub conn: Connectedness,
     pub heat_pct: f64,
     pub conn_pct: f64,
+    /// Review priority: √(heat pct × conn pct) × (0.5 + 0.5 × `outside`).
     pub risk: f64,
     #[ts(optional)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub window: Option<WindowId>,
+    /// Share of its links leaving its module (its directory and below), 0..1; absent without
+    /// counted links or on the import-graph basis (whose risk is the plain geometric mean).
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outside: Option<f64>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
@@ -344,6 +350,140 @@ pub struct MetricsResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub cochange_clusters: Option<Vec<CoChangeClusterPair>>,
+}
+
+/// GET /views/:id/structure: how the folder tree fits the code's data flow and change frequency
+/// (DESIGN §4.11). Links are distinct window pairs (an import counts only when the two files share
+/// no other link); links from the test and docs lanes are left out.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct StructureResponse {
+    pub summary: StructureSummary,
+    /// Every directory holding counted files, each with everything below it, in path order.
+    pub folders: Vec<FolderStructure>,
+    /// Files with links or change, in path order.
+    pub files: Vec<FileStructure>,
+    /// Windows with links or tension, in window order.
+    pub windows: Vec<WindowStructure>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct StructureSummary {
+    /// Directories holding files of their own.
+    pub folders: u32,
+    pub files: u32,
+    pub links: u32,
+    /// Links whose two ends sit in different directories.
+    pub cross_folder_links: u32,
+    /// Share of links inside one directory, 0..1.
+    pub link_locality: f64,
+    /// How far the folder tree is from the dependency clusters of the district (change) layout:
+    /// 1 − normalised mutual information of the two groupings of windows, 0 = the same grouping.
+    /// Absent when no district layout of the repo is known yet.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub divergence: Option<f64>,
+    /// Share of windows whose dependency cluster is mostly another directory's code.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub misgrouped: Option<f64>,
+    /// Change-weighted mean of the directories' own heat tension, 0..1.
+    pub heat_tension: f64,
+    /// Window-weighted mean of the directories' own flow pressure, 0..1.
+    pub pressure: f64,
+}
+
+/// A directory with everything below it, seen as a module.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct FolderStructure {
+    pub path: RepoPath,
+    /// Path components (0 for the repo root).
+    pub depth: u32,
+    pub files: u32,
+    pub windows: u32,
+    /// Links with both ends inside.
+    pub internal: u32,
+    /// Links from inside to outside, and from outside in.
+    pub outgoing: u32,
+    pub incoming: u32,
+    /// Flow pressure: boundary links / all links touching it, 0 (sealed) .. 1 (every link leaves).
+    pub pressure: f64,
+    /// Its depth as a module: links staying inside it (in it or below) / all links touching it,
+    /// 1 − pressure (0 when no link touches it).
+    pub inside: f64,
+    /// Windows inside that something outside links to: the module's interface.
+    pub interface: u32,
+    /// interface / windows: a narrow interface is small.
+    pub interface_share: f64,
+    /// Directories outside it that it links with (either way).
+    pub partners: u32,
+    /// Files inside with a link crossing its boundary: its gateways.
+    pub gateways: u32,
+    /// How the boundary links are spread over its files: (gateways − 1) / (files − 1), 0 when one
+    /// file (or none) carries them all, 1 when every file links outside.
+    pub spread: f64,
+    /// Longest chain of links inside it, in windows (cycles cut).
+    pub chain: u32,
+    /// Dependency clusters of the district layout its windows belong to.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub modules: Option<u32>,
+    /// Change mass (sum of file change rates).
+    pub mass: f64,
+    /// Heat tension: share of the change mass in warm or hot files × share of the lines in cool or
+    /// frozen files, 0..1. High when a few busy files live among code that rarely changes.
+    pub tension: f64,
+    /// Warm or hot files among cool or frozen siblings, busiest first (at most 5).
+    pub hot_files: Vec<RepoPath>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct FileStructure {
+    pub path: RepoPath,
+    /// Its directory.
+    pub folder: RepoPath,
+    pub lane: LaneId,
+    /// File heat grade (0 frozen .. 4 hot) and rate.
+    pub heat: u8,
+    pub rate: f64,
+    /// Links to or from files of the same directory, and to or from other directories.
+    pub internal: u32,
+    pub external: u32,
+    /// Its windows that other directories link to.
+    pub exports: u32,
+    /// How much busier it is than its directory: 0..1, > 0 only for warm or hot files, the share
+    /// of its siblings' lines that are cool or frozen (warm files count 0.6).
+    pub tension: f64,
+    /// The other directory it has the most links with, when that beats its own directory (files
+    /// with siblings only).
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pull: Option<FolderPull>,
+}
+
+/// A window's links against its directory, and its file's heat tension.
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+#[serde(rename_all = "camelCase")]
+pub struct WindowStructure {
+    pub key: WindowKey,
+    pub path: RepoPath,
+    /// Links with windows of its directory or below it (its own file included).
+    pub internal: u32,
+    /// Links with siblings or parents of its directory (anything not below it), either way;
+    /// `incoming` of them come in.
+    pub external: u32,
+    pub incoming: u32,
+    /// Its file's heat tension (FileStructure.tension).
+    pub tension: f64,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct FolderPull {
+    pub folder: RepoPath,
+    pub links: u32,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize, TS)]

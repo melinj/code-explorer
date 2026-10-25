@@ -578,6 +578,7 @@ dependencies = [
  "axum",
  "base64 0.22.1",
  "cv-contracts",
+ "cv-layout",
  "serde",
  "serde_json",
  "tokio",

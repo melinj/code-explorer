@@ -100,7 +100,7 @@ async fn mcp_route_serves_profiles_and_binds_by_agent() {
     assert_eq!(tools["result"]["tools"].as_array().unwrap().len(), 15);
     let mut s = open(format!("http://{addr}/mcp/full")).await;
     let tools = s.rpc(2, "tools/list", json!({})).await;
-    assert_eq!(tools["result"]["tools"].as_array().unwrap().len(), 33);
+    assert_eq!(tools["result"]["tools"].as_array().unwrap().len(), 34);
     let r = s
         .rpc(
             3,
@@ -127,7 +127,7 @@ async fn mcp_route_serves_profiles_and_binds_by_agent() {
     // A second session of the same agent on the reader endpoint sees the binding and fewer tools.
     let mut r2 = open(format!("http://{addr}/mcp/reader")).await;
     let tools = r2.rpc(2, "tools/list", json!({})).await;
-    assert_eq!(tools["result"]["tools"].as_array().unwrap().len(), 15);
+    assert_eq!(tools["result"]["tools"].as_array().unwrap().len(), 16);
     let ws = r2
         .rpc(
             3,

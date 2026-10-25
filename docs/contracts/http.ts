@@ -52,6 +52,7 @@ import type {
   ConflictRecord,
   EdgeBundle,
   EditRequest,
+  FolderFrame,
   EditResult,
   FileDiff,
   GraphOpRequest,
@@ -76,6 +77,7 @@ import type {
   Rect,
   RevisionReview,
   SiteRef,
+  StructureResponse,
   Thread,
   ThreadKind,
   ThreadStatus,
@@ -141,6 +143,8 @@ export interface Routes {
     query: { level?: "cluster" | "file"; lane?: LaneId; limit?: number; rank?: "risk" | "inRange"; basis?: "links" | "imports" };
     res: { points: MetricPoint[]; cochange: CoChangePair[]; cochangeClusters?: CoChangeClusterPair[] }; // Hotspots panel and co-change lens
   };
+  /** Snapshot views (DESIGN §4.11): directories as modules (flow pressure, interface, heat tension) and files to split out or move. folder: only it and below; the summary stays whole. */
+  "GET /api/v1/views/:viewId/structure": { query: { folder?: RepoPath }; res: StructureResponse };
   /** File chip clicked: every fragment of the file, including off-screen ones, for highlight and minimap. */
   "GET /api/v1/views/:viewId/fragments": { query: { path: RepoPath }; res: FragmentsResponse };
 
@@ -322,6 +326,8 @@ export interface ViewBootstrap {
   bundles: EdgeBundle[];
   churn?: ChurnSummary;
   heatLabels: [string, string, string, string, string]; // "Frozen", "Cool", "Mild", "Warm", "Hot"
+  /** Folders layout: directory frames, outermost first (lanes have no rows and columns is empty). */
+  folders?: FolderFrame[];
 }
 
 export interface FragmentsResponse {

@@ -1153,7 +1153,10 @@ pub fn label_cluster(app: &Arc<AppState>, who: &Actor, cluster: &str, b: &LabelB
     {
         let mut views = app.views.write().unwrap();
         for v in views.values_mut() {
-            if !v.bootstrap.base.clusters.iter().any(|c| c.id == cluster) {
+            // Cluster ids name the district grid's clusters; the folder tree's are directories.
+            if crate::layout_api::is_folders(v)
+                || !v.bootstrap.base.clusters.iter().any(|c| c.id == cluster)
+            {
                 continue;
             }
             let mut nv = (**v).clone();

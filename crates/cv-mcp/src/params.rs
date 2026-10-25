@@ -212,6 +212,14 @@ pub struct GetHotspots {
 }
 
 #[derive(Debug, Deserialize, JsonSchema)]
+pub struct GetStructure {
+    /// Only this directory and below, e.g. "src/world".
+    pub folder: Option<String>,
+    /// Rows per list. Default 10.
+    pub limit: Option<usize>,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct BindWorkspace {
     /// Workspace name from list_workspaces, e.g. "gym".
     pub workspace: String,

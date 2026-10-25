@@ -127,6 +127,8 @@ pub trait McpBackend: Send + Sync + 'static {
     async fn window_batch(&self, view: &str, ids: &[String], parts: &[&str]) -> BResult<Value>;
     /// GET /blobs/:blob/text → BlobText
     async fn blob_text(&self, blob: &str, from: Option<u32>, to: Option<u32>) -> BResult<Value>;
+    /// GET /views/:view/structure → StructureResponse
+    async fn structure(&self, view: &str, folder: Option<&str>) -> BResult<Value>;
     /// GET /views/:view/metrics → { points, cochange }
     async fn metrics(
         &self,

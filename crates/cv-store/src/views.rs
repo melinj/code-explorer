@@ -159,6 +159,8 @@ impl IndexDb {
                     "warnings": vr.warnings,
                     "commits": vr.resolved.commits,
                     "sharedPlacement": vr.shared_placement,
+                    "folders": b0.folders,
+                    "clusterFolders": b0.clusters.iter().map(|c| &c.folder).collect::<Vec<_>>(),
                 })
                 .to_string(),
                 v.renames_json,
@@ -757,10 +759,20 @@ fn bootstrap_of(
                 pinned: r.get::<_, i64>(15)? != 0,
                 heat_level: r.get(16)?,
                 review: r.get(17)?,
+                folder: None,
             })
         })?
         .collect::<rusqlite::Result<_>>()?
     };
+    // Folders layout: each cluster's directory, in cluster order (absent before the layout existed).
+    let mut clusters = clusters;
+    if let Ok(folders) =
+        serde_json::from_value::<Vec<Option<String>>>(rest["clusterFolders"].take())
+    {
+        for (c, f) in clusters.iter_mut().zip(folders) {
+            c.folder = f;
+        }
+    }
     let n_clusters = clusters.len() as u32;
     let bootstrap = ViewBootstrap {
         view: ViewRef {
@@ -792,6 +804,7 @@ fn bootstrap_of(
         bundles: serde_json::from_value(rest["bundles"].take())?,
         churn: serde_json::from_value(rest["churn"].take())?,
         heat_labels: serde_json::from_value(rest["heatLabels"].take())?,
+        folders: serde_json::from_value(rest["folders"].take()).unwrap_or_default(),
     };
     Ok(Some(bootstrap))
 }

@@ -11,6 +11,7 @@ struct Fx {
     links: Vec<(usize, usize, EdgeKind)>,
     co: Vec<(usize, usize, f64)>,
     pins: Vec<Pin>,
+    arrangement: Arrangement,
 }
 
 impl Fx {
@@ -21,6 +22,7 @@ impl Fx {
             links: vec![],
             co: vec![],
             pins: vec![],
+            arrangement: Arrangement::Districts,
         }
     }
 
@@ -95,6 +97,7 @@ impl Fx {
             prev,
             full,
             grade_cuts: GradeCuts::default(),
+            arrangement: self.arrangement,
         })
     }
 }
@@ -639,6 +642,7 @@ fn hotter_windows_come_first_within_a_layer() {
         prev: None,
         full: false,
         grade_cuts: GradeCuts::default(),
+        arrangement: Arrangement::Districts,
     };
     let mut calls: Vec<Vec<usize>> = vec![Vec::new(); windows.len()];
     calls[caller] = callees.clone();
@@ -778,4 +782,350 @@ fn test_entry(path: &str) -> bool {
     let name = path.rsplit('/').next().unwrap_or(path);
     let stem = name.split('.').next().unwrap_or(name);
     matches!(stem, "lib" | "mod" | "main" | "__init__" | "index")
+}
+
+// ─── Folders arrangement ─────────────────────────────────────────────────────
+
+fn inside(r: &Rect, o: &Rect) -> bool {
+    r.x >= o.x && r.y >= o.y && r.x + r.w <= o.x + o.w && r.y + r.h <= o.y + o.h
+}
+
+#[test]
+fn folders_cluster_by_directory_and_nest_frames() {
+    let mut fx = Fx::new();
+    fx.arrangement = Arrangement::Folders;
+    let x = fx.file("a/x.py", 2, 3, 0.02, 2);
+    let y = fx.file("a/y.py", 2, 2, 0.0, 1);
+    let z = fx.file("a/b/z.py", 2, 2, 0.0, 0);
+    let w = fx.file("c/d/e/w.py", 2, 2, 0.0, 0);
+    let t = fx.file("tests/test_x.py", 3, 1, 0.0, 0);
+    // Links pull x and z together on the grid; folders ignore them for grouping.
+    fx.links.push((x[0], z[0], EdgeKind::Call));
+    fx.links.push((x[1], w[0], EdgeKind::Call));
+    let out = fx.run(None, false);
+    let folder_of = |win: usize| out.clusters[out.cluster_of[win]].folder.clone().unwrap();
+    assert_eq!(folder_of(x[0]), "a");
+    assert_eq!(out.cluster_of[x[0]], out.cluster_of[y[0]]);
+    assert_eq!(folder_of(z[0]), "a/b");
+    assert_eq!(folder_of(w[1]), "c/d/e");
+    assert_eq!(out.lanes.len(), 2, "code and test lanes");
+    assert!(out.columns.is_empty() && out.lanes.iter().all(|l| l.rows.is_empty()));
+    // a/b nests in a; c/d/e is one folded frame; frames are listed outermost first.
+    let frame = |p: &str| {
+        out.folders
+            .iter()
+            .find(|f| f.path == p)
+            .unwrap_or_else(|| panic!("no frame {p}"))
+    };
+    assert!(inside(&frame("a/b").rect, &frame("a").rect));
+    assert_eq!(frame("c/d/e").label, "c/d/e");
+    assert!(out.folders.iter().all(|f| f.path != "c" && f.path != "c/d"));
+    assert_eq!(frame("a").depth, 0);
+    assert_eq!(frame("a/b").depth, 1);
+    let depths: Vec<u32> = out.folders.iter().map(|f| f.depth).collect();
+    assert!(depths.windows(2).all(|p| p[0] <= p[1]));
+    // Every cluster sits in its directory's frame and in its lane; windows never overlap.
+    for c in &out.clusters {
+        let d = c.folder.as_deref().unwrap();
+        if let Some(f) = out.folders.iter().find(|f| f.path == d) {
+            assert!(inside(&c.rect, &f.rect), "{} outside its frame", c.label);
+        }
+        let band = out.lanes.iter().find(|l| l.lane == LANES[c.lane]).unwrap();
+        assert!(inside(&c.rect, &band.rect));
+    }
+    for i in 0..out.rects.len() {
+        for j in i + 1..out.rects.len() {
+            assert!(!out.rects[i].intersects(&out.rects[j]), "{i} overlaps {j}");
+        }
+    }
+    assert_eq!(out.lanes[1].lane, "test");
+    assert_eq!(folder_of(t[0]), "tests");
+    // Deterministic, and independent of a previous placement.
+    let again = fx.run(Some(&out.placement), false);
+    assert_eq!(again.rects, out.rects);
+    assert_eq!(again.folders, out.folders);
+}
+
+#[test]
+fn folders_split_a_big_directory_between_files() {
+    let mut fx = Fx::new();
+    fx.arrangement = Arrangement::Folders;
+    for i in 0..10 {
+        fx.file(&format!("big/f{i:02}.py"), 2, 10, 0.0, 0);
+    }
+    let out = fx.run(None, false);
+    assert_eq!(
+        out.clusters.len(),
+        3,
+        "100 windows in runs of ≤ 48, files whole"
+    );
+    assert!(
+        out.clusters
+            .iter()
+            .all(|c| c.members.len() <= folders::FOLDER_MAX)
+    );
+    let labels: Vec<&str> = out.clusters.iter().map(|c| c.label.as_str()).collect();
+    assert_eq!(labels, ["big · 1", "big · 2", "big · 3"]);
+}
+
+// ─── Structure ───────────────────────────────────────────────────────────────
+
+mod structure_tests {
+    use crate::structure::{FileIn, LinkIn, WinIn, analyse};
+
+    fn file<'a>(path: &'a str, heat: u8, rate: f64, lines: u32) -> FileIn<'a> {
+        FileIn {
+            path,
+            lane: if path.starts_with("tests/") {
+                "test"
+            } else {
+                "code"
+            },
+            heat,
+            rate,
+            lines,
+        }
+    }
+
+    fn link(from: usize, to: usize) -> LinkIn {
+        LinkIn {
+            from,
+            to,
+            import: false,
+        }
+    }
+
+    #[test]
+    fn pressure_interface_chain_and_pull() {
+        let files = [
+            file("core/a.py", 0, 0.0, 100),  // 0
+            file("core/b.py", 0, 0.0, 100),  // 1
+            file("core/c.py", 0, 0.0, 100),  // 2
+            file("app/main.py", 0, 0.0, 50), // 3
+            file("app/odd.py", 0, 0.0, 50),  // 4
+            file("tests/t.py", 0, 0.0, 50),  // 5
+            file("solo/x.py", 0, 0.0, 50),   // 6
+        ];
+        // One window per file, modules by file except odd.py, grouped with core.
+        let windows: Vec<WinIn> = (0..7)
+            .map(|f| WinIn {
+                key: files[f].path,
+                file: f,
+                module: Some(if f == 4 { 0 } else { f.min(1) }),
+            })
+            .collect();
+        let links = [
+            link(0, 1),
+            link(1, 2), // chain a → b → c inside core
+            link(3, 0), // app calls core's interface (a)
+            link(4, 1),
+            link(4, 2), // odd.py talks to core only
+            link(5, 2), // tests are left out
+            link(6, 0),
+            link(6, 1), // a lone file is never pulled
+            LinkIn {
+                from: 3,
+                to: 0,
+                import: true, // same pair as a call: not counted twice
+            },
+        ];
+        let s = analyse(&files, &windows, &links);
+        assert_eq!(s.summary.links, 7);
+        assert_eq!(s.summary.cross_folder_links, 5);
+        let solo = s.files.iter().find(|f| f.path == "solo/x.py").unwrap();
+        assert_eq!((solo.external, solo.pull.is_none()), (2, true));
+        let core = s.folders.iter().find(|f| f.path == "core").unwrap();
+        assert_eq!((core.internal, core.incoming, core.outgoing), (2, 5, 0));
+        assert_eq!(
+            core.interface, 3,
+            "a, b and c are each reached from outside"
+        );
+        assert_eq!(core.chain, 3);
+        assert_eq!(core.partners, 2);
+        assert_eq!(
+            (core.gateways, core.spread),
+            (3, 1.0),
+            "every core file is reached from outside"
+        );
+        let app = s.folders.iter().find(|f| f.path == "app").unwrap();
+        assert_eq!((app.gateways, app.spread), (2, 1.0));
+        let w = |p: &str| s.windows.iter().find(|w| w.path == p).unwrap();
+        assert_eq!(
+            (
+                w("core/a.py").internal,
+                w("core/a.py").external,
+                w("core/a.py").incoming
+            ),
+            (1, 2, 2)
+        );
+        assert_eq!((w("app/odd.py").external, w("app/odd.py").incoming), (2, 0));
+        assert!(s.windows.iter().all(|w| w.path != "tests/t.py"));
+        assert!((core.pressure - 5.0 / 7.0).abs() < 1e-3);
+        assert!((core.inside - 2.0 / 7.0).abs() < 1e-3);
+        let odd = s.files.iter().find(|f| f.path == "app/odd.py").unwrap();
+        assert_eq!(
+            odd.pull.as_ref().map(|p| (p.folder.as_str(), p.links)),
+            Some(("core", 2))
+        );
+        let main = s.files.iter().find(|f| f.path == "app/main.py").unwrap();
+        assert!(main.pull.is_none(), "one link is not a pull");
+        assert!(s.files.iter().all(|f| f.lane != "test"));
+        assert!(s.summary.divergence.unwrap() > 0.0);
+        assert!(s.summary.misgrouped.unwrap() > 0.0);
+    }
+
+    #[test]
+    fn heat_tension_marks_busy_files_among_quiet_ones() {
+        let files = [
+            file("mix/hot.py", 4, 0.9, 100),
+            file("mix/cold1.py", 0, 0.0, 400),
+            file("mix/cold2.py", 1, 0.01, 500),
+            file("busy/a.py", 4, 0.5, 100),
+            file("busy/b.py", 4, 0.5, 100),
+        ];
+        let windows: Vec<WinIn> = (0..5)
+            .map(|f| WinIn {
+                key: files[f].path,
+                file: f,
+                module: None,
+            })
+            .collect();
+        let s = analyse(&files, &windows, &[]);
+        let mix = s.folders.iter().find(|f| f.path == "mix").unwrap();
+        let busy = s.folders.iter().find(|f| f.path == "busy").unwrap();
+        assert!(mix.tension > 0.8, "{}", mix.tension);
+        assert_eq!(mix.hot_files, ["mix/hot.py"]);
+        assert_eq!(
+            s.windows
+                .iter()
+                .find(|w| w.path == "mix/hot.py")
+                .unwrap()
+                .tension,
+            1.0
+        );
+        assert_eq!(
+            s.windows.len(),
+            1,
+            "only the tense window: there are no links"
+        );
+        assert_eq!(busy.tension, 0.0, "uniformly busy is not tension");
+        let hot = s.files.iter().find(|f| f.path == "mix/hot.py").unwrap();
+        assert_eq!(hot.tension, 1.0);
+        assert!(s.summary.divergence.is_none());
+        assert!(s.summary.heat_tension > 0.0 && s.summary.heat_tension < mix.tension);
+    }
+}
+
+#[test]
+fn flow_order_keeps_linked_items_together() {
+    // The chain starts at the most linked item (3), takes its partner (0), then 4 (linked to 3)
+    // and 1 (linked to 4); 2 has no links and keeps its place after them.
+    let w: HashMap<(usize, usize), f64> = [((0, 3), 5.0), ((1, 4), 2.0), ((3, 4), 1.0)].into();
+    assert_eq!(folders::flow_order(5, &w), [3, 0, 4, 1, 2]);
+    assert_eq!(folders::flow_order(3, &HashMap::new()), [0, 1, 2]);
+}
+
+#[test]
+fn flow_arrangement_puts_linked_directories_side_by_side() {
+    let mut fx = Fx::new();
+    let a = fx.file("a/x.py", 2, 2, 0.0, 0);
+    fx.file("b/y.py", 2, 2, 0.0, 0);
+    fx.file("c/z.py", 2, 2, 0.0, 0);
+    let d = fx.file("d/w.py", 2, 2, 0.0, 0);
+    fx.links.push((a[0], d[0], EdgeKind::Call));
+    fx.links.push((a[1], d[1], EdgeKind::Call));
+    let order = |out: &Output| {
+        let mut fs: Vec<&cv_contracts::FolderFrame> = out.folders.iter().collect();
+        fs.sort_by(|p, q| {
+            (p.rect.y, p.rect.x)
+                .partial_cmp(&(q.rect.y, q.rect.x))
+                .unwrap()
+        });
+        fs.iter().map(|f| f.path.clone()).collect::<Vec<_>>()
+    };
+    fx.arrangement = Arrangement::Folders;
+    assert_eq!(order(&fx.run(None, false)), ["a", "b", "c", "d"]);
+    fx.arrangement = Arrangement::Flow;
+    let flow = fx.run(None, false);
+    assert_eq!(order(&flow), ["a", "d", "b", "c"]);
+    assert!(flow.clusters.iter().all(|c| c.folder.is_some()));
+}
+
+mod depth_tests {
+    use crate::structure::{FileIn, LinkIn, WinIn, analyse};
+
+    #[test]
+    fn a_link_into_a_subfolder_stays_inside_the_window_s_module() {
+        let files = [
+            FileIn {
+                path: "m/api.py",
+                lane: "code",
+                heat: 0,
+                rate: 0.0,
+                lines: 10,
+            },
+            FileIn {
+                path: "m/impl/core.py",
+                lane: "code",
+                heat: 0,
+                rate: 0.0,
+                lines: 10,
+            },
+            FileIn {
+                path: "other/use.py",
+                lane: "code",
+                heat: 0,
+                rate: 0.0,
+                lines: 10,
+            },
+        ];
+        let windows: Vec<WinIn> = (0..3)
+            .map(|f| WinIn {
+                key: files[f].path,
+                file: f,
+                module: None,
+            })
+            .collect();
+        let link = |from, to| LinkIn {
+            from,
+            to,
+            import: false,
+        };
+        // other → m/api (the interface), m/api → m/impl/core (below it).
+        let s = analyse(&files, &windows, &[link(2, 0), link(0, 1)]);
+        let w = |p: &str| s.windows.iter().find(|w| w.path == p).unwrap();
+        assert_eq!((w("m/api.py").internal, w("m/api.py").external), (1, 1));
+        // From m/impl the call comes from its parent: outside its module.
+        assert_eq!(
+            (w("m/impl/core.py").internal, w("m/impl/core.py").external),
+            (0, 1)
+        );
+        let m = s.folders.iter().find(|f| f.path == "m").unwrap();
+        assert_eq!((m.internal, m.incoming, m.outgoing), (1, 1, 0));
+        assert_eq!(m.inside, 0.5);
+        let imp = s.folders.iter().find(|f| f.path == "m/impl").unwrap();
+        assert_eq!(imp.inside, 0.0, "its only link comes from its parent");
+    }
+}
+
+#[test]
+fn review_priority_weighs_up_code_at_a_module_s_edge() {
+    let mut fx = Fx::new();
+    // p and q: equal heat and connectedness; p also links out of m/, q only within it.
+    let p = fx.file("m/p.py", 2, 1, 0.02, 3)[0];
+    let q = fx.file("m/q.py", 2, 1, 0.02, 3)[0];
+    let r = fx.file("n/r.py", 2, 1, 0.0, 0)[0];
+    fx.links.push((p, r, EdgeKind::Call));
+    fx.links.push((q, p, EdgeKind::Call));
+    let out = fx.run(None, false);
+    // p: 1 inside, 1 outside → × 0.75; q: 1 inside → × 0.5.
+    assert!(out.risk[q] > 0.0);
+    assert!(
+        (out.risk[p] / out.risk[q] - 1.5).abs() < 1e-9,
+        "{} vs {}",
+        out.risk[p],
+        out.risk[q]
+    );
+    assert_eq!(structure::boundary_factor(0, 0), 0.5);
+    assert_eq!(structure::boundary_factor(0, 4), 1.0);
 }

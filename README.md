@@ -225,12 +225,25 @@ cd web && npm install && npm run dev      # http://127.0.0.1:5178
     open one to see what it changed, **Undo** just that one (`jj op revert`) or **Restore to here**
     (`jj op restore`, previewed).
   - In a git-colocated repo the bookmarks are git branches, so moving one moves the branch.
-- **Lenses** (top bar) change emphasis, never the layout. What a lens leaves out turns grey, along
-  with the links between such windows.
+- **Lenses** (top bar) change emphasis, and pick the layout. **None** and **Tension** show the folder
+  tree (directories nested by path), **Depth** the same tree ordered by links (linked code side by
+  side); the others show the district grid. What a lens leaves out turns grey, along with the links
+  between such windows.
+  - **None:** the folder tree as it is. The top bar shows how far it diverges from the dependency
+    clusters, the share of links crossing a folder's edge (outside) and heat tension.
+  - **Depth:** how deep each folder is as a module. Hue: blue when its links stay inside it (or its
+    subfolders), through teal and yellow to red when they leave; saturation: how many links it has
+    against the busiest on the view (at least 20%). Folder titles read "82% inside · 3/40 exposed";
+    each window is coloured by its own share. Hovering a window or cluster shows these figures in
+    full. MCP `get_structure` lists the leaky folders, gateways, files to split out and files to
+    move, and `get_metrics` gives the same figures for one window.
+  - **Tension:** busy files sitting among quiet ones, candidates for a module of their own; each
+    window shows its file's tension.
   - **Heat:** how often code changes, on one continuous scale (legend: Frozen → Hot), with a glow
     over the hottest.
   - **Depends:** blue for code others depend on, teal for code that depends on others.
-  - **Hotspots:** review-first code, which is both hot and central.
+  - **Review priority:** review-first code: hot and central, weighted up where its links leave its
+    folder (code at a module's edge ripples further when it changes).
   - **Co-change:** files and modules that change together in history.
     - Point at a module or a file to light up its partners, by how surely they change together.
       Dashed arcs mark coupling that no static link explains.

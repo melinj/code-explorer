@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import type { ViewBootstrap } from "../contracts/http";
-import type { ChurnSummary, Lens, SnapshotOptions, ViewSpec } from "../contracts/model";
+import type { ChurnSummary, Lens, SnapshotOptions, StructureSummary, ViewSpec } from "../contracts/model";
 import { bench, SCENARIOS } from "../canvas/bench";
 import { GROUP_LABEL } from "../canvas/describe";
 import { LINK_GROUPS, edgeColor, type LinkGroup } from "../canvas/edges";
 import { Engine, type EngineStats } from "../canvas/engine";
+import { isTreeLens, layoutFor } from "../canvas/structure";
 import type { Target } from "../canvas/overlay";
 import { DARK, LIGHT, applyCssVars, hex } from "../canvas/theme";
 import { DataClient } from "../data/client";
@@ -59,13 +60,38 @@ function specText(spec: ViewSpec) {
 }
 /** A representative kind per group, for the legend swatch. */
 const GROUP_KIND = { calls: "call", inherit: "inherit", events: "publish", http: "http-request", config: "read" } as const;
-const LENSES: Array<[Lens, string]> = [
-  ["none", "None"],
-  ["heat", "Heat"],
-  ["connectedness", "Depends"],
-  ["hotspots", "Hotspots"],
-  ["cochange", "Co-change"],
+/** Lens buttons: [lens, label, tooltip]. None, Flow and Tension show the folder tree; the rest the district grid. */
+const LENSES: Array<[Lens, string, string]> = [
+  ["none", "None", "The folder tree, no emphasis"],
+  ["depth", "Depth", "Folder tree ordered by links: each folder's title band and each window coloured by the share of its links that stay inside (or in subfolders): blue when sealed, through teal and yellow to red when its links leave; fuller colour = more links than the rest of the view, greyer (20% minimum) = few"],
+  ["tension", "Tension", "Folder tree: busy files among quiet ones, candidates for a module of their own"],
+  ["heat", "Heat", "District grid: change frequency"],
+  ["connectedness", "Depends", "District grid: depended on vs depending"],
+  ["hotspots", "Review priority", "District grid: review first: hot, central code, weighted up where its links leave its folder"],
+  ["cochange", "Co-change", "District grid: files that change together"],
 ];
+
+const pct = (x: number) => `${Math.round(x * 100)}%`;
+
+/**
+ * The folder tree's fit (DESIGN §4.11) in three numbers: how far the folders are from the district
+ * grid's dependency clusters, the share of links crossing a folder's edge, and heat tension.
+ */
+function StructureChip({ s }: { s: StructureSummary }) {
+  const title = [
+    s.divergence !== undefined ? `Divergence ${pct(s.divergence)}: how different the folders are from the dependency clusters of the district (change) layout (1 − NMI); ${pct(s.misgrouped ?? 0)} of windows sit in a cluster that is mostly another folder's.` : undefined,
+    `Outside ${pct(s.pressure)}: share of a folder's links that cross its edge (window-weighted; the Depth lens's ratio); ${s.crossFolderLinks.toLocaleString()} of ${s.links.toLocaleString()} links leave their folder.`,
+    `Heat tension ${pct(s.heatTension)}: change in busy files sitting among quiet ones (change-weighted).`,
+    "MCP get_structure lists the folders and files behind these numbers.",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return (
+    <span className="chip mono structure-chip" title={title}>
+      {s.divergence !== undefined && <>div {pct(s.divergence)} · </>}outside {pct(s.pressure)} · tension {pct(s.heatTension)}
+    </span>
+  );
+}
 
 function useSystemDark() {
   const [dark, setDark] = useState(() => matchMedia("(prefers-color-scheme: dark)").matches);
@@ -88,6 +114,8 @@ export function App() {
   const [sel, setSel] = useState<{ t?: Target; v: number }>({ v: 0 });
   const [hidden, setHidden] = useState<ReadonlySet<LinkGroup>>(new Set());
   const [lens, setLens] = useState<Lens>("none");
+  /** Structure indices of the snapshot on screen (folder-tree lenses). */
+  const [shape, setShape] = useState<StructureSummary>();
   const [hiddenLanes, setHiddenLanes] = useState<ReadonlySet<string>>(new Set());
   // Narrow screens: the side panel is a drawer over the canvas.
   const [drawer, setDrawer] = useState(false);
@@ -160,12 +188,14 @@ export function App() {
       const client = new DataClient();
       // The canvas glyph atlases rasterize once, so the web fonts must be in before the engine starts
       // (bounded: offline, the atlases fall back to system fonts rather than delaying the map).
-      const [b] = await Promise.all([client.open(), fontsReady()]);
+      // The default lens ("none") shows the folder tree (structure.ts layoutFor).
+      const [b] = await Promise.all([client.open({ mode: "snapshot", rev: "@", options: { layout: layoutFor("none") } }), fontsReady()]);
       if (cancelled) return;
       e = new Engine(host.current!, client, review);
       engine.current = e;
       e.onAction = setAction;
       e.onLayoutError = setToast;
+      e.onStructure = (s) => setShape(s?.summary);
       const noteView = () => {
         const spec = e!.client.view.spec as ViewSpec;
         if (spec.mode === "snapshot") setSnap({ rev: spec.rev ?? "@", head: e!.client.view.resolved.head, workspace: spec.options?.workspace });
@@ -456,12 +486,13 @@ export function App() {
         ))}
         <span className="muted sep">Lens</span>
         <div className="seg small" role="group" aria-label="Lens">
-          {LENSES.map(([l, label]) => (
-            <button key={l} className={lens === l ? "on" : ""} onClick={() => pickLens(l)}>
+          {LENSES.map(([l, label, title]) => (
+            <button key={l} className={lens === l ? "on" : ""} title={title} onClick={() => pickLens(l)}>
               {label}
             </button>
           ))}
         </div>
+        {shape && isTreeLens(lens) && !rangeView && <StructureChip s={shape} />}
         <span className="muted sep">Lanes</span>
         {boot?.laneDefs.map((l) => (
           <button

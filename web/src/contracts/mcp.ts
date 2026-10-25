@@ -53,6 +53,8 @@ import type {
   EditMode,
   EditResult,
   FileDiff,
+  FileStructure,
+  FolderStructure,
   Heat,
   Hub,
   Link,
@@ -62,11 +64,13 @@ import type {
   Protocol,
   Revision,
   RevisionReview,
+  StructureSummary,
   ThreadKind,
   ThreadStatus,
   ThreadSummary,
   ViewRef,
   ViewSpec,
+  WindowStructure,
   WorkspaceSummary,
 } from "./model";
 import type { SearchHit } from "./http";
@@ -182,16 +186,44 @@ export interface McpTools {
   get_hub: { in: { key: string; protocol?: Protocol }; out: Omit<Hub, "rect" | "anchors"> };
   /**
    * Both axes for one target: heat (change frequency) and connectedness, plus co-change partners
-   * (≤ 10). No timeline: no route serves per-window months yet.
+   * (≤ 10). No timeline: no route serves per-window months yet. structure (snapshots, §4.11): the
+   * window's links against its directory, its file's tension and pull, and the directory's
+   * pressure, gateway spread and tension.
    */
   get_metrics: {
     in: { target: string };
-    out: { window: WindowId; path: RepoPath; heat: Heat; conn: Connectedness; risk: number; reviewFirst: boolean; timeline?: Array<{ month: string; touches: number }>; coChanged: Array<{ path: RepoPath; jaccard: number }> };
+    out: {
+      window: WindowId; path: RepoPath; heat: Heat; conn: Connectedness; risk: number; reviewFirst: boolean; timeline?: Array<{ month: string; touches: number }>; coChanged: Array<{ path: RepoPath; jaccard: number }>;
+      structure?: {
+        window?: Pick<WindowStructure, "internal" | "external" | "incoming">;
+        file?: Pick<FileStructure, "internal" | "external" | "exports" | "tension" | "pull">;
+        folder?: Pick<FolderStructure, "path" | "files" | "pressure" | "inside" | "gateways" | "spread" | "interfaceShare" | "chain" | "tension">;
+      };
+    };
   };
-  /** Ranked "review first" list: highest geometric mean of heat and connectedness percentiles. limit default 10. */
+  /** Review priority ranking: √(heat pct × connectedness pct) × (0.5 + 0.5 × outside share of its links). limit default 10. */
   get_hotspots: {
     in: { lane?: LaneId; limit?: number };
-    out: Array<Pick<MetricPoint, "label" | "window" | "lane" | "risk" | "heatPct" | "connPct"> & { touches: number; fanIn: number }>;
+    out: Array<Pick<MetricPoint, "label" | "window" | "lane" | "risk" | "heatPct" | "connPct" | "outside"> & { touches: number; fanIn: number }>;
+  };
+
+  /**
+   * How the folder tree fits the code (DESIGN §4.11), for refactoring. leaky: directories ranked by
+   * flow pressure × ln(1 + boundary links) (≥ 3 boundary links); tense: by heat tension × change mass;
+   * splitOut: busy files among quiet siblings; move: files with more links to another directory than
+   * to their own; gateways: the windows carrying the most links across their directory's edge.
+   * folder: only it and below. limit default 10 per list.
+   */
+  get_structure: {
+    in: { folder?: RepoPath; limit?: number };
+    out: {
+      summary: StructureSummary;
+      leaky: Array<Pick<FolderStructure, "path" | "files" | "pressure" | "inside" | "internal" | "interface" | "interfaceShare" | "partners" | "gateways" | "spread" | "chain" | "modules"> & { out: number; in: number }>;
+      tense: Array<Pick<FolderStructure, "path" | "tension" | "hotFiles">>;
+      splitOut: Array<Pick<FileStructure, "path" | "folder" | "heat" | "tension">>;
+      move: Array<{ path: RepoPath; from: RepoPath; to: RepoPath; links: number; internal: number }>;
+      gateways: Array<Pick<WindowStructure, "key" | "external" | "incoming" | "internal">>;
+    };
   };
 
   // ── Workspaces (first-class) ──
@@ -294,10 +326,10 @@ export type McpToolName = keyof McpTools;
  * findings); graph, metrics, tours, navigation and workspace binding are in reviewer and full.
  */
 export const MCP_PROFILES = {
-  reader: ["get_view_state", "focus", "search", "read_window", "read_code", "get_links", "get_hub", "get_metrics", "get_hotspots", "list_workspaces", "bind_workspace", "list_revisions", "get_diff", "get_interdiff", "wait_for_events"],
-  reviewer: ["get_view_state", "set_view", "focus", "create_tour", "search", "read_window", "read_code", "get_links", "get_hub", "get_metrics", "get_hotspots", "list_workspaces", "bind_workspace", "list_threads", "get_thread", "create_thread", "reply", "list_revisions", "get_diff", "get_interdiff", "declare_link", "rate_link", "label_cluster", "wait_for_events"],
+  reader: ["get_view_state", "focus", "search", "read_window", "read_code", "get_links", "get_hub", "get_metrics", "get_hotspots", "get_structure", "list_workspaces", "bind_workspace", "list_revisions", "get_diff", "get_interdiff", "wait_for_events"],
+  reviewer: ["get_view_state", "set_view", "focus", "create_tour", "search", "read_window", "read_code", "get_links", "get_hub", "get_metrics", "get_hotspots", "get_structure", "list_workspaces", "bind_workspace", "list_threads", "get_thread", "create_thread", "reply", "list_revisions", "get_diff", "get_interdiff", "declare_link", "rate_link", "label_cluster", "wait_for_events"],
   editor: ["list_threads", "get_thread", "reply", "create_thread", "edit_code", "apply_suggestion", "read_code", "search", "get_links", "get_diff", "list_conflicts", "get_conflict", "resolve_conflict", "wait_for_events", "set_view"],
-  full: ["get_view_state", "set_view", "focus", "create_tour", "search", "read_window", "read_code", "get_links", "get_hub", "get_metrics", "get_hotspots", "list_workspaces", "bind_workspace", "list_threads", "get_thread", "create_thread", "reply", "set_thread_status", "apply_suggestion", "list_revisions", "get_diff", "get_interdiff", "edit_code", "propose_edit", "apply_edit", "list_conflicts", "get_conflict", "resolve_conflict", "undo_edit", "declare_link", "rate_link", "label_cluster", "wait_for_events"],
+  full: ["get_view_state", "set_view", "focus", "create_tour", "search", "read_window", "read_code", "get_links", "get_hub", "get_metrics", "get_hotspots", "get_structure", "list_workspaces", "bind_workspace", "list_threads", "get_thread", "create_thread", "reply", "set_thread_status", "apply_suggestion", "list_revisions", "get_diff", "get_interdiff", "edit_code", "propose_edit", "apply_edit", "list_conflicts", "get_conflict", "resolve_conflict", "undo_edit", "declare_link", "rate_link", "label_cluster", "wait_for_events"],
 } as const satisfies Record<string, readonly McpToolName[]>;
 
 /**

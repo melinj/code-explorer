@@ -151,8 +151,10 @@ pub fn load_or_build(
     wait: bool,
 ) -> Result<View, String> {
     let repo_key = repo.root().display().to_string();
-    // Only a layout that starts from nothing is what a fresh process computes.
-    let fresh = crate::layout_input::last_placement(&repo_key).is_none();
+    // Only a layout that starts from nothing is what a fresh process computes. The folder tree
+    // always starts from nothing (cv_layout::Arrangement::Folders).
+    let folders = crate::routes::arrangement(&spec).is_tree();
+    let fresh = folders || crate::layout_input::last_placement(&repo_key).is_none();
     let db = if fresh { db(repo.root()) } else { None };
     let inputs = inputs_key(reg, opts, pins);
     if let Some(db) = &db
@@ -180,7 +182,9 @@ pub fn load_or_build(
     let v = index::build_view_pinned(repo, reg, spec, commit, opts, pins)?;
     if let Some(db) = db {
         let t = Instant::now();
-        let placement = crate::layout_input::last_placement(&repo_key)
+        let placement = (!folders)
+            .then(|| crate::layout_input::last_placement(&repo_key))
+            .flatten()
             .and_then(|p| serde_json::to_string(&*p).ok());
         let stored = to_stored(&v, inputs, placement);
         let root = repo.root().to_path_buf();

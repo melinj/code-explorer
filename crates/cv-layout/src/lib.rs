@@ -37,11 +37,13 @@
 //!   happens only on request (`Input::full`). Pinned windows never move.
 
 pub mod cluster;
+pub mod folders;
 pub mod leiden;
+pub mod structure;
 
 use std::collections::{BTreeMap, BTreeSet, HashMap};
 
-use cv_contracts::{GridColumn, LaneBand, LaneRow, Rect};
+use cv_contracts::{FolderFrame, GridColumn, LaneBand, LaneRow, Rect};
 
 pub const MIN_CLUSTER: usize = 4;
 pub const MAX_CLUSTER: usize = 36;
@@ -135,6 +137,29 @@ pub struct Input<'a> {
     pub full: bool,
     /// D6 cut points for the cluster grades.
     pub grade_cuts: GradeCuts,
+    /// How windows are grouped and placed.
+    pub arrangement: Arrangement,
+}
+
+/// How a layout groups and places windows (`options.layout`).
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub enum Arrangement {
+    /// Dependency clusters on the district grid: lanes × heat columns × connectedness rows (D8).
+    #[default]
+    Districts,
+    /// One cluster per directory (split when large), nested by the folder tree inside each lane
+    /// ([`folders`]). Deterministic from the input alone: no previous placement, pins or labels.
+    Folders,
+    /// The folder tree with each directory's items ordered to keep linked ones next to each other
+    /// (short links) instead of by path.
+    Flow,
+}
+
+impl Arrangement {
+    /// The folder tree, in either order.
+    pub fn is_tree(self) -> bool {
+        matches!(self, Arrangement::Folders | Arrangement::Flow)
+    }
 }
 
 /// Grade cut points (D6, `.cv/grades.toml`), applied to clusters as to files and windows.
@@ -176,6 +201,8 @@ pub struct ClusterOut {
     pub rect: Rect,
     /// Index into `Output::subsystems`.
     pub parent: Option<usize>,
+    /// Folders arrangement: the directory whose own files the cluster holds.
+    pub folder: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -198,6 +225,8 @@ pub struct Output {
     pub review_first: Vec<bool>,
     /// What the next layout of this repo should start from.
     pub placement: Placement,
+    /// Folders arrangement: directory frames, outermost first (empty on the district grid).
+    pub folders: Vec<FolderFrame>,
 }
 
 /// A layout remembered by `WindowKey`: cluster membership, labels, cells and positions.
@@ -244,13 +273,14 @@ impl Placement {
     }
 }
 
-pub(crate) fn dirname(p: &str) -> &str {
+/// The directory of a repo path ("" at the root).
+pub fn dirname(p: &str) -> &str {
     p.rfind('/').map(|i| &p[..i]).unwrap_or("")
 }
 
 /// Layered placement inside one cluster; writes rects relative to the cluster origin and returns
 /// the cluster size.
-fn place_cluster(
+pub(crate) fn place_cluster(
     members: &[usize],
     input: &Input,
     calls: &[Vec<usize>],
@@ -850,7 +880,7 @@ fn incremental_partition(
 /// per lane (DESIGN §4.10.3: Hot holds the clusters with the first 50% of *the lane's* change
 /// mass), so a lane with little churn still spreads over the columns. Returns (grade, settled,
 /// level) per module: `level` is the continuous heat on 0..1 (see `ClusterOut::heat_level`).
-fn cluster_heat(
+pub(crate) fn cluster_heat(
     input: &Input,
     modules: &[Vec<usize>],
     file_h: &[f64],
@@ -919,7 +949,7 @@ fn cluster_heat(
 }
 
 /// Cluster connectedness: rank quantiles per lane of each cluster's most-depended-on window.
-fn cluster_conn(input: &Input, modules: &[Vec<usize>], lane_of: &[usize]) -> Vec<u8> {
+pub(crate) fn cluster_conn(input: &Input, modules: &[Vec<usize>], lane_of: &[usize]) -> Vec<u8> {
     let metric: Vec<u32> = modules
         .iter()
         .map(|ms| {
@@ -1021,6 +1051,69 @@ fn attraction_order(
     out
 }
 
+/// Risk per window (review priority): geometric mean of the heat and connectedness percentiles
+/// within the window's lane (lanes differ in churn and in what depends on them), times the
+/// boundary factor ([`structure::boundary_factor`]): code at its module's edge ranks above code
+/// whose links stay inside. A window that never changes, or that
+/// nothing depends on, carries no risk: tied zeros would otherwise take a mid rank and fill a
+/// quiet lane's top 5% with untouched or isolated windows. Top 5% per lane review first.
+pub(crate) fn risk(input: &Input) -> (Vec<f64>, Vec<bool>) {
+    let nw = input.windows.len();
+    // Links inside and outside each window's module (its directory and below), as §4.11 counts
+    // them: distinct window pairs, the test and docs lanes left out.
+    let counted = |w: usize| {
+        let lane = input.lanes[input.files[input.windows[w].file].lane];
+        !structure::SKIP_LANES.contains(&lane)
+    };
+    let dir = |w: usize| dirname(&input.files[input.windows[w].file].path);
+    let mut sides = vec![(0u32, 0u32); nw];
+    let pairs: BTreeSet<(usize, usize)> = input
+        .links
+        .iter()
+        .filter(|l| l.from != l.to && counted(l.from) && counted(l.to))
+        .map(|l| (l.from, l.to))
+        .collect();
+    for (a, b) in pairs {
+        for (w, other) in [(a, b), (b, a)] {
+            if structure::below(dir(other), dir(w)) {
+                sides[w].0 += 1;
+            } else {
+                sides[w].1 += 1;
+            }
+        }
+    }
+    let mut risk = vec![0.0; nw];
+    let mut review_first = vec![false; nw];
+    for li in 0..input.lanes.len() {
+        let ws: Vec<usize> = (0..nw)
+            .filter(|&w| input.files[input.windows[w].file].lane == li)
+            .collect();
+        let hp = pct_rank(
+            &ws.iter()
+                .map(|&w| input.windows[w].rate)
+                .collect::<Vec<_>>(),
+        );
+        let cp = pct_rank(
+            &ws.iter()
+                .map(|&w| input.windows[w].dependents2 as f64)
+                .collect::<Vec<_>>(),
+        );
+        for (i, &w) in ws.iter().enumerate() {
+            let win = &input.windows[w];
+            if win.rate > 0.0 && win.dependents2 > 0 {
+                risk[w] =
+                    (hp[i] * cp[i]).sqrt() * structure::boundary_factor(sides[w].0, sides[w].1);
+            }
+        }
+        let mut idx: Vec<usize> = ws.iter().copied().filter(|&w| risk[w] > 0.0).collect();
+        idx.sort_by(|&a, &b| risk[b].total_cmp(&risk[a]).then(a.cmp(&b)));
+        for &w in idx.iter().take(ws.len().div_ceil(20)) {
+            review_first[w] = true;
+        }
+    }
+    (risk, review_first)
+}
+
 pub fn layout(input: &Input) -> Output {
     let nw = input.windows.len();
     let mut file_windows: Vec<Vec<usize>> = vec![Vec::new(); input.files.len()];
@@ -1039,6 +1132,9 @@ pub fn layout(input: &Input) -> Output {
         if l.from != l.to && l.kind != EdgeKind::Import {
             calls[l.from].push(l.to);
         }
+    }
+    if input.arrangement.is_tree() {
+        return folders::layout(input, &file_h, &calls);
     }
     let weights = cluster::weights(input, &file_windows);
     let adj = cluster::adjacency(nw, &weights);
@@ -1466,6 +1562,7 @@ pub fn layout(input: &Input) -> Output {
             members: part.modules[m].clone(),
             rect,
             parent: None,
+            folder: None,
         });
     }
     // The placement remembers cluster positions; pins then override the output.
@@ -1525,38 +1622,8 @@ pub fn layout(input: &Input) -> Output {
         });
     }
 
-    // 6. Risk: geometric mean of the heat and connectedness percentiles within the window's lane
-    // (lanes differ in churn and in what depends on them). A window that never changes, or that
-    // nothing depends on, carries no risk: tied zeros would otherwise take a mid rank and fill a
-    // quiet lane's top 5% with untouched or isolated windows. Top 5% per lane review first.
-    let mut risk = vec![0.0; nw];
-    let mut review_first = vec![false; nw];
-    for li in 0..input.lanes.len() {
-        let ws: Vec<usize> = (0..nw)
-            .filter(|&w| input.files[input.windows[w].file].lane == li)
-            .collect();
-        let hp = pct_rank(
-            &ws.iter()
-                .map(|&w| input.windows[w].rate)
-                .collect::<Vec<_>>(),
-        );
-        let cp = pct_rank(
-            &ws.iter()
-                .map(|&w| input.windows[w].dependents2 as f64)
-                .collect::<Vec<_>>(),
-        );
-        for (i, &w) in ws.iter().enumerate() {
-            let win = &input.windows[w];
-            if win.rate > 0.0 && win.dependents2 > 0 {
-                risk[w] = (hp[i] * cp[i]).sqrt();
-            }
-        }
-        let mut idx: Vec<usize> = ws.iter().copied().filter(|&w| risk[w] > 0.0).collect();
-        idx.sort_by(|&a, &b| risk[b].total_cmp(&risk[a]).then(a.cmp(&b)));
-        for &w in idx.iter().take(ws.len().div_ceil(20)) {
-            review_first[w] = true;
-        }
-    }
+    // 6. Risk.
+    let (risk, review_first) = risk(input);
     for c in clusters.iter_mut() {
         let n = c.members.iter().filter(|&&w| review_first[w]).count();
         c.review = n as f64 / c.members.len().max(1) as f64;
@@ -1581,6 +1648,7 @@ pub fn layout(input: &Input) -> Output {
         risk,
         review_first,
         placement,
+        folders: Vec::new(),
     }
 }
 

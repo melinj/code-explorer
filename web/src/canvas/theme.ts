@@ -282,6 +282,33 @@ export function oklab(L: number, a: number, b: number) {
   return (enc(lin[0]) << 16) | (enc(lin[1]) << 8) | enc(lin[2]);
 }
 
+/**
+ * Depth lens: hue from the share of links leaving (cold blue → teal → yellow → orange → red when
+ * every link leaves), saturation from how many links there are against the busiest on the view
+ * (`volume`, 0..1; never below DEPTH_MIN_SAT). Lightness stays even so the hue reads alone.
+ * Quantised (DEPTH_HUE_STEPS × DEPTH_SAT_STEPS colours), as the rect palette atlas is bounded.
+ */
+const DEPTH_HUES = [255, 195, 95, 55, 25];
+export const DEPTH_MIN_SAT = 0.2;
+const DEPTH_HUE_STEPS = 13;
+const DEPTH_SAT_STEPS = 6;
+const depthCache = new Map<string, number>();
+export function depthColor(t: Theme, outside: number, volume: number) {
+  const o = Math.round(clamp01(outside) * (DEPTH_HUE_STEPS - 1)) / (DEPTH_HUE_STEPS - 1);
+  const v = Math.round(clamp01(volume) * (DEPTH_SAT_STEPS - 1)) / (DEPTH_SAT_STEPS - 1);
+  const key = `${t.name}|${o}|${v}`;
+  let c = depthCache.get(key);
+  if (c === undefined) {
+    const x = o * (DEPTH_HUES.length - 1);
+    const i = Math.min(DEPTH_HUES.length - 2, Math.floor(x));
+    const hue = DEPTH_HUES[i] + (DEPTH_HUES[i + 1] - DEPTH_HUES[i]) * (x - i);
+    const sat = DEPTH_MIN_SAT + (1 - DEPTH_MIN_SAT) * v;
+    c = oklch(t.name === "dark" ? 0.68 : 0.74, 0.16 * sat, hue);
+    depthCache.set(key, c);
+  }
+  return c;
+}
+
 /** Owner stripes of range views (in-range blame): eight hues at even lightness, apart from heat's ramp. */
 export const OWNER = [250, 160, 300, 200, 330, 120, 270, 185].map((h) => oklch(0.7, 0.13, h));
 

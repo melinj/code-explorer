@@ -1,12 +1,17 @@
 import { Container, Graphics } from "pixi.js";
 import type { ViewBootstrap } from "../contracts/http";
-import type { Cluster, Lens } from "../contracts/model";
+import type { Cluster, FolderFrame, Lens } from "../contracts/model";
 import { MAX_ARCS, arc, centre, clusterPartners, coStrength, drawPartners, labelPartners, pct, type CoChange } from "./cochange";
 import { dashedPolyline } from "./edges";
 import { LabelBatch, fit, sansFont, textWidth } from "./labels";
 import { CLUSTER_LABEL } from "./glyphSpot";
 import { RectBatch, dispose } from "./rects";
-import { clusterHeatLevel, heatColor, mix, step, type Theme } from "./theme";
+import { structure } from "./structure";
+import { clusterHeatLevel, depthColor, heatColor, mix, step, type Theme } from "./theme";
+
+/** Folders layout: a directory frame's name (world units), in its title band (cv-layout FOLDER_TITLE). */
+const FOLDER_LABEL = 180;
+const FOLDER_TITLE = 360;
 
 /**
  * World-space layers drawn once from the T0 bootstrap: lane bands, the district grid, clusters,
@@ -21,6 +26,10 @@ export class Backdrop {
    */
   readonly cards = new Container({ isRenderGroup: true });
   private bands = new Graphics();
+  /** Folders layout: directory frames over the lane bands. */
+  private folderLines = new Graphics();
+  /** Depth lens: each frame's title band (and a faint fill) by the share of its links that stay inside. */
+  private folderBands = new Graphics();
   private clusterFill = new Graphics();
   private clusterLine = new Graphics();
   private hubs = new Graphics();
@@ -36,15 +45,55 @@ export class Backdrop {
   lensStats = { glows: 0, raised: 0, faded: 0, arcs: 0, partners: 0 };
 
   constructor() {
-    this.back.addChild(this.bands);
+    this.back.addChild(this.bands, this.folderBands, this.folderLines);
     this.front.addChild(this.lensUnder, this.clusterFill, this.lensOver, this.clusterLine, this.hubs, this.bigLabels, this.smallLabels, this.lensTop);
   }
 
   /** Lens and Hotspots brush at L0 (§4.9): the cluster map gets the same emphasis as the windows. */
   setLens(lens: Lens, brush?: ReadonlySet<string>) {
+    const depthChanged = (this.lens === "depth") !== (lens === "depth");
     this.lens = lens;
     this.brush = brush;
     this.buildLens();
+    if (depthChanged) this.buildDepth();
+  }
+
+  /** The structure (structure.ts) arrived or changed: the Depth and Tension lenses redraw. */
+  structureChanged() {
+    if (this.lens === "tension" || this.lens === "depth") this.buildLens();
+    if (this.lens === "depth") this.buildDepth();
+  }
+
+  /** A frame's title: under the Depth lens with the share of its links that stay inside it. */
+  private frameText(f: FolderFrame) {
+    const s = this.lens === "depth" ? structure?.folders.get(f.path) : undefined;
+    return s && s.internal + s.outgoing + s.incoming > 0 ? `${f.label}  ·  ${Math.round(s.inside * 100)}% inside · ${s.interface}/${s.windows} exposed` : f.label;
+  }
+
+  /**
+   * Depth lens: module depth by nesting level. Each directory's title band (and a faint wash over
+   * its frame) takes its depth colour (theme.ts depthColor): hue by the share of its links that
+   * leave it, saturation by how many links touch it against the busiest directory on the view. A
+   * parent that stays cold while its children run hot is where a module closes. Frame titles carry the
+   * share inside and how many of its windows are reached from outside.
+   */
+  private buildDepth() {
+    const g = this.folderBands.clear();
+    const boot = this.boot;
+    const t = this.theme;
+    if (boot && t) {
+      this.buildSmallLabels(boot, t);
+      this.buildGalaxyLabels(this.labelZoom || 0.01);
+    }
+    if (!boot || !t || this.lens !== "depth" || !structure) return;
+    for (const f of boot.folders ?? []) {
+      if (this.hiddenLanes?.has(f.lane)) continue;
+      const k = structure.pressure(f.path);
+      if (k === undefined) continue;
+      const c = depthColor(t, k, structure.folderVolume(f.path));
+      g.roundRect(f.rect.x, f.rect.y, f.rect.w, f.rect.h, 120).fill({ color: c, alpha: 0.07 });
+      g.roundRect(f.rect.x, f.rect.y, f.rect.w, Math.min(FOLDER_TITLE, f.rect.h), 120).fill({ color: c, alpha: 0.85 });
+    }
   }
 
   /** Co-change lens at L0: cluster partners (cochange.ts), and the cluster it is about. */
@@ -88,7 +137,10 @@ export class Backdrop {
    *   solid highways in and out of it, stronger with more links;
    * - hotspots: the cluster's share of review-first windows (a double ring, as on the windows);
    * - co-change: how strongly it changes with another cluster, the strongest pairs with no static
-   *   link drawn as arcs; pointed at, its partners light up by strength, with arcs and labels.
+   *   link drawn as arcs; pointed at, its partners light up by strength, with arcs and labels;
+   * - depth (folder tree ordered by links): its directory's share of links leaving it as the hue,
+   *   its link count against the busiest directory as the saturation (theme.ts depthColor);
+   * - tension (folders layout): its directory's heat tension, busy files among quiet ones, glowing.
    * What a lens leaves out turns an even quiet grey, whatever its heat.
    */
   private buildLens() {
@@ -147,6 +199,18 @@ export class Backdrop {
         over.ring(r.x - px(3), r.y - px(3), r.w + px(6), r.h + px(6), px(1.5 + 1.5 * k), t.accent, 0.5 + 0.5 * k);
         over.ring(r.x - px(7), r.y - px(7), r.w + px(14), r.h + px(14), px(1), t.accent, 0.25 + 0.4 * k);
         st.glows++;
+      } else if (lens === "depth") {
+        // Hue: its directory's share of links leaving it (with what is below it); saturation: how
+        // many links touch it against the busiest directory on the view.
+        over.round(r.x, r.y, r.w, r.h, 200, depthColor(t, structure?.pressure(c.folder) ?? 0, structure?.folderVolume(c.folder) ?? 0), 1);
+      } else if (lens === "tension") {
+        const k = step(structure?.tension(c.folder) ?? 0);
+        const hot = heatColor(t, 0.92);
+        over.round(r.x, r.y, r.w, r.h, 200, mix(quiet, hot, 0.25 + 0.7 * k), 1);
+        if (k > 0.3) {
+          under.soft(r.x, r.y, r.w, r.h, px(3 + 11 * k), hot, (dark ? 0.25 : 0.18) + 0.3 * k, true);
+          st.glows++;
+        }
       } else if (lens === "cochange" && co) {
         if (focus) {
           const pk = partnerK.get(c.id);
@@ -220,7 +284,8 @@ export class Backdrop {
 
   /**
    * Whether the lens (or the Hotspots brush) leaves cluster `c` out: heat below Mild; Depends, no
-   * solid links in or out; Hotspots, no review-first window; co-change, no partner.
+   * solid links in or out; Hotspots, no review-first window; co-change, no partner; Flow, no link
+   * touching its directory; Tension, none in its directory.
    */
   fadesCluster(c: Cluster): boolean {
     const lens = this.lens;
@@ -234,6 +299,10 @@ export class Backdrop {
         return !(c.review !== undefined ? c.review > 0 : c.heat >= 3 && c.conn >= 3);
       case "cochange":
         return !!this.cochange && this.cochange.strongest(c.id) < 0;
+      case "tension":
+        return !!structure && !(structure.tension(c.folder) > 0);
+      case "depth":
+        return !!structure && structure.pressure(c.folder) === undefined;
       default:
         return false;
     }
@@ -290,6 +359,13 @@ export class Backdrop {
     for (const c of boot.clusters) cl.roundRect(c.rect.x - 30, c.rect.y - 30, c.rect.w + 60, c.rect.h + 60, 60);
     // Light hairlines so the cards carry the contrast. (A translucent fill here cost ~3 ms of GPU per frame.)
     cl.stroke({ width: 1, pixelLine: true, color: t.line, alpha: range ? 0.2 : 0.42 });
+    // Folders layout: directory frames, the outermost ones a little stronger.
+    const fl = this.folderLines.clear();
+    const frames = (boot.folders ?? []).filter((f) => !this.hiddenLanes?.has(f.lane));
+    for (const [deep, alpha] of [[false, 0.5], [true, 0.3]] as const) {
+      for (const f of frames) if (f.depth > 0 === deep) fl.roundRect(f.rect.x, f.rect.y, f.rect.w, f.rect.h, 120);
+      fl.stroke({ width: 1, pixelLine: true, color: t.ink, alpha: alpha * (t.name === "dark" ? 0.8 : 1) });
+    }
     // Opaque quads in the band's own colour (with the odd-column shading), so the cards read as the
     // background: one mesh, no blending against the bands.
     for (const ch of this.cards.removeChildren()) dispose(ch);
@@ -299,7 +375,7 @@ export class Backdrop {
       const cx = c.rect.x + c.rect.w / 2;
       const col = boot.columns.findIndex((k) => cx >= k.x && cx < k.x + k.w);
       const band = (laneOf.get(c.lane) ?? 0) % 2 ? t.bandAlt : t.band;
-      cards.round(c.rect.x - 30, c.rect.y - 30, c.rect.w + 60, c.rect.h + 60, 60, col % 2 ? mix(band, t.line, 0.035) : band);
+      cards.round(c.rect.x - 30, c.rect.y - 30, c.rect.w + 60, c.rect.h + 60, 60, col % 2 === 1 ? mix(band, t.line, 0.035) : band);
     }
     cards.build(this.cards);
 
@@ -313,11 +389,22 @@ export class Backdrop {
     }
     hg.fill({ color: t.bg }).stroke({ width: 1, pixelLine: true, color: t.edge.publish });
 
-    const font = sansFont();
     this.boot = boot;
     this.theme = t;
     this.buildGalaxyLabels(0.01);
+    this.buildSmallLabels(boot, t);
+    this.buildLens();
+    this.buildDepth();
+  }
+
+  /** L1+ labels: directory frames, clusters, hubs. */
+  private buildSmallLabels(boot: ViewBootstrap, t: Theme) {
+    const font = sansFont();
     const small = new LabelBatch(font);
+    const ink = this.lens === "depth" && structure ? t.ink : mix(t.ink, t.bg, 0.2);
+    for (const f of boot.folders ?? []) {
+      if (!this.hiddenLanes?.has(f.lane)) small.add(fit(font, this.frameText(f), FOLDER_LABEL, f.rect.w - 240), f.rect.x + 120, f.rect.y + 100, FOLDER_LABEL, ink);
+    }
     for (const c of boot.clusters) {
       const L = CLUSTER_LABEL;
       small.add(fit(font, c.label, L.size, c.rect.w - L.inset), c.rect.x + L.dx, c.rect.y + L.dy, L.size, t.ink);
@@ -326,7 +413,6 @@ export class Backdrop {
       if (h.rect) small.add(h.display, h.rect.x + h.rect.w + 40, h.rect.y + h.rect.h / 2 - 50, 80, t.edge.publish);
     }
     small.build(this.smallLabels);
-    this.buildLens();
   }
 
   private boot?: ViewBootstrap;
@@ -348,6 +434,18 @@ export class Backdrop {
     const size = 13 / zoom;
     const big = new LabelBatch(font);
     const placed: Array<[number, number, number, number]> = [];
+    // Folders layout: the outer directories' names first, top-left in their frames, where they fit.
+    const frames = (boot.folders ?? []).filter((f) => f.depth <= 1 && !this.hiddenLanes?.has(f.lane));
+    for (const f of frames.sort((a, b) => a.depth - b.depth || b.rect.w * b.rect.h - a.rect.w * a.rect.h)) {
+      const s = size * (f.depth ? 1 : 1.15);
+      const text = this.frameText(f);
+      const w = textWidth(font, text, s);
+      if (w + s > f.rect.w || s * 1.6 > f.rect.h) continue;
+      const r: [number, number, number, number] = [f.rect.x, f.rect.y, w + s, s * 1.5];
+      if (placed.some((p) => r[0] < p[0] + p[2] && p[0] < r[0] + r[2] && r[1] < p[1] + p[3] && p[1] < r[1] + r[3])) continue;
+      placed.push(r);
+      big.add(text, f.rect.x + s * 0.5, f.rect.y + s * 0.3, s, mix(t.ink, t.bg, 0.15));
+    }
     const order = this.shownClusters(boot).sort((a, b) => b.windows - a.windows);
     for (const c of order) {
       const w = textWidth(font, c.label, size);

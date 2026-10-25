@@ -379,8 +379,25 @@ async fn edit_without_suggestion_and_reading_tools() {
     let (m, _) = ok(&c, "get_metrics", json!({ "target": "src/world.py" })).await;
     assert_eq!(m["coChanged"][0]["path"], "tests/test_world.py");
     assert!(m.get("timeline").is_none());
+    assert_eq!(m["structure"]["window"]["external"], 1);
+    assert_eq!(m["structure"]["file"]["tension"], 1.0);
+    assert_eq!(m["structure"]["folder"]["spread"], 1.0);
     let (hs, _) = ok(&c, "get_hotspots", json!({ "lane": "code", "limit": 1 })).await;
     assert_eq!(hs.as_array().unwrap().len(), 1);
+    let (st, _) = ok(&c, "get_structure", json!({ "limit": 5 })).await;
+    assert_eq!(st["summary"]["divergence"], 0.4);
+    assert_eq!(
+        st["leaky"].as_array().unwrap().len(),
+        1,
+        "lib has too few boundary links"
+    );
+    assert_eq!(st["leaky"][0]["out"], 3);
+    assert_eq!(st["splitOut"][0]["path"], "src/world.py");
+    assert_eq!(st["move"][0]["to"], "lib");
+    assert_eq!(st["tense"][0]["hotFiles"][0], "src/world.py");
+    assert_eq!(st["gateways"][0]["key"], "src/util.py#file");
+    assert_eq!(st["leaky"][0]["spread"], 1.0);
+    assert_eq!(st["leaky"][0]["inside"], 0.4);
     let (vs, _) = ok(&c, "get_view_state", json!({})).await;
     assert_eq!(vs, json!({ "view": null }));
 
@@ -469,10 +486,10 @@ async fn edit_without_suggestion_and_reading_tools() {
 async fn profiles_gate_tools() {
     let fake = Arc::new(FakeBackend::sample());
     for (profile, n) in [
-        (Profile::Reader, 15),
-        (Profile::Reviewer, 24),
+        (Profile::Reader, 16),
+        (Profile::Reviewer, 25),
         (Profile::Editor, 15),
-        (Profile::Full, 33),
+        (Profile::Full, 34),
     ] {
         let c = connect(fake.clone(), profile).await;
         let tools = c.list_all_tools().await.unwrap();

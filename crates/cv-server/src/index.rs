@@ -696,7 +696,14 @@ pub fn build_view_pinned(
         .collect();
     let co_change = crate::layout_input::co_change(&churn.co_change, &path_ix);
     let repo_key = repo.root().display().to_string();
-    let prev = crate::layout_input::last_placement(&repo_key);
+    // The folder tree is computed afresh from the input alone: it neither starts from the
+    // district grid's placement nor becomes the next one; pins are positions on the grid.
+    let arrangement = crate::routes::arrangement(&spec);
+    let folders = arrangement.is_tree();
+    let prev = (!folders)
+        .then(|| crate::layout_input::last_placement(&repo_key))
+        .flatten();
+    let pins = if folders { &[][..] } else { pins };
     let lo = cv_layout::layout(&cv_layout::Input {
         lanes: &view_lanes,
         files: &layout_files,
@@ -711,8 +718,11 @@ pub fn build_view_pinned(
             mass: grade_cfg.mass_cuts,
             rank: grade_cfg.conn.rank_cuts(),
         },
+        arrangement,
     });
-    crate::layout_input::remember_placement(&repo_key, lo.placement.clone());
+    if !folders {
+        crate::layout_input::remember_placement(&repo_key, lo.placement.clone());
+    }
     timings.push(("layout", t.elapsed()));
     progress("layout", 1, 1);
 
@@ -873,6 +883,7 @@ pub fn build_view_pinned(
             pinned: false,
             heat_level: Some((c.heat_level * 1000.0).round() / 1000.0),
             review: Some((c.review * 1000.0).round() / 1000.0),
+            folder: c.folder.clone(),
         })
         .collect();
     let mut bundle_map: BTreeMap<(usize, usize), EdgeBundle> = BTreeMap::new();
@@ -938,6 +949,7 @@ pub fn build_view_pinned(
             bundles: bundle_map.into_values().collect(),
             churn: Some(churn.clone()),
             heat_labels: HEAT_LABELS.map(String::from),
+            folders: folders.then(|| lo.folders.clone()),
         },
         churn,
     };

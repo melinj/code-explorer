@@ -203,6 +203,7 @@ fn router(app: Arc<App>) -> Router {
         .route("/api/v1/workspaces", get(workspaces))
         .route("/api/v1/workspaces:compare", post(compare_workspaces))
         .route("/api/v1/views/{view}/metrics", get(metrics))
+        .route("/api/v1/views/{view}/structure", get(structure))
         .route("/api/v1/search", get(search))
         .route("/api/v1/links", get(links).post(extras::declare_link))
         .route("/api/v1/links/{link}/rate", post(extras::rate_link))
@@ -257,11 +258,11 @@ fn not_found(what: &str) -> Response {
 
 async fn create_view(State(app): St, body: Option<Json<serde_json::Value>>) -> Response {
     let spec = body.map(|b| b.0).unwrap_or_default();
-    // As cv serve: "districts" is the only layout.
+    // As cv serve: "districts", "folders" or "flow" (the mock draws all as its one synthetic map).
     let layout = &spec["options"]["layout"];
-    if !layout.is_null() && layout != "districts" {
+    if !layout.is_null() && !["districts", "folders", "flow"].iter().any(|l| layout == l) {
         return bad(format!(
-            "options.layout {layout}: only \"districts\" is supported"
+            "options.layout {layout}: expected \"districts\", \"folders\" or \"flow\""
         ));
     }
     // As cv serve: bad options are a 400, never silently the defaults.
@@ -1091,6 +1092,50 @@ async fn metrics(State(app): St, Path(view): Path<String>, Query(q): Query<Metri
         q.limit.unwrap_or(2000),
     ))
     .into_response()
+}
+
+/// As cv serve's structure_api: the synthetic map's folders against its links and heat.
+async fn structure(State(app): St, Path(view): Path<String>) -> Response {
+    let v = app.view();
+    if view != v.bootstrap.view.id {
+        return view_unknown(&view);
+    }
+    let first = |f: &synth::FileInfo| f.windows.first().map(|&w| &v.windows[w].header);
+    let files: Vec<cv_layout::structure::FileIn> = v
+        .files
+        .iter()
+        .map(|f| cv_layout::structure::FileIn {
+            path: &f.path,
+            lane: first(f).map_or("code", |h| h.lane.as_str()),
+            heat: first(f).map_or(0, |h| h.heat.grade),
+            rate: first(f).map_or(0.0, |h| h.heat.rate),
+            lines: f.lines,
+        })
+        .collect();
+    let windows: Vec<cv_layout::structure::WinIn> = v
+        .windows
+        .iter()
+        .map(|w| cv_layout::structure::WinIn {
+            key: &w.header.key,
+            file: w.file,
+            module: w
+                .header
+                .cluster
+                .strip_prefix('c')
+                .and_then(|n| n.parse().ok()),
+        })
+        .collect();
+    let links: Vec<cv_layout::structure::LinkIn> = v
+        .links
+        .iter()
+        .filter(|l| l.confidence >= 0.6)
+        .map(|l| cv_layout::structure::LinkIn {
+            from: l.from,
+            to: l.to,
+            import: l.kind == "import",
+        })
+        .collect();
+    Json(cv_layout::structure::analyse(&files, &windows, &links)).into_response()
 }
 
 #[derive(Deserialize)]

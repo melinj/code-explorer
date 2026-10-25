@@ -51,6 +51,7 @@ pub const READER: &[&str] = &[
     "get_hub",
     "get_metrics",
     "get_hotspots",
+    "get_structure",
     "list_workspaces",
     "bind_workspace",
     "list_revisions",
@@ -71,6 +72,7 @@ pub const REVIEWER: &[&str] = &[
     "get_hub",
     "get_metrics",
     "get_hotspots",
+    "get_structure",
     "list_workspaces",
     "bind_workspace",
     "list_threads",
@@ -118,6 +120,7 @@ pub const FULL: &[&str] = &[
     "get_hub",
     "get_metrics",
     "get_hotspots",
+    "get_structure",
     "list_workspaces",
     "bind_workspace",
     "list_threads",
@@ -325,7 +328,11 @@ pub fn all_tools() -> Vec<Tool> {
         ),
         t::<GetHotspots>(
             "get_hotspots",
-            "Review-first ranking: highest geometric mean of heat and connectedness percentiles.",
+            "Review priority ranking: geometric mean of heat and connectedness percentiles, weighted up for code whose links leave its folder (outside share).",
+        ),
+        t::<GetStructure>(
+            "get_structure",
+            "How the folder tree fits the code, for refactoring: leaky directories (flow pressure = share of their links crossing the boundary; good modules have a narrow interface and long chains inside), files to split out (busy among quiet siblings), files pulled toward another directory, and how far folders diverge from the dependency clusters.",
         ),
         t::<Empty>(
             "list_workspaces",
@@ -1511,6 +1518,7 @@ impl CvMcp {
             "get_hub" => self.get_hub(Self::args(a)?, who).await,
             "get_metrics" => self.get_metrics(Self::args(a)?, who).await,
             "get_hotspots" => self.get_hotspots(Self::args(a)?, who).await,
+            "get_structure" => self.get_structure(Self::args(a)?, who).await,
             "list_workspaces" => self.list_workspaces(who).await,
             "bind_workspace" => self.bind_workspace(Self::args(a)?, who).await,
             "list_threads" => self.list_threads(Self::args(a)?, who).await,
@@ -2069,12 +2077,79 @@ impl CvMcp {
             })
             .take(10)
             .collect();
+        // Structure (snapshots): the window, its file and its directory (absent in range views).
+        let dir = t.path.rsplit_once('/').map_or("", |(d, _)| d).to_string();
+        let structure = self
+            .backend()
+            .structure(&view, Some(&dir))
+            .await
+            .ok()
+            .map(|s| {
+                let find = |list: &str, k: &str, v: &Value| {
+                    s[list]
+                        .as_array()
+                        .and_then(|a| a.iter().find(|x| x[k] == *v).cloned())
+                };
+                let pick = |x: Option<Value>, keys: &[&str]| {
+                    x.map(|x| {
+                        Value::Object(
+                            keys.iter()
+                                .map(|k| (k.to_string(), x[*k].clone()))
+                                .collect(),
+                        )
+                    })
+                };
+                let mut out = serde_json::Map::new();
+                for (name, v) in [
+                    (
+                        "window",
+                        pick(
+                            find("windows", "key", &h["key"]),
+                            &["internal", "external", "incoming"],
+                        ),
+                    ),
+                    (
+                        "file",
+                        pick(
+                            find("files", "path", &json!(t.path)),
+                            &["internal", "external", "exports", "tension", "pull"],
+                        ),
+                    ),
+                    (
+                        "folder",
+                        pick(
+                            find("folders", "path", &json!(dir)),
+                            &[
+                                "path",
+                                "files",
+                                "pressure",
+                                "inside",
+                                "gateways",
+                                "spread",
+                                "interfaceShare",
+                                "chain",
+                                "tension",
+                            ],
+                        ),
+                    ),
+                ] {
+                    if let Some(v) = v {
+                        out.insert(name.into(), v);
+                    }
+                }
+                Value::Object(out)
+            })
+            .filter(|s| s.as_object().is_some_and(|o| !o.is_empty()));
         self.attend(who, "get_metrics", vec![id_of(h)], None).await;
         // No timeline: no route serves per-window months yet (mcp.ts marks it optional).
-        Ok(Out::Json(round_floats(&json!({
+        let mut out = json!({
             "window": h["id"], "path": t.path, "heat": h["heat"], "conn": h["conn"], "risk": h["risk"],
             "reviewFirst": h["reviewFirst"], "coChanged": co,
-        }))))
+        });
+        if let Some(s) = structure {
+            out["structure"] = s;
+        }
+        Ok(Out::Json(round_floats(&out)))
     }
 
     async fn get_hotspots(&self, p: GetHotspots, who: &AgentId) -> ToolOut {
@@ -2104,7 +2179,7 @@ impl CvMcp {
             .map(|pt| {
                 round_floats(&json!({
                     "label": pt["label"], "window": pt["window"], "lane": pt["lane"],
-                    "risk": pt["risk"], "heatPct": pt["heatPct"], "connPct": pt["connPct"],
+                    "risk": pt["risk"], "heatPct": pt["heatPct"], "connPct": pt["connPct"], "outside": pt["outside"],
                     "touches": pt["heat"]["touches"], "fanIn": pt["conn"]["fanIn"],
                 }))
             })
@@ -2121,6 +2196,82 @@ impl CvMcp {
         )
         .await;
         Ok(Out::Json(json!(rows)))
+    }
+
+    async fn get_structure(&self, p: GetStructure, who: &AgentId) -> ToolOut {
+        let view = self.view_id(who).await?;
+        let s = self
+            .backend()
+            .structure(&view, p.folder.as_deref())
+            .await
+            .map_err(err)?;
+        let limit = p.limit.unwrap_or(10);
+        let num = |v: &Value, k: &str| v[k].as_f64().unwrap_or(0.0);
+        // The `limit` rows scoring highest, leaving out those scoring 0.
+        let top = |rows: &[&Value], score: &dyn Fn(&Value) -> f64| -> Vec<Value> {
+            let mut rows: Vec<(f64, &Value)> = rows
+                .iter()
+                .map(|r| (score(r), *r))
+                .filter(|(k, _)| *k > 0.0)
+                .collect();
+            rows.sort_by(|a, b| b.0.total_cmp(&a.0));
+            rows.into_iter()
+                .take(limit)
+                .map(|(_, r)| r.clone())
+                .collect()
+        };
+        let folders: Vec<&Value> = s["folders"].as_array().into_iter().flatten().collect();
+        let files: Vec<&Value> = s["files"].as_array().into_iter().flatten().collect();
+        // Leaky: high pressure over many boundary links (a sealed or tiny folder scores 0).
+        let leaky: Vec<Value> = top(&folders, &|f| {
+            let boundary = num(f, "outgoing") + num(f, "incoming");
+            if boundary < 3.0 {
+                0.0
+            } else {
+                num(f, "pressure") * boundary.ln_1p()
+            }
+        })
+        .iter()
+        .map(|f| {
+            json!({
+                "path": f["path"], "files": f["files"], "pressure": f["pressure"], "inside": f["inside"],
+                "internal": f["internal"], "out": f["outgoing"], "in": f["incoming"],
+                "interface": f["interface"], "interfaceShare": f["interfaceShare"],
+                "partners": f["partners"], "gateways": f["gateways"], "spread": f["spread"],
+                "chain": f["chain"], "modules": f["modules"],
+            })
+        })
+        .collect();
+        let tense: Vec<Value> = top(&folders, &|f| num(f, "tension") * num(f, "mass"))
+            .iter()
+            .map(|f| json!({ "path": f["path"], "tension": f["tension"], "hotFiles": f["hotFiles"] }))
+            .collect();
+        let split_out: Vec<Value> = top(&files, &|f| num(f, "tension") * num(f, "rate"))
+            .iter()
+            .map(|f| {
+                json!({ "path": f["path"], "folder": f["folder"], "heat": f["heat"], "tension": f["tension"] })
+            })
+            .collect();
+        let moves: Vec<Value> = top(&files, &|f| num(&f["pull"], "links"))
+            .iter()
+            .map(|f| {
+                json!({ "path": f["path"], "from": f["folder"], "to": f["pull"]["folder"],
+                        "links": f["pull"]["links"], "internal": f["internal"] })
+            })
+            .collect();
+        let windows: Vec<&Value> = s["windows"].as_array().into_iter().flatten().collect();
+        let gateways: Vec<Value> = top(&windows, &|w| num(w, "external"))
+            .iter()
+            .map(|w| {
+                json!({ "key": w["key"], "external": w["external"], "incoming": w["incoming"], "internal": w["internal"] })
+            })
+            .collect();
+        self.attend(who, "get_structure", vec![], p.folder.clone())
+            .await;
+        Ok(Out::Json(round_floats(&json!({
+            "summary": s["summary"], "leaky": leaky, "tense": tense, "splitOut": split_out, "move": moves,
+            "gateways": gateways,
+        }))))
     }
 
     // ── Workspaces ──

@@ -32,7 +32,26 @@ heatLevel?: number,
  * Share of the cluster's windows that are review first (WindowHeader.reviewFirst), 0..1: the
  * L0 Hotspots lens. Absent from older indexes.
  */
-review?: number, };
+review?: number, 
+/**
+ * Folders layout (`options.layout: "folders"`): the directory whose own files the cluster
+ * holds ("" for the repo root). A large directory is split into several clusters.
+ */
+folder?: string, };
+
+/**
+ * Folders layout: the frame of a directory (with everything below it) on the map. Directories
+ * with no files of their own and a single subdirectory are folded into it (`label` "a/b").
+ */
+export type FolderFrame = { path: string, 
+/**
+ * The path below the enclosing frame (or the lane).
+ */
+label: string, lane: string, 
+/**
+ * Nesting depth inside its lane, 0 for the outermost frames.
+ */
+depth: number, rect: Rect, };
 
 export type SiteRef = { path: string, line: number, 
 /**
@@ -84,7 +103,11 @@ bands: [number, number, number, number],
  */
 topRate?: number, };
 
-export type ViewBootstrap = { view: ViewRef, world: Rect, laneDefs: Array<LaneDef>, lanes: Array<LaneBand>, columns: Array<GridColumn>, clusters: Array<Cluster>, hubs: Array<Hub>, bundles: Array<EdgeBundle>, churn?: ChurnSummary, heatLabels: [string, string, string, string, string], };
+export type ViewBootstrap = { view: ViewRef, world: Rect, laneDefs: Array<LaneDef>, lanes: Array<LaneBand>, columns: Array<GridColumn>, clusters: Array<Cluster>, hubs: Array<Hub>, bundles: Array<EdgeBundle>, churn?: ChurnSummary, heatLabels: [string, string, string, string, string], 
+/**
+ * Folders layout: the directory frames, outermost first. Absent from the district layout.
+ */
+folders?: Array<FolderFrame>, };
 
 /**
  * Heat.inRange.

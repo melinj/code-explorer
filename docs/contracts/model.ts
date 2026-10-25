@@ -229,10 +229,13 @@ export type ViewSpec =
   | { mode: "range"; revset: Revset; fileset?: Fileset; options?: RangeOptions };
 
 /**
- * districts = lanes × heat columns × connectedness rows (D8), the only layout. An unspecified
- * "dependency" value was dropped (DESIGN §5 "Layouts considered"): any other value is 400 "invalid".
+ * districts = lanes × heat columns × connectedness rows (D8), the default. folders = each lane's
+ * folder tree, one cluster per directory, in path order (the None and Tension lenses); flow = the
+ * same tree with each directory's items ordered by their links, linked ones side by side (the Depth
+ * lens). The trees have no pins, labels or moves. An unspecified "dependency" value was dropped (DESIGN §4.9 "Layouts considered"): any
+ * other value is 400 "invalid".
  */
-export type ViewLayout = "districts";
+export type ViewLayout = "districts" | "folders" | "flow";
 
 export interface SnapshotOptions {
   /**
@@ -379,6 +382,17 @@ export interface Cluster {
   heatLevel?: number;
   /** Additive: share of the cluster's windows that are review first (WindowHeader.reviewFirst), 0..1: the L0 Hotspots lens. */
   review?: number;
+  /** Folders layout: the directory whose own files the cluster holds ("" = repo root); a large one is split into several clusters. */
+  folder?: RepoPath;
+}
+
+/** Folders layout: a directory's frame (with everything below it). A directory with no files of its own and one subdirectory folds into it (label "a/b"). */
+export interface FolderFrame {
+  path: RepoPath;
+  label: string; // the path below the enclosing frame (or the lane)
+  lane: LaneId;
+  depth: number; // nesting inside its lane, 0 = outermost
+  rect: Rect;
 }
 
 // ─── Lanes and the district grid ─────────────────────────────────────────────
@@ -418,8 +432,86 @@ export interface MetricPoint {
   conn: Connectedness;
   heatPct: number;
   connPct: number;
-  risk: number; // geometric mean of the two percentiles, 0..1
+  risk: number; // review priority: √(heatPct × connPct) × (0.5 + 0.5 × outside), 0..1
   window?: WindowId;
+  /** Share of its links leaving its module (its directory and below), 0..1; absent without links or on the import-graph basis (plain geometric mean). */
+  outside?: number;
+}
+
+/**
+ * GET /views/:id/structure (DESIGN §4.11): how the folder tree fits the data flow and the change
+ * frequency. Links are distinct window pairs (an import counts only when the files share no other
+ * link); links from the test and docs lanes are left out.
+ */
+export interface StructureResponse {
+  summary: StructureSummary;
+  folders: FolderStructure[]; // every directory holding counted files, with everything below it, in path order
+  files: FileStructure[]; // files with links or change, in path order
+  windows: WindowStructure[]; // windows with links or tension, in window order
+}
+
+/** A window's links against its directory, and its file's heat tension. */
+export interface WindowStructure {
+  key: WindowKey;
+  path: RepoPath;
+  internal: number; // links with windows of its directory or below it (its own file included)
+  external: number; // links with siblings or parents of its directory, either way
+  incoming: number; // of those, coming in
+  tension: number; // its file's heat tension
+}
+
+export interface StructureSummary {
+  folders: number; // directories holding files of their own
+  files: number;
+  links: number;
+  crossFolderLinks: number;
+  linkLocality: number; // share of links inside one directory, 0..1
+  /** 1 − normalised mutual information of directories vs the district layout's dependency clusters (0 = same grouping); absent before a district layout exists. */
+  divergence?: number;
+  /** Share of windows whose dependency cluster is mostly another directory's code. */
+  misgrouped?: number;
+  heatTension: number; // change-weighted mean of the directories' own heat tension, 0..1
+  pressure: number; // window-weighted mean of the directories' own flow pressure, 0..1
+}
+
+/** A directory with everything below it, seen as a module. */
+export interface FolderStructure {
+  path: RepoPath;
+  depth: number;
+  files: number;
+  windows: number;
+  internal: number; // links with both ends inside
+  outgoing: number;
+  incoming: number;
+  pressure: number; // boundary links / all links touching it: 0 sealed .. 1 every link leaves
+  inside: number; // its depth as a module: links staying in it or below / all links touching it (1 − pressure; 0 without links)
+  interface: number; // windows inside linked from outside
+  interfaceShare: number; // interface / windows: a narrow interface is small
+  partners: number; // directories outside it linked either way
+  gateways: number; // files inside with a link crossing its boundary
+  /** (gateways − 1) / (files − 1): 0 when one file (or none) carries every boundary link, 1 when every file links outside. */
+  spread: number;
+  chain: number; // longest chain of links inside, in windows (cycles cut)
+  modules?: number; // dependency clusters (district layout) its windows belong to
+  mass: number; // sum of file change rates
+  /** Share of change mass in warm or hot files × share of lines in cool or frozen files, 0..1. */
+  tension: number;
+  hotFiles: RepoPath[]; // warm or hot files among quiet siblings, busiest first (≤ 5)
+}
+
+export interface FileStructure {
+  path: RepoPath;
+  folder: RepoPath;
+  lane: LaneId;
+  heat: HeatGrade;
+  rate: number;
+  internal: number; // links with files of its directory
+  external: number; // links with other directories
+  exports: number; // its windows other directories link to
+  /** > 0 for warm or hot files only: share of its siblings' lines that are cool or frozen (warm files × 0.6). */
+  tension: number;
+  /** The directory it has the most links with, when that beats its own (≥ 2 links; files with siblings only). */
+  pull?: { folder: RepoPath; links: number };
 }
 
 /** Files that change together without a static link (co-change lens). */
@@ -690,8 +782,13 @@ export type EditMode =
   | "keep-descendants" // amend target but keep descendants' content (jj --restore-descendants)
   | "absorb"; // write on top of the range tip, then jj absorb into the commits that own the lines
 
-/** Emphasis lenses: change opacity and weight only, never layout. */
-export type Lens = "none" | "heat" | "connectedness" | "hotspots" | "cochange";
+/**
+ * Emphasis lenses change opacity and weight. Each also picks the layout of a snapshot: "none" and
+ * "tension" (busy files among quiet ones) show the folder tree (ViewLayout "folders"), "depth" (the
+ * share of each directory's links that stay in it or below) the tree ordered by links (ViewLayout
+ * "flow"); the others the district grid. "hotspots" is labelled Review priority.
+ */
+export type Lens = "none" | "heat" | "connectedness" | "hotspots" | "cochange" | "tension" | "depth";
 
 /** Replace lines [start, end] (1-based, inclusive). end = start - 1 inserts before start. */
 export interface LinePatch {

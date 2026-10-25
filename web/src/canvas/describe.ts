@@ -3,6 +3,7 @@ import { GROUP_OF, LINK_GROUPS, isUncertain, type LinkGroup } from "./edges";
 import type { Target } from "./overlay";
 import type { WindowHeader } from "../contracts/model";
 import { inRangeText } from "./chunks";
+import { dirOf, structure } from "./structure";
 
 /** "covered by 3 tests" (§4.9: test dependents are named, not counted into connectedness). */
 export function coveredText(w: WindowHeader) {
@@ -27,6 +28,40 @@ function name(c: DataClient, id: string) {
   return w ? esc(w.symbol?.qualname ?? w.path.split("/").pop()!) : `<span class="dim">${esc(id)} (not loaded)</span>`;
 }
 
+const pctOf = (x: number) => `${Math.round(x * 100)}%`;
+
+/**
+ * A directory's figures as a module (DESIGN §4.11), for a folder-tree lens: links staying in it,
+ * how many of its windows are reached from outside, which files carry its outside links, its
+ * longest inner chain and its heat tension.
+ */
+function folderRows(folder: string | undefined): string[] {
+  const f = folder === undefined ? undefined : structure?.folders.get(folder);
+  if (!f) return [];
+  const touching = f.internal + f.outgoing + f.incoming;
+  const rows = [`<div class="mono dim">${esc(f.path || "(root)")}/ as a module</div>`];
+  if (touching) {
+    rows.push(`<div><span class="k">Depth</span> ${pctOf(f.inside)} of ${touching} links stay inside · ${f.outgoing} out · ${f.incoming} in · ${f.partners} partner folder${f.partners === 1 ? "" : "s"}</div>`);
+    rows.push(`<div><span class="k">Interface</span> ${f.interface} of ${f.windows} windows exposed · ${f.gateways} of ${f.files} files are gateways (spread ${pctOf(f.spread)}) · chain ${f.chain}</div>`);
+  } else rows.push(`<div class="dim">no links touch it</div>`);
+  if (f.tension > 0) rows.push(`<div><span class="k">Tension</span> ${pctOf(f.tension)}${f.hotFiles.length ? ` · busy: ${f.hotFiles.map((h) => esc(h.split("/").pop()!)).join(", ")}` : ""}</div>`);
+  return rows;
+}
+
+/** A window's figures against its directory, its file's tension and pull, then the directory's. */
+function windowStructureRows(w: WindowHeader): string[] {
+  if (!structure) return [];
+  const rows: string[] = [];
+  const s = structure.windows.get(w.key);
+  if (s && s.internal + s.external) {
+    rows.push(`<div><span class="k">Module</span> ${s.internal} links inside its folder (or below) · ${s.external} outside (${s.external - s.incoming} out, ${s.incoming} in) · ${pctOf(s.internal / (s.internal + s.external))} inside</div>`);
+  }
+  const f = structure.files.get(w.path);
+  if (f?.tension) rows.push(`<div><span class="k">File tension</span> ${pctOf(f.tension)}: busier than its siblings</div>`);
+  if (f?.pull) rows.push(`<div class="accent">pulled toward ${esc(f.pull.folder)}/ (${f.pull.links} links, ${f.internal} with its own folder)</div>`);
+  return [...rows, ...folderRows(dirOf(w.path))];
+}
+
 /** Tooltip HTML for a hover target. */
 export function describe(t: Target, c: DataClient, edges: Edge[]): string {
   switch (t.type) {
@@ -41,6 +76,7 @@ export function describe(t: Target, c: DataClient, edges: Edge[]): string {
         `<div><span class="k">Links</span> ${out} out · ${edges.length - out} in${edges.length ? ` · ${countByGroup(edges)}` : ""}</div>`,
       ];
       if (w.heat.inRange) rows.push(`<div><span class="k">Range</span> touched by ${inRangeText(w)}</div>`);
+      rows.push(...windowStructureRows(w));
       if (w.flags.alsoChangedIn?.length) rows.push(`<div class="warn">also changed in ${esc(w.flags.alsoChangedIn.map((x) => x + "@").join(", "))}</div>`);
       if (w.flags.unsnapshotted) rows.push(`<div class="add">edited on disk, not yet snapshotted (live)</div>`);
       if (w.reviewFirst) rows.push(`<div class="accent">Review first · risk ${(w.risk * 100).toFixed(0)}% (top 5%)</div>`);
@@ -77,6 +113,7 @@ export function describe(t: Target, c: DataClient, edges: Edge[]): string {
         `<div><span class="k">Heat</span> ${HEAT_NAMES[k.heat]} · <span class="k">Depends</span> ${CONN_NAMES[k.conn]}</div>`,
         edges.length ? `<div><span class="k">Links</span> ${countByGroup(edges)}</div>` : "",
         k.openThreads ? `<div>${k.openThreads} open threads</div>` : "",
+        ...folderRows(k.folder),
         `<div class="hint">click to unbundle its links · double-click to frame</div>`,
       ].join("");
     }

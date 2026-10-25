@@ -698,6 +698,7 @@ pub fn generate(total_windows: usize, seed: u64) -> View {
                     .count() as f64
                     / c.members.len().max(1) as f64,
             ),
+            folder: None,
         });
     }
     let mut bundle_map: BTreeMap<(String, String), EdgeBundle> = BTreeMap::new();
@@ -851,6 +852,7 @@ pub fn generate(total_windows: usize, seed: u64) -> View {
         bundles: bundle_map.into_values().collect(),
         churn: None,
         heat_labels: HEAT_LABELS.map(String::from),
+        folders: None,
     };
 
     // Spatial index over base tiles.

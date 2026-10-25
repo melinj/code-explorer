@@ -122,7 +122,16 @@ export type WindowDiff = { id: string, lines: Array<DiffLine>, };
 /**
  * One point of the Hotspots chart: x = connectedness percentile, y = heat percentile.
  */
-export type MetricPoint = { key: string, label: string, lane: string, heat: Heat, conn: Connectedness, heatPct: number, connPct: number, risk: number, window?: string, };
+export type MetricPoint = { key: string, label: string, lane: string, heat: Heat, conn: Connectedness, heatPct: number, connPct: number, 
+/**
+ * Review priority: √(heat pct × conn pct) × (0.5 + 0.5 × `outside`).
+ */
+risk: number, window?: string, 
+/**
+ * Share of its links leaving its module (its directory and below), 0..1; absent without
+ * counted links or on the import-graph basis (whose risk is the plain geometric mean).
+ */
+outside?: number, };
 
 export type CoChangePair = { a: string, b: string, support: number, jaccard: number, 
 /**
@@ -138,6 +147,173 @@ clusterA?: string, clusterB?: string, };
 export type CoChangeClusterPair = { a: string, b: string, support: number, jaccard: number, linked: boolean, };
 
 export type MetricsResponse = { points: Array<MetricPoint>, cochange: Array<CoChangePair>, cochangeClusters?: Array<CoChangeClusterPair>, };
+
+/**
+ * GET /views/:id/structure: how the folder tree fits the code's data flow and change frequency
+ * (DESIGN §4.11). Links are distinct window pairs (an import counts only when the two files share
+ * no other link); links from the test and docs lanes are left out.
+ */
+export type StructureResponse = { summary: StructureSummary, 
+/**
+ * Every directory holding counted files, each with everything below it, in path order.
+ */
+folders: Array<FolderStructure>, 
+/**
+ * Files with links or change, in path order.
+ */
+files: Array<FileStructure>, 
+/**
+ * Windows with links or tension, in window order.
+ */
+windows: Array<WindowStructure>, };
+
+export type StructureSummary = { 
+/**
+ * Directories holding files of their own.
+ */
+folders: number, files: number, links: number, 
+/**
+ * Links whose two ends sit in different directories.
+ */
+crossFolderLinks: number, 
+/**
+ * Share of links inside one directory, 0..1.
+ */
+linkLocality: number, 
+/**
+ * How far the folder tree is from the dependency clusters of the district (change) layout:
+ * 1 − normalised mutual information of the two groupings of windows, 0 = the same grouping.
+ * Absent when no district layout of the repo is known yet.
+ */
+divergence?: number, 
+/**
+ * Share of windows whose dependency cluster is mostly another directory's code.
+ */
+misgrouped?: number, 
+/**
+ * Change-weighted mean of the directories' own heat tension, 0..1.
+ */
+heatTension: number, 
+/**
+ * Window-weighted mean of the directories' own flow pressure, 0..1.
+ */
+pressure: number, };
+
+/**
+ * A directory with everything below it, seen as a module.
+ */
+export type FolderStructure = { path: string, 
+/**
+ * Path components (0 for the repo root).
+ */
+depth: number, files: number, windows: number, 
+/**
+ * Links with both ends inside.
+ */
+internal: number, 
+/**
+ * Links from inside to outside, and from outside in.
+ */
+outgoing: number, incoming: number, 
+/**
+ * Flow pressure: boundary links / all links touching it, 0 (sealed) .. 1 (every link leaves).
+ */
+pressure: number, 
+/**
+ * Its depth as a module: links staying inside it (in it or below) / all links touching it,
+ * 1 − pressure (0 when no link touches it).
+ */
+inside: number, 
+/**
+ * Windows inside that something outside links to: the module's interface.
+ */
+interface: number, 
+/**
+ * interface / windows: a narrow interface is small.
+ */
+interfaceShare: number, 
+/**
+ * Directories outside it that it links with (either way).
+ */
+partners: number, 
+/**
+ * Files inside with a link crossing its boundary: its gateways.
+ */
+gateways: number, 
+/**
+ * How the boundary links are spread over its files: (gateways − 1) / (files − 1), 0 when one
+ * file (or none) carries them all, 1 when every file links outside.
+ */
+spread: number, 
+/**
+ * Longest chain of links inside it, in windows (cycles cut).
+ */
+chain: number, 
+/**
+ * Dependency clusters of the district layout its windows belong to.
+ */
+modules?: number, 
+/**
+ * Change mass (sum of file change rates).
+ */
+mass: number, 
+/**
+ * Heat tension: share of the change mass in warm or hot files × share of the lines in cool or
+ * frozen files, 0..1. High when a few busy files live among code that rarely changes.
+ */
+tension: number, 
+/**
+ * Warm or hot files among cool or frozen siblings, busiest first (at most 5).
+ */
+hotFiles: Array<string>, };
+
+export type FileStructure = { path: string, 
+/**
+ * Its directory.
+ */
+folder: string, lane: string, 
+/**
+ * File heat grade (0 frozen .. 4 hot) and rate.
+ */
+heat: number, rate: number, 
+/**
+ * Links to or from files of the same directory, and to or from other directories.
+ */
+internal: number, external: number, 
+/**
+ * Its windows that other directories link to.
+ */
+exports: number, 
+/**
+ * How much busier it is than its directory: 0..1, > 0 only for warm or hot files, the share
+ * of its siblings' lines that are cool or frozen (warm files count 0.6).
+ */
+tension: number, 
+/**
+ * The other directory it has the most links with, when that beats its own directory (files
+ * with siblings only).
+ */
+pull?: FolderPull, };
+
+/**
+ * A window's links against its directory, and its file's heat tension.
+ */
+export type WindowStructure = { key: string, path: string, 
+/**
+ * Links with windows of its directory or below it (its own file included).
+ */
+internal: number, 
+/**
+ * Links with siblings or parents of its directory (anything not below it), either way;
+ * `incoming` of them come in.
+ */
+external: number, incoming: number, 
+/**
+ * Its file's heat tension (FileStructure.tension).
+ */
+tension: number, };
+
+export type FolderPull = { folder: string, links: number, };
 
 export type SearchTarget = { window?: string, site?: SiteRef, hub?: string, thread?: string, change?: string, };
 

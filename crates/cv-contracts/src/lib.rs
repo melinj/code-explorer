@@ -123,6 +123,24 @@ pub struct Cluster {
     #[ts(optional)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub review: Option<f64>,
+    /// Folders layout (`options.layout: "folders"`): the directory whose own files the cluster
+    /// holds ("" for the repo root). A large directory is split into several clusters.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub folder: Option<RepoPath>,
+}
+
+/// Folders layout: the frame of a directory (with everything below it) on the map. Directories
+/// with no files of their own and a single subdirectory are folded into it (`label` "a/b").
+#[derive(Clone, Debug, Serialize, Deserialize, PartialEq, TS)]
+pub struct FolderFrame {
+    pub path: RepoPath,
+    /// The path below the enclosing frame (or the lane).
+    pub label: String,
+    pub lane: LaneId,
+    /// Nesting depth inside its lane, 0 for the outermost frames.
+    pub depth: u32,
+    pub rect: Rect,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, TS)]
@@ -216,6 +234,10 @@ pub struct ViewBootstrap {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub churn: Option<ChurnSummary>,
     pub heat_labels: [String; 5],
+    /// Folders layout: the directory frames, outermost first. Absent from the district layout.
+    #[ts(optional)]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub folders: Option<Vec<FolderFrame>>,
 }
 
 /// How far the churn scan went and where its grade bands lie (ViewBootstrap.churn).

@@ -489,6 +489,11 @@ pub fn apply_persisted(v: &mut View, store: &LayoutStore) {
 /// Builds a snapshot view with the stored pins and labels applied (every full index of a new spec
 /// or revision goes through here), then rewrites the stored records to the clusters they matched
 /// (see the module docs, "Drift").
+/// A view of the folder tree (`options.layout: "folders"` or `"flow"`).
+pub fn is_folders(v: &View) -> bool {
+    crate::routes::arrangement(&v.bootstrap.base.view.spec).is_tree()
+}
+
 pub fn build_snapshot(
     app: &AppState,
     repo: &JjRepo,
@@ -517,7 +522,11 @@ pub fn build_snapshot(
         crate::view_store::wait_for_save(),
     )?;
     // A fileset view shows part of the map: its clusters must not count as misses or rewrite the
-    // members of label and pin records (drift follows full views only).
+    // members of label and pin records (drift follows full views only). The folder tree has no
+    // pins or labels: its clusters are directories, its positions follow from the paths.
+    if is_folders(&v) {
+        return Ok(v);
+    }
     let partial = !v.bootstrap.base.view.spec["fileset"].is_null();
     let Some(r) = review.filter(|_| !partial) else {
         apply_persisted(&mut v, &store);
@@ -648,6 +657,13 @@ pub fn patch_layout(app: &Arc<AppState>, view_id: &str, p: &LayoutPatch) -> R<Va
         .map_err(|e| err(StatusCode::INTERNAL_SERVER_ERROR, e.code, e.message))?;
     let _g = lock().lock().unwrap();
     let old = app.view(view_id)?;
+    if is_folders(&old) {
+        return Err(err(
+            StatusCode::BAD_REQUEST,
+            "layout-fixed",
+            "the folders layout places windows by path; move them in the district layout",
+        ));
+    }
     let current = old.bootstrap.base.view.layout_version;
     if p.base_layout_version != current {
         return Err(err(
@@ -779,7 +795,7 @@ fn propagate(
         .read()
         .unwrap()
         .iter()
-        .filter(|(id, _)| id.as_str() != from && app.read.range(id).is_none())
+        .filter(|(id, v)| id.as_str() != from && app.read.range(id).is_none() && !is_folders(v))
         .map(|(id, v)| (id.clone(), v.clone()))
         .collect();
     for (id, old) in others {

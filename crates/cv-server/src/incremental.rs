@@ -589,6 +589,7 @@ fn place(
                 pinned: false,
                 heat_level: None,
                 review: None,
+                folder: None,
             });
             NewCluster {
                 ci: clusters.len() - 1,

@@ -280,6 +280,8 @@ pub struct SpecVariant {
     /// An explicit `options.workspace`, `None` when it names the workspace the overlay would use
     /// anyway (the one whose `@` is the commit; the served one first).
     workspace: Option<String>,
+    /// The folder trees and the district grid are views of their own.
+    layout: cv_layout::Arrangement,
 }
 
 impl SpecVariant {
@@ -305,6 +307,7 @@ impl SpecVariant {
             fileset,
             live,
             workspace,
+            layout: arrangement(spec),
         })
     }
 }
@@ -398,6 +401,7 @@ pub fn router(state: Arc<AppState>) -> Router {
         .merge(crate::extras_api::router())
         .merge(crate::layout_api::router())
         .merge(crate::repo_api::router())
+        .merge(crate::structure_api::router())
         .layer(
             CompressionLayer::new().compress_when(DefaultPredicate::new().and(
                 |_: StatusCode,
@@ -411,17 +415,29 @@ pub fn router(state: Arc<AppState>) -> Router {
         .with_state(state)
 }
 
-/// `options.layout`: only "districts" (D8) exists. A "dependency" layout (clusters only, no axes)
-/// was in an early contract but never specified or built; accepting it and drawing districts
-/// anyway would be a silent lie, so anything else is a 400 (DESIGN §5, "Layouts considered").
+/// `options.layout`: "districts" (D8, the default) or "folders" (the folder tree, §4.9). A
+/// "dependency" layout (clusters only, no axes) was in an early contract but never specified or
+/// built; accepting it and drawing districts anyway would be a silent lie, so anything else is a
+/// 400 (DESIGN §4.9, "Layouts considered").
 pub fn check_layout(spec: &serde_json::Value) -> Result<(), ApiErr> {
     match &spec["options"]["layout"] {
         serde_json::Value::Null => Ok(()),
-        serde_json::Value::String(s) if s == "districts" => Ok(()),
+        serde_json::Value::String(s) if ["districts", "folders", "flow"].contains(&s.as_str()) => {
+            Ok(())
+        }
         other => Err(bad_request(
             "invalid",
-            format!("options.layout {other}: only \"districts\" is supported"),
+            format!("options.layout {other}: expected \"districts\", \"folders\" or \"flow\""),
         )),
+    }
+}
+
+/// The arrangement a (checked) spec asks for.
+pub fn arrangement(spec: &serde_json::Value) -> cv_layout::Arrangement {
+    match spec["options"]["layout"].as_str() {
+        Some("folders") => cv_layout::Arrangement::Folders,
+        Some("flow") => cv_layout::Arrangement::Flow,
+        _ => cv_layout::Arrangement::Districts,
     }
 }
 

@@ -17,6 +17,7 @@ pub mod repo_api;
 pub mod review_api;
 pub mod routes;
 pub mod scheduler;
+pub mod structure_api;
 pub mod ui;
 pub mod view_store;
 pub mod workspaces;

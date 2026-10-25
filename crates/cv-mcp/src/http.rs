@@ -416,6 +416,15 @@ impl McpBackend for HttpBackend {
         self.get(&format!("/blobs/{}/text", enc(blob)), &q).await
     }
 
+    async fn structure(&self, view: &str, folder: Option<&str>) -> BResult<Value> {
+        let q: Vec<(&str, String)> = folder
+            .map(|f| ("folder", f.to_string()))
+            .into_iter()
+            .collect();
+        self.get(&format!("/views/{}/structure", enc(view)), &q)
+            .await
+    }
+
     async fn metrics(
         &self,
         view: &str,

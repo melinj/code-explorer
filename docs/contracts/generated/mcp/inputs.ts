@@ -14,6 +14,7 @@ export interface McpInputs {
   get_hub: { key: string; protocol?: string };
   get_metrics: { target: string };
   get_hotspots: { lane?: string; limit?: number };
+  get_structure: { folder?: string; limit?: number };
   list_workspaces: Record<string, never>;
   bind_workspace: { workspace: string };
   list_threads: { assignee?: "agent" | "human"; path?: string; revset?: string; status?: Array<"open" | "in-progress" | "addressed" | "resolved" | "outdated" | "wontfix">; withCode?: boolean };

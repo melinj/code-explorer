@@ -298,9 +298,19 @@ await ensureCode();
     };
   });
   // The lens is applied and every chunk and highway rebuilt for it (idle covers bundles.building).
-  const LENS = { None: "none", Heat: "heat", Depends: "connectedness", Hotspots: "hotspots", "Co-change": "cochange" };
+  const LENS = { None: "none", Depth: "depth", Tension: "tension", Heat: "heat", Depends: "connectedness", "Review priority": "hotspots", "Co-change": "cochange" };
+  // None and Tension show the folder tree, Depth the tree ordered by links, the rest the district
+  // grid (structure.ts layoutFor).
+  const layoutOf = (lens) => (lens === "depth" ? "flow" : lens === "none" || lens === "tension" ? "folders" : "districts");
+  const layoutNow = () => page.evaluate(() => window.__cv.engine.client.view.spec.options?.layout ?? "districts");
   const settle = async (want) => {
-    if (want) await until((l) => window.__cv.engine["look"].lens === l, want);
+    if (want) {
+      await until((l) => window.__cv.engine["look"].lens === l, want);
+      // The snapshot re-opens in the lens's layout: wait for that switch, not just the lens. (The
+      // mock has one synthetic map, whatever the layout: cv serve only.)
+      const layout = layoutOf(want);
+      if (REPO) await until((l) => { const e = window.__cv.engine; return (e.client.view.spec.options?.layout ?? "districts") === l && !e.stats().pendingSwitch; }, layout, 120000).catch(() => {});
+    }
     await idle();
   };
   const pick = async (label) => {
@@ -310,9 +320,32 @@ await ensureCode();
   };
   const none = await pick("None");
   check(none.lens === "none" && none.faded === 0 && none.glows === 0 && none.n > 0, `no lens: nothing faded or glowing (${none.n} windows at ${none.tier})`);
+  const tree = await page.evaluate(() => {
+    const b = window.__cv.engine.client.boot;
+    return { frames: b.folders?.length ?? 0, columns: b.columns.length, folder: b.clusters.every((c) => c.folder !== undefined) };
+  });
+  if (REPO) check((await layoutNow()) === "folders" && tree.frames > 0 && tree.columns === 0 && tree.folder, `None shows the folder tree (${tree.frames} folder frames, every cluster a directory)`);
+  else skip("folder tree: the mock draws one synthetic map");
+  await until(() => !!document.querySelector(".structure-chip"), undefined, 60000).catch(() => {});
+  const chip = await page.evaluate(() => document.querySelector(".structure-chip")?.textContent ?? "");
+  check(/outside \d+% · tension \d+%/.test(chip), `the top bar shows the folder tree's structure indices (${chip})`);
+  for (const label of ["Depth", "Tension"]) {
+    const st = await pick(label);
+    await until(() => !!window.__cv.engine["structureView"], undefined, 60000).catch(() => {});
+    const loaded = await page.evaluate(() => window.__cv.engine["structureView"] === window.__cv.engine.client.view.id);
+    await shot(`p-lens-${label.toLowerCase()}`);
+    // Per-window structure: windows of the loaded tiles with an entry (links or tension).
+    const perWindow = await page.evaluate(async () => {
+      const e = window.__cv.engine;
+      const s = await (await fetch(`/api/v1/views/${e.client.view.id}/structure`)).json();
+      const keys = new Set(s.windows.map((w) => w.key));
+      return [...e.client.windows.values()].filter((w) => keys.has(w.key)).length;
+    });
+    check(st.lens === LENS[label] && (!REPO || (await layoutNow()) === layoutOf(LENS[label])) && loaded && st.faded <= st.n && perWindow > 0, `lens ${label} shows its folder tree (${layoutOf(LENS[label])}) and reads its structure (${st.faded} of ${st.n} windows faded, ${perWindow} loaded windows with per-window structure)`);
+  }
   const heat = await pick("Heat");
   await shot("p-lens-heat");
-  check(heat.lens === "heat", `lens Heat switches the canvas lens (${heat.lens})`);
+  check(heat.lens === "heat" && (!REPO || (await layoutNow()) === "districts"), `lens Heat switches the canvas lens and the snapshot to the district grid (${heat.lens})`);
   if (heat.hot) check(heat.glows === heat.hot, `heat lens: a thermal glow under each of the ${heat.hot} hot windows (${heat.glows} glows)`);
   else skip("heat glow check: no hot window in view");
   check(heat.faded === heat.cold, `heat lens fades the ${heat.cold} cold windows (${heat.faded} faded)`);
@@ -326,8 +359,9 @@ await ensureCode();
   if (conn.central) check(conn.raised === conn.central && conn.elev > none.elev * 1.5, `connectedness lens raises the ${conn.central} central windows (shadow offset ${none.elev.toFixed(1)} → ${conn.elev.toFixed(1)} px)`);
   else skip("elevation check: no central window in view");
   // Coupling widths were dropped: every window pair has one link per kind, so they were constant.
-  check(Math.abs(conn.edgePx - none.edgePx) < 1e-6 && Math.abs(conn.highwayPx - none.highwayPx) < 1e-6, `connectedness lens keeps link and highway widths (links ${conn.edgePx.toFixed(1)} px, highways ${conn.highwayPx.toFixed(1)} px)`);
-  const hot = await pick("Hotspots");
+  // (Against Heat, on the same district grid: None shows the folder tree, other windows in view.)
+  check(Math.abs(conn.edgePx - heat.edgePx) < 1e-6 && Math.abs(conn.highwayPx - heat.highwayPx) < 1e-6, `connectedness lens keeps link and highway widths (links ${conn.edgePx.toFixed(1)} px, highways ${conn.highwayPx.toFixed(1)} px)`);
+  const hot = await pick("Review priority");
   check(hot.lens === "hotspots" && hot.faded === hot.notFirst, `hotspots lens keeps only review-first windows at full strength (${hot.n - hot.notFirst} kept, ${hot.faded} faded)`);
   const co = await pick("Co-change");
   await until(() => !!window.__cv.engine["cochange"], undefined, 60000);
@@ -350,10 +384,11 @@ await ensureCode();
       const ra = (await e.locate(a))[0], rb = (await e.locate(b))[0];
       if (!ra || !rb) return;
       const x0 = Math.min(ra.x, rb.x), y0 = Math.min(ra.y, rb.y), x1 = Math.max(ra.x + ra.w, rb.x + rb.w), y1 = Math.max(ra.y + ra.h, rb.y + rb.h);
-      e.frameRect({ x: x0, y: y0, w: x1 - x0, h: y1 - y0 }, 0);
-      // Zoom in about the centre (not the top-left corner), so the pair stays on screen.
-      const z = 0.03, c = e.cam, cx = c.x + c.width / 2 / c.zoom, cy = c.y + c.height / 2 / c.zoom;
-      if (c.zoom < z) c.animateTo(cx - c.width / 2 / z, cy - c.height / 2 / z, z, 0);
+      // Both files on screen, centred (frameRect reads a tall rect from its top instead), at a
+      // zoom where tiles load (≥ 0.03).
+      const c = e.cam, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+      const z = Math.max(0.03, Math.min(0.6, (0.9 * c.width) / (x1 - x0), (0.9 * c.height) / (y1 - y0)));
+      c.animateTo(cx - c.width / 2 / z, cy - c.height / 2 / z, z, 0);
     }, coState.first);
     // Both files' windows loaded (a condition, not a delay).
     await until(() => {
@@ -1374,6 +1409,10 @@ check(true, "back to the snapshot");
 }
 
 // Drag and pin: drag the selected window's title bar; it stays pinned there across a reload; Unpin.
+// Moves belong to the district grid (the folder tree places windows by path): a grid lens first.
+await page.click(`.seg[aria-label=Lens] button:has-text('Heat')`);
+await until(() => { const e = window.__cv.engine; return (e.client.view.spec.options?.layout ?? "districts") === "districts" && !e.stats().pendingSwitch; }, undefined, 120000).catch(() => {});
+await idle();
 const box = await (await page.$(".canvas canvas")).boundingBox();
 await ensureCode();
 {

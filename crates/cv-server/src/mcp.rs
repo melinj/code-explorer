@@ -190,6 +190,13 @@ impl McpBackend for InProcess {
         )
     }
 
+    async fn structure(&self, view: &str, folder: Option<&str>) -> BResult<Value> {
+        let s = crate::structure_api::structure_of(&self.app, view)
+            .await
+            .map_err(api_err)?;
+        to_value(crate::structure_api::within(&s, folder))
+    }
+
     async fn metrics(
         &self,
         view: &str,

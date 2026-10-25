@@ -34,11 +34,41 @@ struct Agg {
     heat: Heat,
     conn: Connectedness,
     window: Option<String>,
+    /// Links inside and outside its module (review priority's boundary factor).
+    sides: (u32, u32),
+}
+
+/// Per window of `v`: its solid links inside and outside its module (its directory and below,
+/// `cv_layout::structure::below`), between lanes §4.11 counts, distinct window pairs.
+fn module_sides(v: &View) -> Vec<(u32, u32)> {
+    let counted =
+        |w: usize| !cv_layout::structure::SKIP_LANES.contains(&v.files[v.windows[w].file].lane);
+    let dir = |w: usize| cv_layout::dirname(&v.files[v.windows[w].file].path);
+    let pairs: std::collections::BTreeSet<(usize, usize)> = v
+        .links
+        .iter()
+        .filter(|l| !l.is_dynamic() && !crate::index::is_uncertain(l.kind, l.confidence))
+        .filter(|l| l.from != l.to && counted(l.from) && counted(l.to))
+        .map(|l| (l.from, l.to))
+        .collect();
+    let mut sides = vec![(0u32, 0u32); v.windows.len()];
+    for (a, b) in pairs {
+        for (w, other) in [(a, b), (b, a)] {
+            if cv_layout::structure::below(dir(other), dir(w)) {
+                sides[w].0 += 1;
+            } else {
+                sides[w].1 += 1;
+            }
+        }
+    }
+    sides
 }
 
 /// Points for the Hotspots scatter, highest risk first. `level` is "cluster" (default) or "file";
-/// risk is the geometric mean of the heat (rate) and connectedness (dependents within 2 hops)
-/// percentiles, ranked among the points returned before `limit`.
+/// risk (review priority) is the geometric mean of the heat (rate) and connectedness (dependents
+/// within 2 hops) percentiles, ranked among the points returned before `limit`, times the boundary
+/// factor of its links inside and outside its module (`cv_layout::structure::boundary_factor`;
+/// not on the import-graph basis, which reproduces appendix C).
 pub fn points(v: &View, level: &str, lane: Option<&str>, limit: usize) -> Vec<MetricPoint> {
     points_with(v, level, lane, limit, None)
 }
@@ -53,6 +83,11 @@ pub fn points_with(
     file_conn: Option<&[Connectedness]>,
 ) -> Vec<MetricPoint> {
     let mut aggs: Vec<Agg> = Vec::new();
+    let sides = module_sides(v);
+    let sum = |ws: &[usize]| {
+        ws.iter()
+            .fold((0, 0), |a, &w| (a.0 + sides[w].0, a.1 + sides[w].1))
+    };
     if level == "file" {
         for (fi, f) in v.files.iter().enumerate() {
             if lane.is_some_and(|l| l != f.lane) {
@@ -84,6 +119,7 @@ pub fn points_with(
                 heat: h.heat.clone(),
                 conn,
                 window: Some(h.id.clone()),
+                sides: sum(&f.windows),
             });
         }
     } else {
@@ -145,6 +181,7 @@ pub fn points_with(
                 },
                 conn,
                 window: None,
+                sides: sum(ws),
             });
         }
     }
@@ -166,7 +203,14 @@ pub fn points_with(
             conn: a.conn,
             heat_pct: heat_pct[i],
             conn_pct: conn_pct[i],
-            risk: (heat_pct[i] * conn_pct[i]).sqrt(),
+            risk: (heat_pct[i] * conn_pct[i]).sqrt()
+                * if file_conn.is_some() {
+                    1.0
+                } else {
+                    cv_layout::structure::boundary_factor(a.sides.0, a.sides.1)
+                },
+            outside: (file_conn.is_none() && a.sides.0 + a.sides.1 > 0)
+                .then(|| a.sides.1 as f64 / (a.sides.0 + a.sides.1) as f64),
             window: a.window,
         })
         .collect();

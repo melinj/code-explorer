@@ -6,7 +6,8 @@ import { GROUP_OF, LOW_CONFIDENCE, dashedPolyline, edgeColor, edgePoints, quadEd
 import type { RangeOptions } from "../contracts/model";
 import { RectBatch, TL, TR, dispose } from "./rects";
 import { LabelBatch, fit, monoFont, sansFont, textWidth } from "./labels";
-import { CHIP_HI, CHIP_REST, OWNER, heatColor, heatLevel, mix, step, type Theme } from "./theme";
+import { CHIP_HI, CHIP_REST, OWNER, depthColor, heatColor, heatLevel, mix, step, type Theme } from "./theme";
+import { structure } from "./structure";
 
 export type Part = "frames" | "edges" | "sil" | "ports" | "titles" | "heads";
 /** Containers per chunk: the built parts plus `code`, which holds per-window L3 text. */
@@ -118,6 +119,10 @@ export function lensFades(w: WindowHeader, lens: Lens) {
       return !w.reviewFirst;
     case "cochange":
       return !cochangePaths.has(w.path);
+    case "tension":
+      return !((structure?.files.get(w.path)?.tension ?? 0) > 0);
+    case "depth":
+      return structure?.windowOutside(w.key) === undefined;
     default:
       return false;
   }
@@ -352,7 +357,8 @@ function outOfFocus(w: WindowHeader, look: Look) {
  * The colour a window's heat cap and tint take: its heat on the continuous ramp, except under the
  * lenses whose subject is not heat. Depends: depended on (accent) or depending on others
  * (consumer), by fan-in against fan-out, stronger the more lopsided. Co-change: the lens colour,
- * stronger the more surely the file changes with another.
+ * stronger the more surely the file changes with another. Flow: consumer, stronger the larger the
+ * share of the file's links leaving its directory; accent for a file pulled toward another one.
  */
 export function lensColor(w: WindowHeader, look: Look) {
   const t = look.theme;
@@ -365,6 +371,12 @@ export function lensColor(w: WindowHeader, look: Look) {
     const k = cochangeStrength.get(w.path);
     if (k !== undefined) return mix(mix(t.body, t.line, 0.45), t.couple, 0.2 + 0.5 * step(k));
   }
+  if (look.lens === "depth") {
+    // Hue: share of the window's links leaving its directory (and what is below it), cold inside,
+    // hot outside; saturation: how many links it has against the busiest window on the view.
+    const k = structure?.windowOutside(w.key);
+    if (k !== undefined) return depthColor(t, k, structure!.windowVolume(w.key));
+  }
   return heatColor(t, heatLevel(w.heat.grade, w.heat.rate, look.churn));
 }
 
@@ -376,7 +388,8 @@ function* buildFrames(c: Container, ws: WindowHeader[], look: Look, stats: Chunk
   const rb = new RectBatch(ws.length * 40);
   try {
     const radius = px(CARD_RADIUS_PX);
-    const heatLens = look.lens === "heat";
+    // Tension shows busy files among quiet ones: the heat lens's glow, on those files only.
+    const heatLens = look.lens === "heat" || look.lens === "tension";
     const connLens = look.lens === "connectedness";
     stats.glows = stats.faded = stats.raised = 0;
     stats.maxElevPx = 0;
@@ -562,6 +575,18 @@ export function inRangeText(w: WindowHeader) {
   return r ? `${r.commits} of ${r.of} commit${r.of === 1 ? "" : "s"}` : "";
 }
 
+/**
+ * The structure lenses' badge (§4.11): Tension, its file's heat tension; Depth, its links staying
+ * in its directory or below against those leaving.
+ */
+export function structureText(w: WindowHeader, look: Look) {
+  const s = structure?.windows.get(w.key);
+  if (!s) return "";
+  if (look.lens === "tension") return s.tension > 0 ? `tension ${Math.round(s.tension * 100)}%` : "";
+  if (look.lens === "depth") return s.internal + s.external ? `${s.internal} inside  · ${s.external} outside` : "";
+  return "";
+}
+
 /** "↧ 85 ↥ 12": dependents within two hops and fan-out (§4.9 connectedness badges). */
 export function depsText(w: WindowHeader) {
   const c = w.conn;
@@ -579,8 +604,9 @@ function* buildTitles(c: Container, ws: WindowHeader[], look: Look): Generator<v
       const text = fit(font, name, size, w.rect.w - 40);
       if (text && w.rect.h > size + HEADER_WU + 20) {
         batch.add(text, w.rect.x + 20, w.rect.y + HEADER_WU + 14, size, look.theme.ink);
-        // Range views: the in-range badge under the title, readable at map zoom.
-        const ir = inRangeText(w);
+        // Range views: the in-range badge under the title, readable at map zoom; the structure
+        // lenses' badge likewise.
+        const ir = inRangeText(w) || structureText(w, look);
         if (ir && w.rect.h > size * 1.9 + HEADER_WU + 40) batch.add(fit(font, ir, size * 0.6, w.rect.w - 40), w.rect.x + 20, w.rect.y + HEADER_WU + 24 + size, size * 0.6, look.theme.accent);
       }
     }
@@ -616,6 +642,8 @@ function* buildHeads(c: Container, ws: WindowHeader[], look: Look): Generator<vo
       if (stat) segs.push([`−${stat.removed}`, DIFF_DEL, 19], [`+${stat.added}`, DIFF_ADD, 19]);
       const ir = inRangeText(w);
       if (ir) segs.push([ir, t.accent, 16]);
+      const st = structureText(w, look);
+      if (st) segs.push([st, t.accent, 16]);
       if (w.flags.alsoChangedIn?.length) segs.push([`also in ${w.flags.alsoChangedIn.join(", ")}`, t.warn, 15]);
       if (w.flags.unsnapshotted) segs.push(["edited, live", t.add, 15]);
       if (w.flags.minimized) segs.push(["unchanged", t.dim, 15]);

@@ -1,5 +1,5 @@
 import { Application, Container, Graphics } from "pixi.js";
-import type { CoChangeClusterPair, CoChangePair, Cluster, Lens, Rect, SnapshotOptions, WindowHeader, ZoomTier } from "../contracts/model";
+import type { CoChangeClusterPair, CoChangePair, Cluster, Lens, Rect, SnapshotOptions, StructureResponse, ViewLayout, WindowHeader, ZoomTier } from "../contracts/model";
 import { CELL_WU, DataClient, bounds, cellKey, type Edge } from "../data/client";
 import { grow, intersects } from "../data/loader";
 import { buildCodeText, type ExpandHit } from "../windows/codeText";
@@ -9,6 +9,7 @@ import { GATHER, Gather, type GatherItem } from "./gather";
 import { HEADER_WU, LINE_WU, TILE_BASE_WU } from "../contracts/wire";
 import { Camera, MAX_ZOOM, clamp, tierIndex } from "./camera";
 import { Chunk, cochangePaths, cochangeStrength, isHiddenContext, isMinimized, type Look, type Part } from "./chunks";
+import { Structure, isTreeLens, layoutFor, setStructure, structure } from "./structure";
 import { LabelBatch, fit, monoFont, sansFont, textWidth } from "./labels";
 import { CLUSTER_LABEL, GLYPH_BORDER_PX, GLYPH_PX, clusterLabelRect, glyphSpot } from "./glyphSpot";
 import { RectBatch, flushPalette, dispose, paletteUse } from "./rects";
@@ -208,6 +209,8 @@ export class Engine {
   async start(onStats?: (s: EngineStats) => void, onSelect?: (t: Target | undefined) => void) {
     this.onStats = onStats;
     this.onSelectCb = onSelect;
+    // The first view's structure (later views load theirs on the switch).
+    if (isTreeLens(this.look.lens)) void this.loadStructure();
     await this.app.init({
       resizeTo: this.el,
       autoStart: false,
@@ -403,20 +406,20 @@ export class Engine {
   }
 
   /**
-   * Emphasis lens (§4.9), never moving anything: heat fades cold windows and glows under hot ones;
-   * connectedness fades isolated windows, weighs links by coupling and raises central windows;
-   * hotspots keeps only review-first windows at full strength; co-change draws "changes together"
-   * links. The L0 cluster map follows the same lens.
+   * Emphasis lens (§4.9): heat fades cold windows and glows under hot ones; connectedness fades
+   * isolated windows, weighs links by coupling and raises central windows; hotspots keeps only
+   * review-first windows at full strength; co-change draws "changes together" links; flow keeps
+   * code linked across its directory's edge; tension, busy files among quiet ones. The L0 cluster
+   * map follows the same lens. A snapshot also takes the lens's layout (structure.ts layoutFor):
+   * none, flow and tension show the folder tree, the others the district grid.
    */
   setLens(lens: Lens) {
     if (this.look.lens === lens) return;
     this.releaseGather(true);
     this.look = { ...this.look, lens };
-    // Cards take the lens's colours; links and highways whose ends it fades step back with them.
-    for (const c of this.chunks.values()) {
-      c.dirty.add("frames");
-      c.dirty.add("edges");
-    }
+    // Cards take the lens's colours; links and highways whose ends it fades step back with them;
+    // the structure lenses badge the titles and headers.
+    for (const c of this.chunks.values()) for (const p of ["frames", "edges", "titles", "heads"] as Part[]) c.dirty.add(p);
     this.restyleBundles();
     this.backdrop.setLens(lens, this.look.brush);
     this.glyphDirty = true;
@@ -428,6 +431,62 @@ export class Engine {
     this.cochangeDirty = true;
     // Under the co-change lens, hovering shows co-change rather than static links (overlay).
     if (this.hover) this.overlayDirty = true;
+    if (isTreeLens(lens)) void this.loadStructure();
+    void this.applyLayout();
+  }
+
+  /** The layout snapshots are opened in: the lens's (see setLens). */
+  private layout: ViewLayout = "folders";
+
+  /** A snapshot spec with the current layout; other specs as they are. */
+  private withLayout(spec: unknown): unknown {
+    const s = spec as ViewSpec;
+    return s.mode === "snapshot" ? { ...s, options: { ...s.options, layout: this.layout } } : spec;
+  }
+
+  /** The layout the lens shows, for the snapshot on screen: switch views, keeping the selected window in sight. */
+  private async applyLayout() {
+    const layout = layoutFor(this.look.lens);
+    if (layout === this.layout) return;
+    this.layout = layout;
+    const vs = this.client.view.spec as ViewSpec;
+    // Range views keep the map of their tip (D16); the next snapshot opens in this layout.
+    if (vs.mode !== "snapshot") return;
+    const sel = this.selected?.type === "window" ? this.selected.w : undefined;
+    const moved = ((v) => () => this.cam.version !== v)(this.cam.version);
+    if (!(await this.switchView(vs))) return;
+    // Back to the selection (or home), unless the camera moved meanwhile: a pan or a fly started
+    // during the switch wins over this one.
+    if (moved()) return;
+    if (!sel) return this.home(600);
+    const at = (await this.locate(sel.path))[0];
+    if (at && !moved()) await this.goTo({ path: sel.path, line: sel.lines.start });
+  }
+
+  /** The folder-tree lenses: the view's structure (GET /views/:id/structure), once per view. */
+  private structureView?: string;
+
+  /** Called with the structure of the view on screen when it arrives (undefined on a view switch). */
+  onStructure?: (s?: StructureResponse) => void;
+
+  private async loadStructure() {
+    // Snapshots only: a range view keeps its tip's map, and /structure does not know its id (a 404
+    // there would read as a lost view and re-open it).
+    if (this.isRange) return;
+    const view = this.client.view.id;
+    if (structure && this.structureView === view) return;
+    const r = await fetch(`/api/v1/views/${view}/structure`);
+    if (!r.ok) return void this.client.noteFailure(r);
+    const s = (await r.json()) as StructureResponse;
+    if (this.client.view.id !== view) return;
+    setStructure(new Structure(s));
+    this.structureView = view;
+    this.onStructure?.(s);
+    for (const c of this.chunks.values()) for (const p of ["frames", "edges", "titles", "heads"] as Part[]) c.dirty.add(p);
+    this.backdrop.structureChanged();
+    this.restyleBundles();
+    this.glyphDirty = true;
+    this.dirty = true;
   }
 
   private async loadCochange() {
@@ -750,7 +809,7 @@ export class Engine {
   private async switchView(spec: unknown) {
     this.switching++;
     try {
-      return await this.switchViewNow(spec);
+      return await this.switchViewNow(this.withLayout(spec));
     } finally {
       this.switching--;
     }
@@ -788,6 +847,10 @@ export class Engine {
     this.setCochange(undefined);
     this.cochangeFor = undefined;
     if (this.look.lens === "cochange") void this.loadCochange();
+    setStructure(undefined);
+    this.structureView = undefined;
+    this.onStructure?.(undefined);
+    if (isTreeLens(this.look.lens)) void this.loadStructure();
     this.threadsDirty = true;
     this.lastData = 0;
     this.camVersion = -1;
@@ -1330,6 +1393,8 @@ export class Engine {
   home(ms = 450) {
     const b = this.client.boot;
     const lane = b.lanes.find((l) => l.lane === "code") ?? b.lanes[0];
+    // The folder tree has no cells: its code lane.
+    if (!lane.rows.length) return this.frameRect(lane.rect, ms);
     const conn = Math.max(...lane.rows.map((r) => r.conn));
     const cell = b.clusters.filter((c) => c.lane === lane.lane && c.conn === conn && c.heat === 4);
     this.frameRect(cell.length ? bounds(cell.map((c) => c.rect)) : lane.rect, ms);
